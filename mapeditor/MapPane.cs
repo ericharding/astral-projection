@@ -47,7 +47,7 @@ namespace TileMap
 
 				if (TileToPlace != null)
 				{
-					AddTile((TileCluster)TileToPlace.Clone(), e.GetPosition(this), true);
+					AddTile((TileCluster)TileToPlace.Clone(), FindNearestGridIntersect(e.GetPosition(this)), true);
 				}
 			}
 		}
@@ -114,6 +114,22 @@ namespace TileMap
 			return canvasPoint;
 		}
 
+		private Point RealToCanvas(Point realPoint)
+		{
+			realPoint.Offset(_offsetX - _origin, _offsetY - _origin);
+			return realPoint;
+		}
+
+		private Point FindNearestGridIntersect(Point from)
+		{
+			from = CanvasToReal(from);
+
+			from.X = Math.Floor(from.X / TileWidth) * TileWidth;
+			from.Y = Math.Floor(from.Y / TileHeight) * TileHeight;
+
+			return RealToCanvas(from);
+		}
+
 		protected override void OnRender(DrawingContext dc)
 		{
 			base.OnRender(dc);
@@ -143,7 +159,7 @@ namespace TileMap
 			{
 				if (TileToPlace != null)
 				{
-					TileToPlace.Draw(dc, _mouseHover, 0.5);
+					TileToPlace.Draw(dc, FindNearestGridIntersect(_mouseHover), 0.5);
 				}
 			}
 		}
