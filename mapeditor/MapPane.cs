@@ -103,7 +103,6 @@ namespace TileMap
 		public void AddTile(TileCluster tile, Point where, bool relativeToCanvas)
 		{
 			tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
-			tile.TileSize = new Size(TileWidth, TileHeight);
 			_tiles.Insert(tile);
 
 			this.InvalidateVisual();
