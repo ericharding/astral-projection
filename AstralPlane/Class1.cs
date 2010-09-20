@@ -9,8 +9,9 @@ namespace Astral.Plane
      * Astral.Plane classes
      * 
      * Map - Represents a file as a whole
-     * Tile - One image on a map.  Includes position, rotation, orientation and edge data
-     * 
+     * Image - One image bits
+     * TileData - One image - shared state.   Image, Rotation, 
+     * Tile - location, layer, 
      * 
      */
     
