@@ -1,11 +1,12 @@
 syntax: glob
-*.suo
-*.snk
 *.log
-tags
-tagfiles.txt
-obj
-bin
+*.snk
+*.suo
+*.testsettings
 *.user
+*.vsmdi
+bin
+obj
+TestResults
 
 syntax: regexp

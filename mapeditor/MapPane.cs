@@ -15,10 +15,11 @@ namespace TileMap
 		public int TileWidth { get; set; }
 		public int TileHeight { get; set; }
 		public TileCluster TileToPlace { get; set; }
+		public bool IsSnapToGrid { set { _snapToGrid = value; this.InvalidateVisual(); } }
 
 		private const long _origin = 0x7FFFFFFF;
 		private Pen _gridPen;
-		private bool _scrolling = false, _hoverTile = false, _leftClick = false;
+		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true;
 		private Point _mousePos, _mouseHover;
 		private long _offsetX = _origin, _offsetY = _origin;
 		private QuadTree<TileCluster> _tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
@@ -47,7 +48,7 @@ namespace TileMap
 
 				if (TileToPlace != null)
 				{
-					AddTile((TileCluster)TileToPlace.Clone(), e.GetPosition(this), true);
+					AddTile((TileCluster)TileToPlace.Clone(), _snapToGrid ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true);
 				}
 			}
 		}
@@ -103,7 +104,6 @@ namespace TileMap
 		public void AddTile(TileCluster tile, Point where, bool relativeToCanvas)
 		{
 			tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
-			tile.TileSize = new Size(TileWidth, TileHeight);
 			_tiles.Insert(tile);
 
 			this.InvalidateVisual();
@@ -113,6 +113,22 @@ namespace TileMap
 		{
 			canvasPoint.Offset(_origin - _offsetX, _origin - _offsetY);
 			return canvasPoint;
+		}
+
+		private Point RealToCanvas(Point realPoint)
+		{
+			realPoint.Offset(_offsetX - _origin, _offsetY - _origin);
+			return realPoint;
+		}
+
+		private Point FindNearestGridIntersect(Point from)
+		{
+			from = CanvasToReal(from);
+
+			from.X = Math.Floor(from.X / TileWidth) * TileWidth;
+			from.Y = Math.Floor(from.Y / TileHeight) * TileHeight;
+
+			return RealToCanvas(from);
 		}
 
 		protected override void OnRender(DrawingContext dc)
@@ -144,7 +160,7 @@ namespace TileMap
 			{
 				if (TileToPlace != null)
 				{
-					TileToPlace.Draw(dc, _mouseHover, 0.5);
+					TileToPlace.Draw(dc, _snapToGrid ? FindNearestGridIntersect(_mouseHover) : _mouseHover, 0.5);
 				}
 			}
 		}

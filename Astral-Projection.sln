@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AstralPlane", "AstralPlane\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TileMap", "mapeditor\TileMap.csproj", "{06AC9780-A7E3-4C8E-8BDD-42EB28392D68}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AstralTest", "AstralTest\AstralTest.csproj", "{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,16 @@ Global
 		{06AC9780-A7E3-4C8E-8BDD-42EB28392D68}.Release|Mixed Platforms.Build.0 = Release|x86
 		{06AC9780-A7E3-4C8E-8BDD-42EB28392D68}.Release|x86.ActiveCfg = Release|x86
 		{06AC9780-A7E3-4C8E-8BDD-42EB28392D68}.Release|x86.Build.0 = Release|x86
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B5F9FF79-BD8E-4151-BC6B-FADC22F75ED2}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
