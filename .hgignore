@@ -1,0 +1,11 @@
+syntax: glob
+*.suo
+*.snk
+*.log
+tags
+tagfiles.txt
+obj
+bin
+*.user
+
+syntax: regexp
