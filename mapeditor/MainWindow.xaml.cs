@@ -52,6 +52,8 @@ namespace TileMap
 
 		private void MenuItemDeleteImportedTile_Click(object sender, RoutedEventArgs e)
 		{
+			// TODO: confirm this action; delete instances of deleted tile from map?
+
 			_tiles.Remove((TileCluster)(((MenuItem)e.Source).DataContext));
 		}
 
@@ -63,6 +65,32 @@ namespace TileMap
 		private void viewTiles_MouseDown(object sender, MouseButtonEventArgs e)
 		{
 			viewTiles.SelectedItem = null;
+		}
+
+		private void Window_KeyDown(object sender, KeyEventArgs e)
+		{
+			switch (e.Key)
+			{
+				case Key.Escape:
+					viewTiles.SelectedItem = null;
+					mapPane.InvalidateVisual();
+					break;
+				case Key.LeftShift:
+				case Key.RightShift:
+					mapPane.IsSnapToGrid = false;
+					break;
+			}
+		}
+
+		private void Window_KeyUp(object sender, KeyEventArgs e)
+		{
+			switch (e.Key)
+			{
+				case Key.LeftShift:
+				case Key.RightShift:
+					mapPane.IsSnapToGrid = true;
+					break;
+			}
 		}
 	}
 }

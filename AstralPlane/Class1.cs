@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AstralPlane
+namespace Astral.Plane
 {
-    public class Class1
-    {
-    }
+    /*
+     * Astral.Plane classes
+     * 
+     * Map - Represents a file as a whole
+     * Tile - One image on a map.  Includes position, rotation, orientation and edge data
+     * 
+     * 
+     */
+    
 }
