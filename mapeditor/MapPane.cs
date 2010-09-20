@@ -15,10 +15,11 @@ namespace TileMap
 		public int TileWidth { get; set; }
 		public int TileHeight { get; set; }
 		public TileCluster TileToPlace { get; set; }
+		public bool IsSnapToGrid { set { _snapToGrid = value; this.InvalidateVisual(); } }
 
 		private const long _origin = 0x7FFFFFFF;
 		private Pen _gridPen;
-		private bool _scrolling = false, _hoverTile = false, _leftClick = false;
+		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true;
 		private Point _mousePos, _mouseHover;
 		private long _offsetX = _origin, _offsetY = _origin;
 		private QuadTree<TileCluster> _tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
@@ -47,7 +48,7 @@ namespace TileMap
 
 				if (TileToPlace != null)
 				{
-					AddTile((TileCluster)TileToPlace.Clone(), FindNearestGridIntersect(e.GetPosition(this)), true);
+					AddTile((TileCluster)TileToPlace.Clone(), _snapToGrid ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true);
 				}
 			}
 		}
@@ -159,7 +160,7 @@ namespace TileMap
 			{
 				if (TileToPlace != null)
 				{
-					TileToPlace.Draw(dc, FindNearestGridIntersect(_mouseHover), 0.5);
+					TileToPlace.Draw(dc, _snapToGrid ? FindNearestGridIntersect(_mouseHover) : _mouseHover, 0.5);
 				}
 			}
 		}

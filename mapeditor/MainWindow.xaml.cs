@@ -75,6 +75,21 @@ namespace TileMap
 					viewTiles.SelectedItem = null;
 					mapPane.InvalidateVisual();
 					break;
+				case Key.LeftShift:
+				case Key.RightShift:
+					mapPane.IsSnapToGrid = false;
+					break;
+			}
+		}
+
+		private void Window_KeyUp(object sender, KeyEventArgs e)
+		{
+			switch (e.Key)
+			{
+				case Key.LeftShift:
+				case Key.RightShift:
+					mapPane.IsSnapToGrid = true;
+					break;
 			}
 		}
 	}
