@@ -42,13 +42,22 @@ namespace Astral.Plane
         {
         }
 
+        public void AddTileFactory(TileFactory tf)
+        {
+            tf.Map = this;
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Save the map to a file.
         /// </summary>
         /// <param name="full">If true the resulting file will include all necessary tiles and be completely standalone</param>
         public void Save(bool standalone, string filename)
         {
-
+            // Serialize includes if !standalone
+            // Serialize either the local TileFactories or all referenced TileFactories
+            // Serialize Tiles to xml
+            
         }
 
         #endregion
@@ -61,6 +70,21 @@ namespace Astral.Plane
             throw new NotImplementedException();
         }
 
+        public IList<TileFactory> TileFactories
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public IEnumerable<Tile> Tiles
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 
