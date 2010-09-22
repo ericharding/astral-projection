@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Astral.Plane
 {
-    class MapTile
+    public class TileFactory
     {
     }
 }
