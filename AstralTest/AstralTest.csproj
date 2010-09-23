@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="AstralPlane\ContainerTest.cs" />
     <Compile Include="AstralPlane\MapTest.cs" />
+    <Compile Include="AstralPlane\TileFactoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -64,9 +65,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\mustard.png" />
-    <Content Include="Images\red.png" />
-    <Content Include="Images\teal.png" />
+    <EmbeddedResource Include="Images\mustard.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Images\red.png" />
+    <EmbeddedResource Include="Images\teal.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Test References\" />

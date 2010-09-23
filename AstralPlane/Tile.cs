@@ -19,7 +19,10 @@ namespace Astral.Plane
     {
         internal Tile(TileFactory source)
         {
+            this.Factory = source;
         }
+
+        internal TileFactory Factory { get; set; }
 
         public Point Location { get; set; }
         public int Layer { get; set; }

@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Astral.Plane;
 using System.Windows;
 using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace AstralTest.AstralPlane
 {
@@ -20,11 +21,13 @@ namespace AstralTest.AstralPlane
             Rect borders = new Rect(0, 0, 0, 0);
             int tilesHoriz = 1;
             int tilesVert = 1;
-            
-            TileFactory redtiles = new TileFactory("images/red.png", "red" ,borders, tilesHoriz, tilesVert);
+
+            BitmapImage image = new BitmapImage(new Uri("images/red.png", UriKind.Relative));
+            TileFactory redtiles = new TileFactory(image, "red" ,borders, tilesHoriz, tilesVert);
             m.AddTileFactory(redtiles);
 
-            TileFactory tealtiles = new TileFactory("images/teal.png", "teal", borders, 2, 2);
+            image = new BitmapImage(new Uri("images/teal.png", UriKind.Relative));
+            TileFactory tealtiles = new TileFactory(image, "teal", borders, 2, 2);
             m.AddTileFactory(tealtiles);
 
             Assert.IsTrue(m.TileFactories.Contains(redtiles));
