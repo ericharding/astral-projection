@@ -3,11 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Media.Imaging;
+using System.Windows;
 
 namespace Astral.Plane
 {
     public class TileFactory
     {
+        private string _imagePath;
+        private string _tags;
+        private Rect _borders;
+        private int _tilesHoriz;
+        private int _tilesVert;
+
+        public TileFactory(string imagePath, string tags, System.Windows.Rect borders, int tilesHoriz, int tilesVert)
+        {
+            this._imagePath = imagePath;
+            this._tags = tags;
+            this._borders = borders;
+            this._tilesHoriz = tilesHoriz;
+            this._tilesVert = tilesVert;
+        }
 
         public string TileID
         {
@@ -19,7 +34,7 @@ namespace Astral.Plane
             }
         }
 
-        public string Name { get; set; }
+        public string[] Tags { get; set; }
 
         public BitmapImage Image
         {
@@ -40,5 +55,6 @@ namespace Astral.Plane
                 // todo: when a tile is added to a map set this
             }
         }
+
     }
 }
