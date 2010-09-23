@@ -31,7 +31,7 @@ namespace Astral.Plane
 
         #endregion
 
-        #region public Interface
+        #region Public
 
         /// <summary>
         /// Add a reference to another map.  
@@ -45,7 +45,7 @@ namespace Astral.Plane
         public void AddTileFactory(TileFactory tf)
         {
             tf.Map = this;
-            throw new NotImplementedException();
+            _tileFactories.Add(tf);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Astral.Plane
         {
             get
             {
-                throw new NotImplementedException();
+                return _tileFactories;
             }
         }
 
@@ -88,5 +88,13 @@ namespace Astral.Plane
 
         #endregion
 
+
+        #region private members
+        List<TileFactory> _tileFactories = new List<TileFactory>();
+        List<Map> _references = new List<Map>();
+        List<Tile> _tiles = new List<Tile>();
+        
+        
+        #endregion
     }
 }

@@ -4,19 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media.Imaging;
 using System.Windows;
+using System.IO;
 
 namespace Astral.Plane
 {
-    public class TileFactory
+    public class TileFactory : IComparable<TileFactory>
     {
         private string _imagePath;
         private string _tags;
         private Rect _borders;
         private int _tilesHoriz;
         private int _tilesVert;
+        private Lazy<string> _tileID;
+        private Lazy<BitmapSource> _bitmapSource;
 
         public TileFactory(string imagePath, string tags, System.Windows.Rect borders, int tilesHoriz, int tilesVert)
         {
+            this._tileID = new Lazy<string>(ComputeTileHash);
             this._imagePath = imagePath;
             this._tags = tags;
             this._borders = borders;
@@ -28,15 +32,13 @@ namespace Astral.Plane
         {
             get
             {
-                // todo: This should be a hash of this tile's properties + the image's bits
-                
-                throw new NotImplementedException();
+                return _tileID.Value;
             }
         }
 
         public string[] Tags { get; set; }
 
-        public BitmapImage Image
+        public BitmapSource Image
         {
             get
             {
@@ -56,5 +58,39 @@ namespace Astral.Plane
             }
         }
 
+        public int CompareTo(TileFactory other)
+        {
+            return TileID.CompareTo(other.TileID);
+        }
+
+
+        #region Internal
+
+        internal Stream GetImageStream()
+        {
+            return this.GetImageStream(new PngBitmapEncoder());
+        }
+        internal Stream GetImageStream(BitmapEncoder encoder)
+        {
+            encoder.Frames.Add(BitmapFrame.Create(Image));
+            MemoryStream memStream = new MemoryStream();
+            encoder.Save(memStream);
+            return memStream;
+        }
+
+        #endregion
+
+
+        #region Private
+
+        private string ComputeTileHash()
+        {
+            if (this.Image == null) throw new InvalidOperationException("Cannot compute hash for uninitialized TileFactory");
+
+
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }
