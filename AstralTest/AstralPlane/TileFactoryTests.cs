@@ -6,6 +6,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Astral.Plane;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.IO.Packaging;
+using AstralTest.Utility;
 
 namespace AstralTest.AstralPlane
 {
@@ -15,12 +17,17 @@ namespace AstralTest.AstralPlane
         [TestMethod]
         public void TestHash()
         {
-            
-            BitmapImage image = new BitmapImage(new Uri("Images/red.png", UriKind.Relative));
+            TileFactory redTile1 = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 0, 0);
+            TileFactory redTile2 = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 0, 0);
+            TileFactory redTile3 = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 1, 0);
+            TileFactory tealTile1 = new TileFactory(TestUtility.TealImage, "teal", Rect.Empty, 0, 0);
+            TileFactory tealtile2 = new TileFactory(TestUtility.TealImage, "teal", Rect.Empty, 0, 0);
 
-            TileFactory tf = new TileFactory(image, "red", Rect.Empty, 0, 0);
-
-            string id = tf.TileID;
+            Assert.AreEqual(redTile1.TileID, redTile2.TileID);
+            Assert.AreEqual(redTile1, redTile2);
+            Assert.AreNotEqual(redTile1, redTile3);
+            Assert.AreNotEqual(redTile1, tealTile1);
+            Assert.AreEqual(tealtile2, tealTile1);
         }
     }
 }
