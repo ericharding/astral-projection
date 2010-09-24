@@ -27,17 +27,10 @@ namespace Astral.Plane
         /// Loads map data from the specified file
         /// </summary>
         /// <param name="fileName">A file conforming to the AstralMap spec</param>
-        internal Map(string fileName)
+        public Map(string fileName)
         {
             _fileName = fileName;
             LoadFromFile(fileName);
-        }
-
-        public static Map Load(string filename)
-        {
-            Map m = new Map(filename);
-            //todo: record map's id in static table and re
-            return m;
         }
 
         #endregion
@@ -56,6 +49,8 @@ namespace Astral.Plane
 
         public void AddTileFactory(TileFactory tf)
         {
+            if (tf.Map == null && tf.Image == null) throw new InvalidOperationException("Invalid tile factory.");
+
             tf.Map = this;
             _tileFactories.Add(tf);
         }
@@ -163,5 +158,10 @@ namespace Astral.Plane
         
         
         #endregion
+
+        internal static Stream LoadStream(string _imagePath)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace Astral.Plane
 {
-    public class TileFactory : IComparable<TileFactory>
+    public class TileFactory : IComparable<TileFactory>, IComparable
     {
         private string _imagePath;
         private string _tags;
@@ -18,6 +18,7 @@ namespace Astral.Plane
         private int _tilesHoriz;
         private int _tilesVert;
         private Lazy<string> _tileID;
+        private int _hashCode;
         private BitmapSource _bitmapSource;
         private Map _map;
 
@@ -54,11 +55,13 @@ namespace Astral.Plane
             {
                 if (_bitmapSource == null)
                 {
-                    
+                    LoadBitmapSource();
                 }
                 return _bitmapSource;
             }
         }
+
+        internal bool HasBitmapSource { get { return _bitmapSource != null; } }
 
         public Map Map
         {
@@ -77,6 +80,26 @@ namespace Astral.Plane
             return TileID.CompareTo(other.TileID);
         }
 
+        public int CompareTo(object other)
+        {
+            return this.CompareTo(other as TileFactory);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is TileFactory &&
+                this.GetHashCode() == obj.GetHashCode() &&
+                this.TileID == ((TileFactory)obj).TileID;
+        }
+
+        public override int GetHashCode()
+        {
+            if (_hashCode == 0)
+            {
+                ComputeTileHash();
+            }
+            return _hashCode;
+        }
 
         #region Internal
 
@@ -94,7 +117,6 @@ namespace Astral.Plane
 
         #endregion
 
-
         #region Private
 
         private string ComputeTileHash()
@@ -106,13 +128,14 @@ namespace Astral.Plane
 
             int srcSize = (borders.Length * sizeof(double)) +
                             (tileCount.Length * sizeof(int)) +
-                            (this.Image.PixelWidth * this.Image.PixelHeight);
+                            (this.Image.PixelWidth * this.Image.PixelHeight * 4);
             byte[] imageBits = new byte[srcSize];
 
             int offset = 0;
             foreach (double d in borders)
             {
-                Array.Copy(BitConverter.GetBytes(d), 0, imageBits, offset, sizeof(double));
+                byte[] bytes = BitConverter.GetBytes(d);
+                Array.Copy(bytes, 0, imageBits, offset, sizeof(double));
                 offset += sizeof(double);
             }
             foreach (int i in tileCount)
@@ -121,30 +144,32 @@ namespace Astral.Plane
                 offset += sizeof(int);
             }
 
-            Debug.Assert(srcSize - offset == (this.Image.PixelWidth * this.Image.PixelHeight));
-            
-            this.Image.CopyPixels(imageBits, imageBits.Length, offset);
-                        
-            
-            SHA1 sha = SHA1.Create();
-            
+            Debug.Assert(srcSize - offset == (this.Image.PixelWidth * this.Image.PixelHeight * 4));
 
-            throw new NotImplementedException();
+            this.Image.CopyPixels(imageBits, this.Image.PixelWidth * 4, offset);
+
+            SHA1 sha = SHA1.Create();
+            byte[] hash = sha.ComputeHash(imageBits);
+
+            int[] hashcodes = { BitConverter.ToInt32(hash, 0),
+                                BitConverter.ToInt32(hash, 4),
+                                BitConverter.ToInt32(hash, 8),
+                                BitConverter.ToInt32(hash, 12),
+                                BitConverter.ToInt32(hash, 16)};
+            _hashCode = hashcodes[0] ^ hashcodes[1] ^ hashcodes[2] ^ hashcodes[3] ^ hashcodes[4];
+            
+            return Convert.ToBase64String(hash);
         }
 
         private void LoadBitmapSource()
         {
-            if (_map == null)
-            {
-                // Assume filename is a location on disk
+            if (Map == null) throw new InvalidOperationException("Cannot load bitmap from path when not part of a Map");
 
-            }
-            else
-            {
-                // assume filename is a parturi
-            }
+            Stream s = Map.LoadStream(_imagePath);
+            PngBitmapDecoder decoder = new PngBitmapDecoder(s, BitmapCreateOptions.None, BitmapCacheOption.None);
         }
 
         #endregion
+
     }
 }
