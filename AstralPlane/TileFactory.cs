@@ -24,6 +24,11 @@ namespace Astral.Plane
 
         public TileFactory(BitmapSource image, string tags, Rect borders, int tilesHoriz, int tilesVert)
         {
+            if (tilesHoriz <= 0 || tilesVert <= 0)
+            {
+                throw new ArgumentException("tiles must be greater than 0 in both directions.");
+            }
+
             this._tileID = new Lazy<string>(ComputeTileHash);
             this._bitmapSource = image;
             this._tags = tags;
@@ -32,9 +37,10 @@ namespace Astral.Plane
             this._tilesVert = tilesVert;
         }
 
-        internal TileFactory(Map map, string imagePath, string tags, Rect borders, int tilesHoriz, int tilesVert)
+        internal TileFactory(Map map, string id ,string imagePath, string tags, Rect borders, int tilesHoriz, int tilesVert)
             : this(null, tags, borders, tilesHoriz, tilesVert)
         {
+            _tileID = new Lazy<string>(() => id);
             _map = map;
             _imagePath = imagePath;
         }
@@ -61,19 +67,22 @@ namespace Astral.Plane
             }
         }
 
-        internal bool HasBitmapSource { get { return _bitmapSource != null; } }
-
+        /// <summary>
+        /// The map that contains this TileFactory
+        /// </summary>
         public Map Map
         {
             get
             {
-                throw new NotImplementedException();
+                return _map;
             }
             internal set
             {
-                // todo: when a tile is added to a map set this
+                _map = value;
             }
         }
+
+        #region Comparison
 
         public int CompareTo(TileFactory other)
         {
@@ -101,6 +110,34 @@ namespace Astral.Plane
             return _hashCode;
         }
 
+        public static bool operator ==(TileFactory left, TileFactory right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(TileFactory left, TileFactory right)
+        {
+            return !left.Equals(right);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Creates a new tile of this type
+        /// </summary>
+        /// <returns></returns>
+        public Tile CreateTile()
+        {
+            // This is using a factory pattern b/c we now have the option of
+            // automatically adding this tile to the Map.  Not doing that yet though...
+            return new Tile(this);
+        }
+
+        public override string ToString()
+        {
+            return _tags;
+        }
+
         #region Internal
 
         internal Stream GetImageStream()
@@ -114,6 +151,7 @@ namespace Astral.Plane
             encoder.Save(memStream);
             return memStream;
         }
+        internal bool HasBitmapSource { get { return _bitmapSource != null; } }
 
         #endregion
 
@@ -157,8 +195,13 @@ namespace Astral.Plane
                                 BitConverter.ToInt32(hash, 12),
                                 BitConverter.ToInt32(hash, 16)};
             _hashCode = hashcodes[0] ^ hashcodes[1] ^ hashcodes[2] ^ hashcodes[3] ^ hashcodes[4];
-            
-            return Convert.ToBase64String(hash);
+
+            StringBuilder str = new StringBuilder(40);
+            for (int x = 0; x < 20; x++)
+            {
+                str.AppendFormat("{0:X2}", hash[x]);
+            }
+            return str.ToString() + ".png";
         }
 
         private void LoadBitmapSource()
