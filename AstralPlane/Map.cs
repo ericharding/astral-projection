@@ -57,9 +57,29 @@ namespace Astral.Plane
 
         public void AddTile(Tile tile)
         {
-            // todo: validate that tile.Factory is in this map's reference chain
+            if (this.FindTileFactory(tile.Factory) == null)
+            {
+                throw new InvalidOperationException("This map does not know about the specified type of tile.  Did you forget to add a map reference?");
+            }
 
-            throw new NotImplementedException();
+            // Ok, you may pass
+            _tiles.Add(tile);
+        }
+
+        public IList<TileFactory> TileFactories
+        {
+            get
+            {
+                return _tileFactories.AsReadOnly();
+            }
+        }
+
+        public IEnumerable<Tile> Tiles
+        {
+            get
+            {
+                return _tiles.AsReadOnly();
+            }
         }
 
         /// <summary>
@@ -84,7 +104,6 @@ namespace Astral.Plane
             // If this is a standalone map it will contain all of the TileFactories for it's references
             if (!standalone)
             {
-                // todo:  Load will have to load the referenced maps too
                 XElement references = new XElement("References");
                 doc.Root.Add(references);
 
@@ -94,9 +113,7 @@ namespace Astral.Plane
                 }
             }
 
-            
-
-            // todo: does tileFactory need an id except during save/load?  maybe not
+            throw new NotImplementedException();
 
             /*
              * <AstralMap ID="">
@@ -116,6 +133,8 @@ namespace Astral.Plane
             // Serialize includes if !standalone
             // Serialize either the local TileFactories or all referenced TileFactories
             // Serialize Tiles to xml
+
+            // Save the xml as AstralManifest.xml
             
         }
 
@@ -128,29 +147,36 @@ namespace Astral.Plane
 
         private void LoadFromFile(string fileName)
         {
+            // Todo: When you get around to writing load
+            // Make the Map constructor private and replace it with a public Load() which
+            // keeps track of all Maps in memory.  Then we can check references against the 
+            // table of loaded maps and save time/memory.
             throw new NotImplementedException();
         }
 
-        public IList<TileFactory> TileFactories
+
+
+        private TileFactory FindTileFactory(TileFactory searchFactory)
         {
-            get
+            // todo: Possible performance optimization would be to cache the results of this test ala "dynamic programming"
+            // Once a reference is added it cannot be removed so it is safe to cache
+
+            foreach (TileFactory tf in TileFactories)
             {
-                return _tileFactories;
+                if (tf == searchFactory)
+                    return tf;
             }
+
+            foreach(Map refmap in _references)
+            {
+                TileFactory match = refmap.FindTileFactory(searchFactory);
+                if (match != null) return match;
+            }
+
+            return null;
         }
 
-        public IEnumerable<Tile> Tiles
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
 
-        #endregion
-
-
-        #region private members
         string _fileName;
         List<TileFactory> _tileFactories = new List<TileFactory>();
         List<Map> _references = new List<Map>();
