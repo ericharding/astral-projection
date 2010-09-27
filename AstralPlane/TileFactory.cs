@@ -7,6 +7,7 @@ using System.Windows;
 using System.IO;
 using System.Security.Cryptography;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace Astral.Plane
 {
@@ -53,7 +54,13 @@ namespace Astral.Plane
             }
         }
 
-        public string[] Tags { get; set; }
+        public string[] Tags
+        {
+            get
+            {
+                return _tags.Split(';');
+            }
+        }
 
         public BitmapSource Image
         {
@@ -70,13 +77,13 @@ namespace Astral.Plane
         /// <summary>
         /// The map that contains this TileFactory
         /// </summary>
-        public Map Map
+        internal Map Map
         {
             get
             {
                 return _map;
             }
-            internal set
+            set
             {
                 _map = value;
             }
@@ -133,6 +140,24 @@ namespace Astral.Plane
             return new Tile(this);
         }
 
+        public Rect Borders
+        {
+            get
+            {
+                return _borders;
+            }
+        }
+
+        public int TilesHorizontal
+        {
+            get { return _tilesHoriz; }
+        }
+
+        public int TilesVertical
+        {
+            get { return _tilesVert; }
+        }
+
         public override string ToString()
         {
             return _tags;
@@ -149,6 +174,7 @@ namespace Astral.Plane
             encoder.Frames.Add(BitmapFrame.Create(Image));
             MemoryStream memStream = new MemoryStream();
             encoder.Save(memStream);
+            memStream.Seek(0, SeekOrigin.Begin);
             return memStream;
         }
         internal bool HasBitmapSource { get { return _bitmapSource != null; } }
@@ -204,12 +230,22 @@ namespace Astral.Plane
             return str.ToString() + ".png";
         }
 
-        private void LoadBitmapSource()
+        internal void LoadBitmapSource()
         {
             if (Map == null) throw new InvalidOperationException("Cannot load bitmap from path when not part of a Map");
 
             Stream s = Map.LoadStream(_imagePath);
             PngBitmapDecoder decoder = new PngBitmapDecoder(s, BitmapCreateOptions.None, BitmapCacheOption.None);
+            _bitmapSource = decoder.Frames[0];
+            _bitmapSource.Freeze();
+        }
+
+        internal XNode ToXML()
+        {
+            return new XElement("Tiletype",
+                new XAttribute("TileID", this.TileID),
+                new XAttribute("tags", this._tags));
+
         }
 
         #endregion

@@ -31,8 +31,8 @@ namespace Astral.Plane
         internal XNode ToXML()
         {
             return new XElement("Tile",
-                new XAttribute("Location.X", this.Location.X),
-                new XAttribute("Location.Y", this.Location.Y),
+                new XAttribute("Type", this.Factory.TileID),
+                new XAttribute("Location", this.Location.ToString()),
                 new XAttribute("Layer", this.Layer),
                 new XAttribute("Rotation", this.Rotation));
         }

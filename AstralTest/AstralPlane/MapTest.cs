@@ -9,6 +9,7 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using AstralTest.Utility;
 using Astral.Plane.Container;
+using System.Xml.Linq;
 
 /*
  * General Idea:
@@ -158,6 +159,22 @@ namespace AstralTest.AstralPlane
             map.AddTile(tmust);
         }
 
+        [TestMethod]
+        public void MapTileSharing()
+        {
+            Map map = new Map();
+            Map map2 = new Map();
+
+            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 1, 1);
+
+            // This is OK since the tile has an image
+            map.AddTileFactory(redtiles);
+            map2.AddTileFactory(redtiles);
+
+            // todo: If the tile did not have an image loaded then it would be forced to load it's image when added to another map
+            // If it were unable to load the image it would throw
+
+        }
 
         [TestMethod]
         public void MapSaveBasic()
@@ -168,28 +185,109 @@ namespace AstralTest.AstralPlane
             TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", borders, 1, 1);
             map.AddTileFactory(redtiles);
 
+            Tile tile1 = redtiles.CreateTile();
+            tile1.Location = new Point(100, 100);
+            map.AddTile(tile1);
+
             string tempFile = Path.GetTempFileName();
             map.Save(false, tempFile);
 
             using (ZipFileContainer file = new ZipFileContainer(tempFile))
             {
-                Assert.IsTrue(file.ContainsFile("AstralManifest.xaml"));
+                Assert.IsTrue(file.ContainsFile("AstralManifest.xml"));
                 Assert.IsTrue(file.ContainsFile(string.Format("images/{0}", redtiles.TileID)));
             }
+
+            TestUtility.TryDelete(tempFile);
         }
 
         [TestMethod]
         public void MapSaveReferences()
         {
-            throw new NotImplementedException();
-            // Check the references table
+            Map library = new Map();
+            Map map1 = new Map();
+
+            map1.AddReference(library);
+
+            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 1, 1);
+            library.AddTileFactory(redtiles);
+
+            TileFactory mustiles = new TileFactory(TestUtility.MustardImage, "mustard", Rect.Empty, 1, 1);
+            library.AddTileFactory(mustiles);
+
+            Tile tred = redtiles.CreateTile();
+            Tile tmus = mustiles.CreateTile();
+
+            map1.AddTile(tred);
+            map1.AddTile(tmus);
+
+            string tempLibrary = Path.GetTempFileName();
+            string tempFile = Path.GetTempFileName();
+
+            library.Save(false, tempLibrary);
+            map1.Save(false, tempFile); // Should just have a reference to library and include no images
+
+            using (ZipFileContainer file = new ZipFileContainer(tempFile))
+            {
+                Assert.IsTrue(file.ContainsFile("AstralManifest.xml"));
+                Assert.IsFalse(file.ContainsFile("images/" + redtiles.TileID));
+                Assert.IsFalse(file.ContainsFile("images/" + mustiles.TileID));
+            }
+
+            using (ZipFileContainer file = new ZipFileContainer(tempLibrary))
+            {
+                Assert.IsTrue(file.ContainsFile("AstralManifest.xml"));
+                Assert.IsTrue(file.ContainsFile("images/" + redtiles.TileID));
+                Assert.IsTrue(file.ContainsFile("images/" + mustiles.TileID));
+            }
+
+            TestUtility.TryDelete(tempFile);
+            TestUtility.TryDelete(tempLibrary);
         }
 
         [TestMethod]
         public void MapSaveStandalone()
         {
-            throw new NotImplementedException();
-            // Save a tile included in a reference
+            Map library = new Map();
+            Map map1 = new Map();
+
+            map1.AddReference(library);
+
+            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 1, 1);
+            library.AddTileFactory(redtiles);
+
+            TileFactory mustiles = new TileFactory(TestUtility.MustardImage, "mustard", Rect.Empty, 1, 1);
+            library.AddTileFactory(mustiles);
+
+            Tile tred = redtiles.CreateTile();
+            Tile tmus = mustiles.CreateTile();
+
+            map1.AddTile(tred);
+            map1.AddTile(tmus);
+
+            string tempLibrary = Path.GetTempFileName();
+            string tempFile = Path.GetTempFileName();
+
+            library.Save(false, tempLibrary);
+            map1.Save(true, tempFile); // Should just have a reference to library and include no images
+
+            using (ZipFileContainer file = new ZipFileContainer(tempFile))
+            {
+                Assert.IsTrue(file.ContainsFile("AstralManifest.xml"));
+                // This time the map DOES contain the images necessary for display
+                Assert.IsTrue(file.ContainsFile("images/" + redtiles.TileID));
+                Assert.IsTrue(file.ContainsFile("images/" + mustiles.TileID));
+            }
+
+            using (ZipFileContainer file = new ZipFileContainer(tempLibrary))
+            {
+                Assert.IsTrue(file.ContainsFile("AstralManifest.xml"));
+                Assert.IsTrue(file.ContainsFile("images/" + redtiles.TileID));
+                Assert.IsTrue(file.ContainsFile("images/" + mustiles.TileID));
+            }
+
+            TestUtility.TryDelete(tempFile);
+            TestUtility.TryDelete(tempLibrary);
         }
 
 
