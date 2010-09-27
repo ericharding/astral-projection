@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using CSharpQuadTree;
+using Astral.Plane;
 
 namespace TileMap
 {
@@ -14,7 +15,7 @@ namespace TileMap
 	{
 		public int TileWidth { get; set; }
 		public int TileHeight { get; set; }
-		public TileCluster TileToPlace { get; set; }
+		public TileFactory TileToPlace { get { return _tileToPlace; } set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(TileWidth, TileHeight))); } }
 		public bool IsSnapToGrid { set { _snapToGrid = value; this.InvalidateVisual(); } }
 
 		private const long _origin = 0x7FFFFFFF;
@@ -22,6 +23,8 @@ namespace TileMap
 		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true;
 		private Point _mousePos, _mouseHover;
 		private long _offsetX = _origin, _offsetY = _origin;
+		private TileFactory _tileToPlace;
+		private TileCluster _tileToPlacePreview;
 		private QuadTree<TileCluster> _tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
 
 		public MapPane()
@@ -48,7 +51,7 @@ namespace TileMap
 
 				if (TileToPlace != null)
 				{
-					AddTile((TileCluster)TileToPlace.Clone(), _snapToGrid ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true);
+					AddTile(new TileCluster(TileToPlace, new Size(TileWidth, TileHeight)), _snapToGrid ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true);
 				}
 			}
 		}
@@ -86,7 +89,7 @@ namespace TileMap
 				this.InvalidateVisual();
 			}
 
-			if (_hoverTile && TileToPlace != null)
+			if (_hoverTile && _tileToPlacePreview != null)
 				this.InvalidateVisual();
 		}
 
@@ -158,9 +161,9 @@ namespace TileMap
 
 			if (_hoverTile)
 			{
-				if (TileToPlace != null)
+				if (_tileToPlacePreview != null)
 				{
-					TileToPlace.Draw(dc, _snapToGrid ? FindNearestGridIntersect(_mouseHover) : _mouseHover, 0.5);
+					_tileToPlacePreview.Draw(dc, _snapToGrid ? FindNearestGridIntersect(_mouseHover) : _mouseHover, 0.5);
 				}
 			}
 		}

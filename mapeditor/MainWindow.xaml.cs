@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
+using Astral.Plane;
 
 namespace TileMap
 {
@@ -21,13 +22,13 @@ namespace TileMap
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private ObservableCollection<TileCluster> _tiles = new ObservableCollection<TileCluster>();
+		private Map _library = new Map();
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
-			viewTiles.ItemsSource = _tiles;
+			viewTiles.ItemsSource = _library.TileFactories;
 		}
 
 		private void bImport_Click(object sender, RoutedEventArgs e)
@@ -44,8 +45,8 @@ namespace TileMap
 
 				if ((bool) result)
 				{
-					TileCluster tc = new TileCluster(import.TileName, img, import.TilesHoriz, import.TilesVert, import.BorderTop, import.BorderRight, import.BorderBottom, import.BorderLeft, new Size(mapPane.TileWidth, mapPane.TileHeight));
-					_tiles.Add(tc);
+					TileFactory tf = new TileFactory(img, import.TileName, new Thickness(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
+					_library.AddTileFactory(tf);
 				}
 			}
 		}
@@ -54,12 +55,13 @@ namespace TileMap
 		{
 			// TODO: confirm this action; delete instances of deleted tile from map?
 
-			_tiles.Remove((TileCluster)(((MenuItem)e.Source).DataContext));
+			//_tiles.Remove((TileCluster)(((MenuItem)e.Source).DataContext));
+			// TODO: Map needs a Remove()
 		}
 
 		private void viewTiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			mapPane.TileToPlace = (TileCluster) viewTiles.SelectedItem;
+			mapPane.TileToPlace = (TileFactory) viewTiles.SelectedItem;
 		}
 
 		private void viewTiles_MouseDown(object sender, MouseButtonEventArgs e)

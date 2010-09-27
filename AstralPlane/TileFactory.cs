@@ -15,7 +15,7 @@ namespace Astral.Plane
     {
         private string _imagePath;
         private string _tags;
-        private Rect _borders;
+        private Thickness _borders;
         private int _tilesHoriz;
         private int _tilesVert;
         private Lazy<string> _tileID;
@@ -23,7 +23,7 @@ namespace Astral.Plane
         private BitmapSource _bitmapSource;
         private Map _map;
 
-        public TileFactory(BitmapSource image, string tags, Rect borders, int tilesHoriz, int tilesVert)
+        public TileFactory(BitmapSource image, string tags, Thickness borders, int tilesHoriz, int tilesVert)
         {
             if (tilesHoriz <= 0 || tilesVert <= 0)
             {
@@ -38,7 +38,7 @@ namespace Astral.Plane
             this._tilesVert = tilesVert;
         }
 
-        internal TileFactory(Map map, string id ,string imagePath, string tags, Rect borders, int tilesHoriz, int tilesVert)
+        internal TileFactory(Map map, string id ,string imagePath, string tags, Thickness borders, int tilesHoriz, int tilesVert)
             : this(null, tags, borders, tilesHoriz, tilesVert)
         {
             _tileID = new Lazy<string>(() => id);
@@ -119,12 +119,18 @@ namespace Astral.Plane
 
         public static bool operator ==(TileFactory left, TileFactory right)
         {
-            return left.Equals(right);
+			if ((object)left == null)
+				return (object)right == null;
+
+			return left.Equals(right);
         }
 
         public static bool operator !=(TileFactory left, TileFactory right)
         {
-            return !left.Equals(right);
+			if ((object)left == null)
+				return (object)right != null;
+
+			return !left.Equals(right);
         }
 
         #endregion
@@ -140,7 +146,7 @@ namespace Astral.Plane
             return new Tile(this);
         }
 
-        public Rect Borders
+        public Thickness Borders
         {
             get
             {
@@ -160,7 +166,7 @@ namespace Astral.Plane
 
         public override string ToString()
         {
-            return _tags;
+			return string.Format("{0} ({1}x{2})", _tags, _tilesHoriz, _tilesVert);
         }
 
         #region Internal

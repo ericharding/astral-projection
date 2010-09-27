@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -84,11 +85,11 @@ namespace Astral.Plane
             _tiles.Add(tile);
         }
 
-        public IList<TileFactory> TileFactories
+		public ReadOnlyObservableCollection<TileFactory> TileFactories
         {
             get
             {
-                return _tileFactories.AsReadOnly();
+				return new ReadOnlyObservableCollection<TileFactory>(_tileFactories);
             }
         }
 
@@ -274,7 +275,7 @@ namespace Astral.Plane
 
 
         string _fileName;
-        List<TileFactory> _tileFactories = new List<TileFactory>();
+		ObservableCollection<TileFactory> _tileFactories = new ObservableCollection<TileFactory>();
         List<Map> _references = new List<Map>();
         List<Tile> _tiles = new List<Tile>();
         

@@ -6,37 +6,27 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CSharpQuadTree;
+using Astral.Plane;
 
 namespace TileMap
 {
-	public class TileCluster : UIElement, IQuadObject, ICloneable
+	public class TileCluster : IQuadObject
 	{
-		public string Text { get { return string.Format("{0} ({1}x{2})", _name, _tilesX, _tilesY); } }
-		public BitmapImage Image { get { return _image; } }
 		public event EventHandler BoundsChanged;
 		public Rect Bounds { get { return _bounds; } }
 		public Size TileSize { set { UpdateDrawSize(value); UpdateBounds(); } }
-		public Point Position { set { _pos = value; UpdateBounds(); } }
+		public Point Position { set { _tile.Location = value; UpdateBounds(); } }
 
-		private string _name;
-		private BitmapImage _image;
-		private int _tilesX, _tilesY;
-		private double _borderTop, _borderRight, _borderBottom, _borderLeft;
-		private Point _pos;
 		private Rect _bounds;
 		private Size _drawSize;
 		private Vector _borderOffset;
+		private TileFactory _factory;
+		private Tile _tile;
 
-		public TileCluster(string name, BitmapImage image, int tilesX, int tilesY, double borderTop, double borderRight, double borderBottom, double borderLeft, Size tileSize)
+		public TileCluster(TileFactory tf, Size tileSize)
 		{
-			_name = name;
-			_image = image;
-			_tilesX = tilesX;
-			_tilesY = tilesY;
-			_borderTop = borderTop;
-			_borderRight = borderRight;
-			_borderBottom = borderBottom;
-			_borderLeft = borderLeft;
+			_factory = tf;
+			_tile = tf.CreateTile();
 			TileSize = tileSize;
 		}
 
@@ -47,10 +37,10 @@ namespace TileMap
 
 			switch (side)
 			{
-				case LEFTBORDER: return _borderLeft;
-				case TOPBORDER: return _borderTop;
-				case RIGHTBORDER: return _borderRight;
-				case BOTTOMBORDER: return _borderBottom;
+				case LEFTBORDER: return _factory.Borders.Left;
+				case TOPBORDER: return _factory.Borders.Top;
+				case RIGHTBORDER: return _factory.Borders.Right;
+				case BOTTOMBORDER: return _factory.Borders.Bottom;
 				default: return 0;
 			}
 		}
@@ -59,12 +49,12 @@ namespace TileMap
 		{
 			Size newSize = new Size();
 
-			double width = _tilesX * tileSize.Width;
-			double height = _tilesY * tileSize.Height;
-			double offsetL = (width * GetBorder(LEFTBORDER)) / _image.PixelWidth;
-			double offsetR = (width * GetBorder(RIGHTBORDER)) / _image.PixelWidth;
-			double offsetT = (height * GetBorder(TOPBORDER)) / _image.PixelHeight;
-			double offsetB = (height * GetBorder(BOTTOMBORDER)) / _image.PixelHeight;
+			double width = _factory.TilesHorizontal * tileSize.Width;
+			double height = _factory.TilesVertical * tileSize.Height;
+			double offsetL = (width * GetBorder(LEFTBORDER)) / _factory.Image.PixelWidth;
+			double offsetR = (width * GetBorder(RIGHTBORDER)) / _factory.Image.PixelWidth;
+			double offsetT = (height * GetBorder(TOPBORDER)) / _factory.Image.PixelHeight;
+			double offsetB = (height * GetBorder(BOTTOMBORDER)) / _factory.Image.PixelHeight;
 			newSize.Width = width + offsetL + offsetR;
 			newSize.Height = height + offsetT + offsetB;
 
@@ -75,7 +65,7 @@ namespace TileMap
 
 		private void UpdateBounds()
 		{
-			Point realPos = new Point(_pos.X - _borderOffset.X, _pos.Y - _borderOffset.Y);
+			Point realPos = new Point(_tile.Location.X - _borderOffset.X, _tile.Location.Y - _borderOffset.Y);
 			_bounds = new Rect(realPos, _drawSize);
 
 			if (BoundsChanged != null)
@@ -84,20 +74,15 @@ namespace TileMap
 
 		public void Draw(DrawingContext dc, Vector offset)
 		{
-			dc.DrawImage(_image, new Rect(new Point(_bounds.X - offset.X, _bounds.Y - offset.Y), _drawSize));
+			dc.DrawImage(_factory.Image, new Rect(new Point(_bounds.X - offset.X, _bounds.Y - offset.Y), _drawSize));
 		}
 
 		public void Draw(DrawingContext dc, Point where, double opacity)
 		{
 			where.Offset(-_borderOffset.X, -_borderOffset.Y);
 			dc.PushOpacity(opacity);
-			dc.DrawImage(_image, new Rect(where, _drawSize));
+			dc.DrawImage(_factory.Image, new Rect(where, _drawSize));
 			dc.Pop();
-		}
-
-		public object Clone()
-		{
-			return (TileCluster) this.MemberwiseClone();
 		}
 	}
 }

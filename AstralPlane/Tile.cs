@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Astral.Plane
 {
-    public enum Rotation
+    public enum TileRotation
     {
         Zero = 0,
         CW90 = 90,
