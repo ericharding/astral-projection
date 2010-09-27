@@ -11,6 +11,7 @@ namespace AstralTest.AstralPlane
     [TestClass]
     public class ContainerTest
     {
+        static Action<string> TryDelete = AstralTest.Utility.TestUtility.TryDelete;
         string text = "hello world";
 
         [TestMethod]
@@ -80,22 +81,6 @@ namespace AstralTest.AstralPlane
             writer.Close();
 
             Assert.IsTrue(container.ContainsFile(filename));
-        }
-
-        private static void TryDelete(string path)
-        {
-            try
-            {
-                if (Directory.Exists(path))
-                {
-                    Directory.Delete(path, true);
-                }
-                else if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-            }
-            catch { }
         }
     }
 }

@@ -23,6 +23,7 @@ namespace AstralTest.Utility
                 if (_red == null)
                 {
                     _red = LoadImage("red.png");
+                    _red.Freeze();
                 }
                 return _red;
             }
@@ -35,6 +36,7 @@ namespace AstralTest.Utility
                 if (_teal == null)
                 {
                     _teal = LoadImage("teal.png");
+                    _teal.Freeze();
                 }
                 return _teal;
             }
@@ -47,6 +49,7 @@ namespace AstralTest.Utility
                 if (_mustard == null)
                 {
                     _mustard = LoadImage("mustard.png");
+                    _mustard.Freeze();
                 }
                 return _mustard;
             }
@@ -61,6 +64,23 @@ namespace AstralTest.Utility
             PngBitmapDecoder decoder = new PngBitmapDecoder(s, BitmapCreateOptions.None, BitmapCacheOption.None);
 
             return decoder.Frames[0];
+        }
+
+
+        public static void TryDelete(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    Directory.Delete(path, true);
+                }
+                else if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+            catch { }
         }
     }
 }
