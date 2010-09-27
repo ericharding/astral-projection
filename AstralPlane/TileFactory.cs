@@ -244,8 +244,15 @@ namespace Astral.Plane
         {
             return new XElement("Tiletype",
                 new XAttribute("TileID", this.TileID),
-                new XAttribute("tags", this._tags));
+                new XAttribute("tags", this._tags),
+                new XAttribute("Borders", _borders),
+                new XAttribute("Tiles", string.Format("{0},{1}", _tilesHoriz, _tilesVert)));
 
+        }
+
+        internal void FromXML(XElement node)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
