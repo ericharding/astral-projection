@@ -29,10 +29,25 @@ namespace Astral.Plane
         /// Loads map data from the specified file
         /// </summary>
         /// <param name="fileName">A file conforming to the AstralMap spec</param>
-        public Map(string fileName)
+        public static Map LoadFromFile(string filename)
+        {
+            string fullpath = Path.GetFullPath(filename);
+            Map newMap;
+            if (!sLoadedMaps.TryGetValue(fullpath, out newMap))
+            {
+                // todo: weak references?
+                newMap = new Map(fullpath);
+                sLoadedMaps[fullpath] = newMap;
+            }
+
+            return newMap;
+        }
+        private static Dictionary<string, Map> sLoadedMaps = new Dictionary<string, Map>();
+
+        private Map(string fileName)
         {
             _fileName = fileName;
-            LoadFromFile(fileName);
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -235,16 +250,6 @@ namespace Astral.Plane
 
 
         #region private
-
-        private void LoadFromFile(string fileName)
-        {
-            // Todo: When you get around to writing load
-            // Make the Map constructor private and replace it with a public Load() which
-            // keeps track of all Maps in memory.  Then we can check references against the 
-            // table of loaded maps and save time/memory.
-            throw new NotImplementedException();
-        }
-
 
 
         private TileFactory FindTileFactory(TileFactory searchFactory)
