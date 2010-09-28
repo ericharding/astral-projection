@@ -17,11 +17,13 @@ namespace AstralTest.AstralPlane
         [TestMethod]
         public void TestHash()
         {
-            TileFactory redTile1 = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 2, 2);
-            TileFactory redTile2 = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 2, 2);
-            TileFactory redTile3 = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 1, 2);
-            TileFactory tealTile1 = new TileFactory(TestUtility.TealImage, "teal", Rect.Empty, 2, 2);
-            TileFactory tealtile2 = new TileFactory(TestUtility.TealImage, "teal", Rect.Empty, 2, 2);
+            
+
+            TileFactory redTile1 = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 2, 2);
+            TileFactory redTile2 = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 2, 2);
+            TileFactory redTile3 = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 2);
+            TileFactory tealTile1 = new TileFactory(TestUtility.TealImage, "teal", Borders.Empty, 2, 2);
+            TileFactory tealtile2 = new TileFactory(TestUtility.TealImage, "teal", Borders.Empty, 2, 2);
 
             Assert.AreEqual(redTile1.TileID, redTile2.TileID);
             Assert.AreEqual(redTile1, redTile2);

@@ -47,15 +47,14 @@ namespace AstralTest.AstralPlane
         public void MapBasic()
         {
             Map map = new Map();
-            Rect borders = new Rect(0, 0, 0, 0);
 
-            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", borders, 1, 1);
+            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 1);
             map.AddTileFactory(redtiles);
 
-            TileFactory tealtiles = new TileFactory(TestUtility.TealImage, "teal", borders, 2, 2);
+            TileFactory tealtiles = new TileFactory(TestUtility.TealImage, "teal", Borders.Empty, 2, 2);
             map.AddTileFactory(tealtiles);
 
-            TileFactory mustardTiles = new TileFactory(TestUtility.MustardImage, "mustard", borders, 1, 1);
+            TileFactory mustardTiles = new TileFactory(TestUtility.MustardImage, "mustard", Borders.Empty, 1, 1);
             // not adding to map
 
             Assert.IsTrue(map.TileFactories.Contains(redtiles));
@@ -92,7 +91,7 @@ namespace AstralTest.AstralPlane
             Map map2 = new Map();
             map.AddReference(map2);
 
-            Rect borders = new Rect(0, 0, 0, 0);
+            Borders borders = Borders.Empty;
 
             TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", borders, 1, 1);
             map.AddTileFactory(redtiles);
@@ -128,7 +127,7 @@ namespace AstralTest.AstralPlane
             Map map2Equivalent = new Map();
             map.AddReference(map2Equivalent);
 
-            Rect borders = new Rect(0, 0, 0, 0);
+            Borders borders = Borders.Empty;
 
             TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", borders, 1, 1);
             map.AddTileFactory(redtiles);
@@ -165,7 +164,7 @@ namespace AstralTest.AstralPlane
             Map map = new Map();
             Map map2 = new Map();
 
-            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 1, 1);
+            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 1);
 
             // This is OK since the tile has an image
             map.AddTileFactory(redtiles);
@@ -180,7 +179,7 @@ namespace AstralTest.AstralPlane
         public void MapSaveBasic()
         {
             Map map = new Map();
-            Rect borders = new Rect(0, 0, 0, 0);
+            Borders borders = Borders.Empty;
 
             TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", borders, 1, 1);
             map.AddTileFactory(redtiles);
@@ -209,10 +208,10 @@ namespace AstralTest.AstralPlane
 
             map1.AddReference(library);
 
-            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 1, 1);
+            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 1);
             library.AddTileFactory(redtiles);
 
-            TileFactory mustiles = new TileFactory(TestUtility.MustardImage, "mustard", Rect.Empty, 1, 1);
+            TileFactory mustiles = new TileFactory(TestUtility.MustardImage, "mustard", Borders.Empty, 1, 1);
             library.AddTileFactory(mustiles);
 
             Tile tred = redtiles.CreateTile();
@@ -253,10 +252,10 @@ namespace AstralTest.AstralPlane
 
             map1.AddReference(library);
 
-            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Rect.Empty, 1, 1);
+            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 1);
             library.AddTileFactory(redtiles);
 
-            TileFactory mustiles = new TileFactory(TestUtility.MustardImage, "mustard", Rect.Empty, 1, 1);
+            TileFactory mustiles = new TileFactory(TestUtility.MustardImage, "mustard", Borders.Empty, 1, 1);
             library.AddTileFactory(mustiles);
 
             Tile tred = redtiles.CreateTile();
