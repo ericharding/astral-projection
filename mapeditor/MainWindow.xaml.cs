@@ -45,7 +45,7 @@ namespace TileMap
 
 				if ((bool) result)
 				{
-					TileFactory tf = new TileFactory(img, import.TileName, new Thickness(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
+					TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
 					_library.AddTileFactory(tf);
 				}
 			}

@@ -8,6 +8,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Diagnostics;
 using System.Xml.Linq;
+using System.Runtime.InteropServices;
 
 namespace Astral.Plane
 {
@@ -15,7 +16,7 @@ namespace Astral.Plane
     {
         private string _imagePath;
         private string _tags;
-        private Thickness _borders;
+        private Borders _borders;
         private int _tilesHoriz;
         private int _tilesVert;
         private Lazy<string> _tileID;
@@ -23,7 +24,7 @@ namespace Astral.Plane
         private BitmapSource _bitmapSource;
         private Map _map;
 
-        public TileFactory(BitmapSource image, string tags, Thickness borders, int tilesHoriz, int tilesVert)
+        public TileFactory(BitmapSource image, string tags, Borders borders, int tilesHoriz, int tilesVert)
         {
             if (tilesHoriz <= 0 || tilesVert <= 0)
             {
@@ -38,7 +39,7 @@ namespace Astral.Plane
             this._tilesVert = tilesVert;
         }
 
-        internal TileFactory(Map map, string id ,string imagePath, string tags, Thickness borders, int tilesHoriz, int tilesVert)
+        internal TileFactory(Map map, string id ,string imagePath, string tags, Borders borders, int tilesHoriz, int tilesVert)
             : this(null, tags, borders, tilesHoriz, tilesVert)
         {
             _tileID = new Lazy<string>(() => id);
@@ -146,7 +147,7 @@ namespace Astral.Plane
             return new Tile(this);
         }
 
-        public Thickness Borders
+        public Borders Borders
         {
             get
             {
@@ -263,5 +264,57 @@ namespace Astral.Plane
 
         #endregion
 
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Borders : IEquatable<Borders>
+    {
+        public Borders(double uniformBorder) : this()
+        {
+            Left = Top = Right = Bottom = uniformBorder;
+        }
+
+        public Borders(double left, double top, double right, double bottom) : this()
+        {
+            this.Left = left;
+            this.Top = top;
+            this.Right = right;
+            this.Bottom = bottom;
+        }
+
+        public double Left { get; set; }
+        public double Top { get; set; }
+        public double Right { get; set; }
+        public double Bottom { get; set; }
+
+        public static Borders Empty
+        {
+            get
+            {
+                return new Borders(0);
+            }
+        }
+
+        #region equality
+
+        public bool Equals(Borders other)
+        {
+            return other != null &&
+                this.Left == other.Left &&
+                this.Top == other.Top &&
+                this.Right == other.Right &&
+                this.Bottom == other.Bottom;
+        }
+
+        public static bool operator ==(Borders left, Borders right)
+        {
+            return (object.ReferenceEquals(left,null) && object.ReferenceEquals(right,null)) || (right != null && right.Equals(left));
+        }
+
+        public static bool operator !=(Borders left, Borders right)
+        {
+            return !(left == right);
+        }
+        #endregion
     }
 }

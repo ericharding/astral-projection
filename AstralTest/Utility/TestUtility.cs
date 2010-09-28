@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using System.Reflection;
 using System.IO;
 using System.IO.Packaging;
+using System.Windows;
 
 namespace AstralTest.Utility
 {
@@ -83,4 +84,5 @@ namespace AstralTest.Utility
             catch { }
         }
     }
+
 }
