@@ -130,6 +130,9 @@ namespace TileMap
 			if (OnTileSizeUpdated != null)
 				OnTileSizeUpdated(_tileWidth, _tileHeight);
 
+			if (_tileToPlacePreview != null)
+				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
+
 			this.InvalidateVisual();
 		}
 
