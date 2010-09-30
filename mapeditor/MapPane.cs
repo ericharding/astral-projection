@@ -15,7 +15,7 @@ namespace TileMap
 	{
 		public int TileWidth { get { return _tileWidth; } set { ResizeTiles(value, _tileHeight); } }
 		public int TileHeight { get { return _tileHeight; } set { ResizeTiles(_tileWidth, value); } }
-		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight), this)); } }
+		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); } }
 		public bool IsSnapToGrid { set { _snapToGrid = value; this.InvalidateVisual(); } }
 		public delegate void TileSizeUpdatedDelegate(int newWidth, int newHeight);
 		public event TileSizeUpdatedDelegate OnTileSizeUpdated;
@@ -114,7 +114,8 @@ namespace TileMap
 
 		private void PlaceTile(TileFactory tf, Point where, bool relativeToCanvas)
 		{
-			TileCluster tile = new TileCluster(tf, new Size(_tileWidth, _tileHeight), this);
+			TileCluster tile = new TileCluster(tf, new Size(_tileWidth, _tileHeight));
+			this.OnTileSizeUpdated += new TileSizeUpdatedDelegate(tile.map_OnTileSizeUpdated);
 			tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
 			_tiles.Insert(tile);
 
