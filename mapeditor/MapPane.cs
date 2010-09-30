@@ -13,16 +13,19 @@ namespace TileMap
 {
 	public class MapPane : Canvas
 	{
-		public int TileWidth { get; set; }
-		public int TileHeight { get; set; }
-		public TileFactory TileToPlace { get { return _tileToPlace; } set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(TileWidth, TileHeight))); } }
+		public int TileWidth { get { return _tileWidth; } set { ResizeTiles(value, _tileHeight); } }
+		public int TileHeight { get { return _tileHeight; } set { ResizeTiles(_tileWidth, value); } }
+		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight), this)); } }
 		public bool IsSnapToGrid { set { _snapToGrid = value; this.InvalidateVisual(); } }
+		public delegate void TileSizeUpdatedDelegate(int newWidth, int newHeight);
+		public event TileSizeUpdatedDelegate OnTileSizeUpdated;
 
 		private const long _origin = 0x7FFFFFFF;
 		private Pen _gridPen;
 		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true;
 		private Point _mousePos, _mouseHover;
 		private long _offsetX = _origin, _offsetY = _origin;
+		private int _tileWidth, _tileHeight;
 		private TileFactory _tileToPlace;
 		private TileCluster _tileToPlacePreview;
 		private QuadTree<TileCluster> _tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
@@ -43,15 +46,20 @@ namespace TileMap
 			this.MouseLeftButtonUp += new MouseButtonEventHandler(MapPane_MouseLeftButtonUp);
 		}
 
+		public MapPane(Map map) : this()
+		{
+			LoadMap(map);
+		}
+
 		private void MapPane_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			if (_leftClick)
 			{
 				_leftClick = false;
 
-				if (TileToPlace != null)
+				if (_tileToPlace != null)
 				{
-					AddTile(new TileCluster(TileToPlace, new Size(TileWidth, TileHeight)), _snapToGrid ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true);
+					PlaceTile(_tileToPlace, _snapToGrid ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true);
 				}
 			}
 		}
@@ -104,12 +112,28 @@ namespace TileMap
 			_scrolling = true;
 		}
 
-		public void AddTile(TileCluster tile, Point where, bool relativeToCanvas)
+		private void PlaceTile(TileFactory tf, Point where, bool relativeToCanvas)
 		{
+			TileCluster tile = new TileCluster(tf, new Size(_tileWidth, _tileHeight), this);
 			tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
 			_tiles.Insert(tile);
 
 			this.InvalidateVisual();
+		}
+
+		private void ResizeTiles(int newWidth, int newHeight)
+		{
+			_tileWidth = newWidth;
+			_tileHeight = newHeight;
+
+			if (OnTileSizeUpdated != null)
+				OnTileSizeUpdated(_tileWidth, _tileHeight);
+
+			this.InvalidateVisual();
+		}
+
+		private void LoadMap(Map map)
+		{
 		}
 
 		private Point CanvasToReal(Point canvasPoint)
@@ -128,8 +152,8 @@ namespace TileMap
 		{
 			from = CanvasToReal(from);
 
-			from.X = Math.Floor(from.X / TileWidth) * TileWidth;
-			from.Y = Math.Floor(from.Y / TileHeight) * TileHeight;
+			from.X = Math.Floor(from.X / _tileWidth) * _tileWidth;
+			from.Y = Math.Floor(from.Y / _tileHeight) * _tileHeight;
 
 			return RealToCanvas(from);
 		}
@@ -140,15 +164,15 @@ namespace TileMap
 
 			double w = this.RenderSize.Width, h = this.RenderSize.Height;
 
-			for (double i = 0.5; i <= (w + TileWidth); i += TileWidth)
+			for (double i = 0.5; i <= (w + _tileWidth); i += _tileWidth)
 			{
-				double x = (i + (_offsetX - _origin) % TileWidth);
+				double x = (i + (_offsetX - _origin) % _tileWidth);
 				dc.DrawLine(_gridPen, new Point(x, 0), new Point(x, h));
 			}
 
-			for (double i = 0.5; i <= (h + TileHeight); i += TileHeight)
+			for (double i = 0.5; i <= (h + _tileHeight); i += _tileHeight)
 			{
-				double y = (i + (_offsetY - _origin) % TileHeight);
+				double y = (i + (_offsetY - _origin) % _tileHeight);
 				dc.DrawLine(_gridPen, new Point(0, y), new Point(w, y));
 			}
 
