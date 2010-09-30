@@ -14,7 +14,7 @@ namespace TileMap
 	{
 		public event EventHandler BoundsChanged;
 		public Rect Bounds { get { return _bounds; } }
-		public Size TileSize { set { _tileSize = value; UpdateDrawSize(); UpdateBounds(); } }
+		private Size TileSize { set { _tileSize = value; UpdateDrawSize(); UpdateBounds(); } }
 		public Point Position { get { return _tile.Location; } set { _tile.Location = value; UpdateBounds(); } }
 
 		private Rect _bounds;
@@ -23,15 +23,14 @@ namespace TileMap
 		private TileFactory _factory;
 		private Tile _tile;
 
-		public TileCluster(TileFactory tf, Size tileSize, MapPane map)
+		public TileCluster(TileFactory tf, Size tileSize)
 		{
-			map.OnTileSizeUpdated += new MapPane.TileSizeUpdatedDelegate(map_OnTileSizeUpdated);
 			_factory = tf;
 			_tile = tf.CreateTile();
 			TileSize = tileSize;
 		}
 
-		void map_OnTileSizeUpdated(int newWidth, int newHeight)
+		public void map_OnTileSizeUpdated(int newWidth, int newHeight)
 		{
 			_tile.Location = new Point(_tile.Location.X * ((double)newWidth / _tileSize.Width), _tile.Location.Y * ((double)newHeight / _tileSize.Height));
 			TileSize = new Size(newWidth, newHeight);
