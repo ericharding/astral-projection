@@ -23,6 +23,7 @@ namespace TileMap
 	public partial class MainWindow : Window
 	{
 		private Map _library = new Map();
+		private const string _libraryFileName = "library.astral";
 
 		public MainWindow()
 		{
@@ -93,6 +94,23 @@ namespace TileMap
 					mapPane.IsSnapToGrid = true;
 					break;
 			}
+		}
+
+		private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
+		{
+			if (e.Delta > 0)
+				Zoom(5);
+			else if (e.Delta < 0)
+				Zoom(-5);
+		}
+
+		private void Zoom(int pixels)
+		{
+			if (mapPane.TileWidth + pixels <= 0 || mapPane.TileHeight + pixels <= 0)
+				return;
+
+			mapPane.TileWidth += pixels;
+			mapPane.TileHeight += pixels;
 		}
 	}
 }
