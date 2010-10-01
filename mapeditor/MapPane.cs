@@ -16,13 +16,15 @@ namespace TileMap
 		public int TileWidth { get { return _tileWidth; } set { ResizeTiles(value, _tileHeight); } }
 		public int TileHeight { get { return _tileHeight; } set { ResizeTiles(_tileWidth, value); } }
 		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); } }
-		public bool IsSnapToGrid { set { _snapToGrid = value; this.InvalidateVisual(); } }
+		public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
+		public bool IsDrawGrid { get { return _drawGrid; } set { _drawGrid = value; this.InvalidateVisual(); } }
+		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
 		public delegate void TileSizeUpdatedDelegate(int newWidth, int newHeight);
 		public event TileSizeUpdatedDelegate OnTileSizeUpdated;
 
 		private const long _origin = 0x7FFFFFFF;
-		private Pen _gridPen;
-		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true;
+		private Pen _gridPen = new Pen(Brushes.Black, 1);
+		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true, _drawGrid = true;
 		private Point _mousePos, _mouseHover;
 		private long _offsetX = _origin, _offsetY = _origin;
 		private int _tileWidth, _tileHeight;
@@ -34,9 +36,6 @@ namespace TileMap
 		{
 			RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
 
-			_gridPen = new Pen(Brushes.Black, 1);
-			_gridPen.DashStyle = DashStyles.Solid;
-
 			this.MouseRightButtonDown += new MouseButtonEventHandler(MapPane_MouseRightButtonDown);
 			this.MouseRightButtonUp += new MouseButtonEventHandler(MapPane_MouseRightButtonUp);
 			this.MouseMove += new MouseEventHandler(MapPane_MouseMove);
@@ -44,11 +43,6 @@ namespace TileMap
 			this.MouseEnter += new MouseEventHandler(MapPane_MouseEnter);
 			this.MouseLeftButtonDown += new MouseButtonEventHandler(MapPane_MouseLeftButtonDown);
 			this.MouseLeftButtonUp += new MouseButtonEventHandler(MapPane_MouseLeftButtonUp);
-		}
-
-		public MapPane(Map map) : this()
-		{
-			LoadMap(map);
 		}
 
 		private void MapPane_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -168,16 +162,19 @@ namespace TileMap
 
 			double w = this.RenderSize.Width, h = this.RenderSize.Height;
 
-			for (double i = 0.5; i <= (w + _tileWidth); i += _tileWidth)
+			if (_drawGrid)
 			{
-				double x = (i + (_offsetX - _origin) % _tileWidth);
-				dc.DrawLine(_gridPen, new Point(x, 0), new Point(x, h));
-			}
+				for (double i = 0.5; i <= (w + _tileWidth); i += _tileWidth)
+				{
+					double x = (i + (_offsetX - _origin) % _tileWidth);
+					dc.DrawLine(_gridPen, new Point(x, 0), new Point(x, h));
+				}
 
-			for (double i = 0.5; i <= (h + _tileHeight); i += _tileHeight)
-			{
-				double y = (i + (_offsetY - _origin) % _tileHeight);
-				dc.DrawLine(_gridPen, new Point(0, y), new Point(w, y));
+				for (double i = 0.5; i <= (h + _tileHeight); i += _tileHeight)
+				{
+					double y = (i + (_offsetY - _origin) % _tileHeight);
+					dc.DrawLine(_gridPen, new Point(0, y), new Point(w, y));
+				}
 			}
 
 			foreach (TileCluster tc in _tiles.Query(new Rect(_origin - _offsetX, _origin - _offsetY, w, h)))
