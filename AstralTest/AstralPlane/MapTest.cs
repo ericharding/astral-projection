@@ -189,7 +189,7 @@ namespace AstralTest.AstralPlane
             map.AddTile(tile1);
 
             string tempFile = Path.GetTempFileName();
-            map.Save(false, tempFile);
+            map.Save(tempFile);
 
             using (ZipFileContainer file = new ZipFileContainer(tempFile))
             {
@@ -223,8 +223,8 @@ namespace AstralTest.AstralPlane
             string tempLibrary = Path.GetTempFileName();
             string tempFile = Path.GetTempFileName();
 
-            library.Save(false, tempLibrary);
-            map1.Save(false, tempFile); // Should just have a reference to library and include no images
+            library.Save(tempLibrary);
+            map1.Save(tempFile); // Should just have a reference to library and include no images
 
             using (ZipFileContainer file = new ZipFileContainer(tempFile))
             {
@@ -267,8 +267,8 @@ namespace AstralTest.AstralPlane
             string tempLibrary = Path.GetTempFileName();
             string tempFile = Path.GetTempFileName();
 
-            library.Save(false, tempLibrary);
-            map1.Save(true, tempFile); // Should just have a reference to library and include no images
+            library.Save(tempLibrary);
+            map1.SaveStandalone(tempFile); // Should just have a reference to library and include no images
 
             using (ZipFileContainer file = new ZipFileContainer(tempFile))
             {
@@ -315,6 +315,99 @@ namespace AstralTest.AstralPlane
 
         }
 
+
+        [TestMethod]
+        public void RemoveTile()
+        {
+            Map map1 = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "don't serialize me!", Borders.Empty, 1, 1);
+            TileFactory tf2 = new TileFactory(TestUtility.TealImage, "lalala I'm not listening", new Borders(5), 1, 2);
+            var tile = tf1.CreateTile();
+            var tile2 = tf2.CreateTile();
+
+            // Just tossing in an extra check b/c I almost forgot to add the file factory
+            bool threw = false;
+            try
+            {
+                map1.AddTile(tile);
+            }
+            catch
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw);
+
+            map1.AddTileFactory(tf1);
+            map1.AddTileFactory(tf2);
+            map1.AddTile(tile);
+            map1.AddTile(tile2);
+
+            map1.RemoveTile(tile);
+
+            string tempFile = Path.GetTempFileName();
+            map1.SaveStandalone(tempFile);
+
+            using (ZipFileContainer file = new ZipFileContainer(tempFile))
+            {
+                Assert.IsTrue(file.ContainsFile("AstralManifest.xml"));
+                Assert.IsTrue(file.ContainsFile(string.Format("images/{0}", tf2.TileID)));
+                Assert.IsFalse(file.ContainsFile(string.Format("images/{0}", tf1.TileID)));
+            }
+
+            TestUtility.TryDelete(tempFile);
+        }
+
+        [TestMethod]
+        public void SaveNoPrune()
+        {
+            Map map1 = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "don't serialize me!", Borders.Empty, 1, 1);
+            TileFactory tf2 = new TileFactory(TestUtility.TealImage, "lalala I'm not listening", new Borders(5), 1, 2);
+            var tile = tf1.CreateTile();
+            var tile2 = tf2.CreateTile();
+
+            // Just tossing in an extra check b/c I almost forgot to add the file factory
+            bool threw = false;
+            try
+            {
+                map1.AddTile(tile);
+            }
+            catch
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw);
+
+            map1.AddTileFactory(tf1);
+            map1.AddTileFactory(tf2);
+
+            string tempFile = Path.GetTempFileName();
+            map1.SaveStandalone(tempFile, false);
+
+            using (ZipFileContainer file = new ZipFileContainer(tempFile))
+            {
+                Assert.IsTrue(file.ContainsFile("AstralManifest.xml"));
+                Assert.IsTrue(file.ContainsFile(string.Format("images/{0}", tf2.TileID)));
+                Assert.IsTrue(file.ContainsFile(string.Format("images/{0}", tf1.TileID)));
+            }
+
+            TestUtility.TryDelete(tempFile);
+        }
+
+        // [TestMethod]
+        public void RemoveTileFactorySimple()
+        {
+            Map map1 = new Map();
+            throw new NotImplementedException();
+        }
+
+        // [TestMethod]
+        public void RemoveTileFactoryFromReference()
+        {
+            Map library = new Map();
+            Map map1 = new Map();
+            throw new NotImplementedException();
+        }
 
 
     }

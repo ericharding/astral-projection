@@ -74,6 +74,11 @@ namespace Astral.Plane
             _tileFactories.Add(tf);
         }
 
+        public void RemoveTileFactory(TileFactory tf)
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddTile(Tile tile)
         {
             if (this.FindTileFactory(tile.Factory) == null)
@@ -83,6 +88,11 @@ namespace Astral.Plane
 
             // Ok, you may pass
             _tiles.Add(tile);
+        }
+
+        public void RemoveTile(Tile tile)
+        {
+            _tiles.Remove(tile);
         }
 
 		public ReadOnlyObservableCollection<TileFactory> TileFactories
@@ -105,28 +115,43 @@ namespace Astral.Plane
         /// Save the Map
         /// </summary>
         /// <param name="standalone"></param>
-        public void Save(bool standalone)
+        public void Save()
         {
             if (string.IsNullOrEmpty(_fileName)) throw new FileNotFoundException("No filename");
-            this.Save(standalone, _fileName);
+            this.Save(_fileName);
         }
 
 #if DEBUG
         public bool SaveToDirectory { get; set; }
 #endif
 
-        public void SafeSave(bool standalone, string filename)
-        {
-            string tempFile = Path.GetTempFileName();
-            Save(standalone, tempFile);
-            File.Move(tempFile, filename);
-        }
-
         /// <summary>
         /// Save the map to a file.
         /// </summary>
-        /// <param name="full">If true the resulting file will include all necessary tiles and be completely standalone</param>
-        public void Save(bool standalone, string filename)
+        public void Save(string filename)
+        {
+            SafeSave(false, false, filename);
+        }
+
+        /// <summary>
+        /// Saves a file ready for sharing.  The resulting file will not need your local tile library to be available when loaded
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="prune">If true any tileFactory that was explicitly added to the map will be deleted if no tiles reference it</param>
+        public void SaveStandalone(string filename, bool prune=true)
+        {
+            SafeSave(true, prune, filename);
+        }
+
+        private void SafeSave(bool standalone, bool prune, string filename)
+        {
+            string tempFile = Path.GetTempFileName();
+            Save(standalone, prune, tempFile);
+            TryDelete(filename);
+            File.Move(tempFile, filename);
+        }
+        
+        private void Save(bool standalone, bool prune, string filename)
         {
             /*
              * <AstralMap ID="">
@@ -172,6 +197,17 @@ namespace Astral.Plane
                 {
                     // For a standalone map we need to know about every referenced tile factory
                     usedTiles.Add(tile.Factory);
+                }
+            }
+
+            // If we're standalone but the user doesn't want us to prune then
+            // add all of the unreferenced tilefactories that were already here
+            if (standalone && !prune)
+            {
+                foreach (TileFactory tf in _tileFactories)
+                {
+                    if (!usedTiles.Contains(tf))
+                        usedTiles.Add(tf);
                 }
             }
 
