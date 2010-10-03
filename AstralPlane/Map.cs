@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using System.IO;
 using Astral.Plane.Container;
 using System.Xml;
+using Astral.Plane.Utility;
 
 namespace Astral.Plane
 {
@@ -32,23 +33,30 @@ namespace Astral.Plane
         /// <param name="fileName">A file conforming to the AstralMap spec</param>
         public static Map LoadFromFile(string filename)
         {
+            // todo: bug: If map is edited from a different source we cannot reload it
+
             string fullpath = Path.GetFullPath(filename);
-            Map newMap;
-            if (!sLoadedMaps.TryGetValue(fullpath, out newMap))
+            WeakReference<Map> mapRef = null;
+
+            // if the old map is known and the reference is still alive return that
+            if (sLoadedMaps.TryGetValue(fullpath, out mapRef) && mapRef.IsAlive)
             {
-                // todo: weak references?
-                newMap = new Map(fullpath);
-                sLoadedMaps[fullpath] = newMap;
+                return mapRef.Target;
             }
+
+            Map newMap = new Map(fullpath);
+            sLoadedMaps[fullpath] = new WeakReference<Map>(newMap);
 
             return newMap;
         }
-        private static Dictionary<string, Map> sLoadedMaps = new Dictionary<string, Map>();
 
         private Map(string fileName)
         {
             _fileName = fileName;
-            throw new NotImplementedException();
+            using (IContainer container = new ZipFileContainer(fileName))
+            {
+                Load(container);
+            }
         }
 
         #endregion
@@ -95,11 +103,11 @@ namespace Astral.Plane
             _tiles.Remove(tile);
         }
 
-		public ReadOnlyObservableCollection<TileFactory> TileFactories
+        public ReadOnlyObservableCollection<TileFactory> TileFactories
         {
             get
             {
-				return new ReadOnlyObservableCollection<TileFactory>(_tileFactories);
+                return new ReadOnlyObservableCollection<TileFactory>(_tileFactories);
             }
         }
 
@@ -138,7 +146,7 @@ namespace Astral.Plane
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="prune">If true any tileFactory that was explicitly added to the map will be deleted if no tiles reference it</param>
-        public void SaveStandalone(string filename, bool prune=true)
+        public void SaveStandalone(string filename, bool prune = true)
         {
             SafeSave(true, prune, filename);
         }
@@ -150,7 +158,7 @@ namespace Astral.Plane
             TryDelete(filename);
             File.Move(tempFile, filename);
         }
-        
+
         private void Save(bool standalone, bool prune, string filename)
         {
             /*
@@ -232,7 +240,7 @@ namespace Astral.Plane
                 }
             }
 
-            
+
             // Save the xml as AstralManifest.xml
             TryDelete(filename);
             using (IContainer saveContainer = this.SaveToDirectory ? (IContainer)new FilesystemContainer(filename) : (IContainer)new ZipFileContainer(filename))
@@ -255,12 +263,19 @@ namespace Astral.Plane
             _fileName = filename;
         }
 
+        private void Load(IContainer file)
+        {
+
+            
+            throw new NotImplementedException();
+        }
+
         private static void CopyStream(Stream input, Stream output)
         {
             input.Seek(0, SeekOrigin.Begin);
             byte[] buffer = new byte[4096];
             int read = 0;
-            while ( (read = input.Read(buffer, 0, buffer.Length)) > 0)
+            while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
             {
                 output.Write(buffer, 0, read);
             }
@@ -281,7 +296,7 @@ namespace Astral.Plane
             }
             catch { }
         }
-        
+
 
         #endregion
 
@@ -300,7 +315,7 @@ namespace Astral.Plane
                     return tf;
             }
 
-            foreach(Map refmap in _references)
+            foreach (Map refmap in _references)
             {
                 TileFactory match = refmap.FindTileFactory(searchFactory);
                 if (match != null) return match;
@@ -311,11 +326,12 @@ namespace Astral.Plane
 
 
         string _fileName;
-		ObservableCollection<TileFactory> _tileFactories = new ObservableCollection<TileFactory>();
+        ObservableCollection<TileFactory> _tileFactories = new ObservableCollection<TileFactory>();
         List<Map> _references = new List<Map>();
         List<Tile> _tiles = new List<Tile>();
-        
-        
+
+        private static Dictionary<string, WeakReference<Map>> sLoadedMaps = new Dictionary<string, WeakReference<Map>>();
+
         #endregion
 
         internal static Stream LoadStream(string _imagePath)
@@ -323,4 +339,5 @@ namespace Astral.Plane
             throw new NotImplementedException();
         }
     }
+
 }
