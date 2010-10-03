@@ -290,29 +290,40 @@ namespace AstralTest.AstralPlane
         }
 
 
-        // [TestMethod]
+        [TestMethod]
         public void MapLoadBasic()
         {
+            Map map = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "don't serialize me!", Borders.Empty, 1, 1);
+            TileFactory tf2 = new TileFactory(TestUtility.TealImage, "lalala I'm not listening", new Borders(5), 1, 2);
+            var tile = tf1.CreateTile();
+            var tile2 = tf2.CreateTile();
 
-            //string filename = Path.GetTempFileName();
-            //try
-            //{
-            //    m.Save(true, filename);
+            map.AddTileFactory(tf1);
+            map.AddTileFactory(tf2);
+            map.AddTile(tile);
+            map.AddTile(tile2);
 
-            //    // Load a new copy of the map we just saved
-            //    Map m2 = new Map(filename);
+            string filename = Path.GetTempFileName();
+            try
+            {
+                map.Save(filename);
 
-            //    Assert.IsTrue(m2.TileFactories.Contains(redtiles));
+                // load a new copy of the map we just saved
+                Map map2 = Map.LoadFromFile(filename);
+                Map map3 = Map.LoadFromFile(filename);
+                Assert.IsTrue(object.ReferenceEquals(map2, map3)); // Map cache should handle the second load
 
-            //}
-            //finally
-            //{
-            //    if (File.Exists(filename))
-            //    {
-            //        File.Delete(filename);
-            //    }
-            //}
+                Assert.IsTrue(map2.TileFactories.Contains(tf1));
+                Assert.IsTrue(map3.TileFactories.Contains(tf2));
+                Assert.IsTrue(map2.Tiles.Contains(tile));
+                Assert.IsTrue(map2.Tiles.Contains(tile2));
 
+            }
+            finally
+            {
+                TestUtility.TryDelete(filename);
+            }
         }
 
 
