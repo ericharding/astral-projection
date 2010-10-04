@@ -43,7 +43,7 @@
 					<Button Content="Import" Height="23" HorizontalAlignment="Stretch" Name="bImport" Click="bImport_Click" Grid.Row="1"/>
 				</Grid>
 				<GridSplitter Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1" Focusable="False"/>
-				<tilemap:MapPane x:Name="mapPane" ClipToBounds="True" Grid.Column="2" TileWidth="50" TileHeight="50" Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<tilemap:MapPane x:Name="mapPane" Grid.Column="2" Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 			</Grid>
 		</DockPanel>
 	</Grid>

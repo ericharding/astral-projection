@@ -27,7 +27,7 @@ namespace TileMap
 		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true, _drawGrid = true;
 		private Point _mousePos, _mouseHover;
 		private long _offsetX = _origin, _offsetY = _origin;
-		private int _tileWidth, _tileHeight;
+		private int _tileWidth = 50, _tileHeight = 50;
 		private TileFactory _tileToPlace;
 		private TileCluster _tileToPlacePreview;
 		private QuadTree<TileCluster> _tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
@@ -35,6 +35,8 @@ namespace TileMap
 		public MapPane()
 		{
 			RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
+
+			this.ClipToBounds = true;
 
 			this.MouseRightButtonDown += new MouseButtonEventHandler(MapPane_MouseRightButtonDown);
 			this.MouseRightButtonUp += new MouseButtonEventHandler(MapPane_MouseRightButtonUp);
@@ -118,6 +120,9 @@ namespace TileMap
 
 		private void ResizeTiles(int newWidth, int newHeight)
 		{
+			_offsetX = (long)((_offsetX - _origin) * ((double)newWidth / _tileWidth) + _origin);
+			_offsetY = (long)((_offsetY - _origin) * ((double)newHeight / _tileHeight) + _origin);
+
 			_tileWidth = newWidth;
 			_tileHeight = newHeight;
 
