@@ -51,6 +51,7 @@
     <Compile Include="Tile.cs" />
     <Compile Include="TileFactory.cs" />
     <Compile Include="Utility\WeakReference.cs" />
+    <Compile Include="Utility\XAttributeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReadMe.txt" />

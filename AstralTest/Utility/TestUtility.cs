@@ -83,6 +83,40 @@ namespace AstralTest.Utility
             }
             catch { }
         }
+
+
+        public static bool TestForThrow(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch
+            {
+                return true;
+            }
+            return false;
+        }
+
+
+        // Doesn't work - hmm... who has the reference
+        public static Func<bool> WaitForGC(params object[] objs)
+        {
+            return () =>
+                {
+                    List<WeakReference> refs = new List<WeakReference>(objs.Select(o => new WeakReference(o)));
+                    for (int x = 0; x < objs.Length; x++) objs[x] = null;
+                    int failSafe = 100;
+                    while (refs.Any(w => w.IsAlive) && failSafe > 0)
+                    {
+                        GC.Collect();
+                        failSafe--;
+                        System.Threading.Thread.Sleep(100);
+                    }
+
+                    return failSafe > 0;
+                };
+        }
     }
 
 }

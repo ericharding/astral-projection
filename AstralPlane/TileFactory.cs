@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Diagnostics;
 using System.Xml.Linq;
 using System.Runtime.InteropServices;
+using Astral.Plane.Utility;
 
 namespace Astral.Plane
 {
@@ -20,7 +21,6 @@ namespace Astral.Plane
         private int _tilesHoriz;
         private int _tilesVert;
         private Lazy<string> _tileID;
-        private int _hashCode;
         private BitmapSource _bitmapSource;
         private Map _map;
 
@@ -111,11 +111,7 @@ namespace Astral.Plane
 
         public override int GetHashCode()
         {
-            if (_hashCode == 0)
-            {
-                ComputeTileHash();
-            }
-            return _hashCode;
+            return TileID.GetHashCode();
         }
 
         public static bool operator ==(TileFactory left, TileFactory right)
@@ -222,13 +218,6 @@ namespace Astral.Plane
             SHA1 sha = SHA1.Create();
             byte[] hash = sha.ComputeHash(imageBits);
 
-            int[] hashcodes = { BitConverter.ToInt32(hash, 0),
-                                BitConverter.ToInt32(hash, 4),
-                                BitConverter.ToInt32(hash, 8),
-                                BitConverter.ToInt32(hash, 12),
-                                BitConverter.ToInt32(hash, 16)};
-            _hashCode = hashcodes[0] ^ hashcodes[1] ^ hashcodes[2] ^ hashcodes[3] ^ hashcodes[4];
-
             StringBuilder str = new StringBuilder(40);
             for (int x = 0; x < 20; x++)
             {
@@ -249,18 +238,29 @@ namespace Astral.Plane
 
         internal XNode ToXML()
         {
-            return new XElement("Tiletype",
+            return new XElement(Map.TILEFACTORY_NODE,
                 new XAttribute("TileID", this.TileID),
-                new XAttribute("tags", this._tags),
+                new XAttribute("Tags", this._tags),
                 new XAttribute("Borders", _borders),
                 new XAttribute("Tiles", string.Format("{0},{1}", _tilesHoriz, _tilesVert)));
-
         }
 
-        internal void FromXML(XElement node)
+        internal static TileFactory FromXML(Map m, XElement node)
         {
-            throw new NotImplementedException();
+            string id, tags;
+            Borders borders;
+            int tileshoriz, tilesvert;
+
+            id = node.Attribute("TileID").Value;
+            tags = node.Attribute("Tags").Value;
+            borders = node.Attribute("Borders").Parse(Borders.Parse);
+            var tileValues = node.Attribute("Tiles").Parse(s => s.Split(',').Select(t => Int32.Parse(t))).ToArray();
+            tileshoriz = tileValues[0];
+            tilesvert = tileValues[1];
+
+            return new TileFactory(m, id, "images/" + id, tags, borders, tileshoriz, tilesvert);
         }
+        
 
         #endregion
 
@@ -293,6 +293,29 @@ namespace Astral.Plane
             {
                 return new Borders(0);
             }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0},{1},{2},{3}", Left, Top, Right, Bottom);
+        }
+
+        public static Borders Parse(string borders)
+        {
+            string[] values = borders.Split(',');
+            var ints = values.Select(s => double.Parse(s));
+            var enumerator = ints.GetEnumerator();
+            Borders b = new Borders();
+            enumerator.MoveNext();
+            b.Left = enumerator.Current;
+            enumerator.MoveNext();
+            b.Top = enumerator.Current;
+            enumerator.MoveNext();
+            b.Right = enumerator.Current;
+            enumerator.MoveNext();
+            b.Bottom = enumerator.Current;
+
+            return b;
         }
 
         #region equality

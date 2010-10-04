@@ -43,6 +43,30 @@ namespace AstralTest.AstralPlane
     [TestClass]
     public class MapTest
     {
+        # region Common
+
+        // Define a few temporary files to use for saving/loading and avoid duplicating initialization/cleanup code
+        private Lazy<string> _tempFilename1 = new Lazy<string>(() => Path.GetTempFileName());
+        private Lazy<string> _tempFilename2 = new Lazy<string>(() => Path.GetTempFileName());
+        private Lazy<string> _tempFilename3 = new Lazy<string>(() => Path.GetTempFileName());
+        public string TempFile1 { get { return _tempFilename1.Value; } }
+        public string TempFile2 { get { return _tempFilename2.Value; } }
+        public string TempFile3 { get { return _tempFilename3.Value; } }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            if (_tempFilename1.IsValueCreated)
+                TestUtility.TryDelete(_tempFilename1.Value);
+            if (_tempFilename2.IsValueCreated)
+                TestUtility.TryDelete(_tempFilename2.Value);
+            if (_tempFilename3.IsValueCreated)
+                TestUtility.TryDelete(_tempFilename3.Value);
+        }
+
+        #endregion
+
+
         [TestMethod]
         public void MapBasic()
         {
@@ -188,16 +212,13 @@ namespace AstralTest.AstralPlane
             tile1.Location = new Point(100, 100);
             map.AddTile(tile1);
 
-            string tempFile = Path.GetTempFileName();
-            map.Save(tempFile);
+            map.Save(TempFile1);
 
-            using (ZipFileContainer file = new ZipFileContainer(tempFile))
+            using (ZipFileContainer file = new ZipFileContainer(TempFile1))
             {
                 Assert.IsTrue(file.ContainsFile("AstralManifest.xml"));
                 Assert.IsTrue(file.ContainsFile(string.Format("images/{0}", redtiles.TileID)));
             }
-
-            TestUtility.TryDelete(tempFile);
         }
 
         [TestMethod]
@@ -220,8 +241,8 @@ namespace AstralTest.AstralPlane
             map1.AddTile(tred);
             map1.AddTile(tmus);
 
-            string tempLibrary = Path.GetTempFileName();
-            string tempFile = Path.GetTempFileName();
+            string tempLibrary = TempFile1;
+            string tempFile = TempFile2;
 
             library.Save(tempLibrary);
             map1.Save(tempFile); // Should just have a reference to library and include no images
@@ -239,9 +260,40 @@ namespace AstralTest.AstralPlane
                 Assert.IsTrue(file.ContainsFile("images/" + redtiles.TileID));
                 Assert.IsTrue(file.ContainsFile("images/" + mustiles.TileID));
             }
+        }
 
-            TestUtility.TryDelete(tempFile);
-            TestUtility.TryDelete(tempLibrary);
+        [TestMethod]
+        public void MapSaveBadReference()
+        {
+            Map library = new Map();
+            Map map1 = new Map();
+
+            map1.AddReference(library);
+
+            TileFactory redtiles = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 1);
+            library.AddTileFactory(redtiles);
+
+            TileFactory mustiles = new TileFactory(TestUtility.MustardImage, "mustard", Borders.Empty, 1, 1);
+            library.AddTileFactory(mustiles);
+
+            Tile tred = redtiles.CreateTile();
+            Tile tmus = mustiles.CreateTile();
+
+            map1.AddTile(tred);
+            map1.AddTile(tmus);
+
+
+            string tempFile = TempFile1;
+            bool threw = false;
+            try
+            {
+                // Can't save map1 b/c it references library which was never saved
+                map1.Save(tempFile);
+            }
+            catch { threw = true; }
+
+            Assert.IsTrue(threw);
+
         }
 
         [TestMethod]
@@ -264,8 +316,8 @@ namespace AstralTest.AstralPlane
             map1.AddTile(tred);
             map1.AddTile(tmus);
 
-            string tempLibrary = Path.GetTempFileName();
-            string tempFile = Path.GetTempFileName();
+            string tempLibrary = TempFile1;
+            string tempFile = TempFile2;
 
             library.Save(tempLibrary);
             map1.SaveStandalone(tempFile); // Should just have a reference to library and include no images
@@ -285,13 +337,10 @@ namespace AstralTest.AstralPlane
                 Assert.IsTrue(file.ContainsFile("images/" + mustiles.TileID));
             }
 
-            TestUtility.TryDelete(tempFile);
-            TestUtility.TryDelete(tempLibrary);
         }
 
-
         [TestMethod]
-        public void MapLoadBasic()
+        public void MapLoadFromCache()
         {
             Map map = new Map();
             TileFactory tf1 = new TileFactory(TestUtility.TealImage, "don't serialize me!", Borders.Empty, 1, 1);
@@ -304,28 +353,157 @@ namespace AstralTest.AstralPlane
             map.AddTile(tile);
             map.AddTile(tile2);
 
-            string filename = Path.GetTempFileName();
-            try
-            {
-                map.Save(filename);
+            map.Save(TempFile1);
 
-                // load a new copy of the map we just saved
-                Map map2 = Map.LoadFromFile(filename);
-                Map map3 = Map.LoadFromFile(filename);
-                Assert.IsTrue(object.ReferenceEquals(map2, map3)); // Map cache should handle the second load
+            // load a new copy of the map we just saved
+            Map map2 = Map.LoadFromFile(TempFile1);
 
-                Assert.IsTrue(map2.TileFactories.Contains(tf1));
-                Assert.IsTrue(map3.TileFactories.Contains(tf2));
-                Assert.IsTrue(map2.Tiles.Contains(tile));
-                Assert.IsTrue(map2.Tiles.Contains(tile2));
-
-            }
-            finally
-            {
-                TestUtility.TryDelete(filename);
-            }
+            // Since "filename" was already loaded LoadFromFile returns that reference
+            Assert.IsTrue(object.ReferenceEquals(map, map2));
         }
 
+        [TestMethod]
+        public void MapInvalidateCacheUponSaveWithDifferentName()
+        {
+            Map map = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "don't serialize me!", Borders.Empty, 1, 1);
+            TileFactory tf2 = new TileFactory(TestUtility.TealImage, "lalala I'm not listening", new Borders(5), 1, 2);
+            var tile = tf1.CreateTile();
+            var tile2 = tf2.CreateTile();
+
+            map.AddTileFactory(tf1);
+            map.AddTileFactory(tf2);
+            map.AddTile(tile);
+            map.AddTile(tile2);
+
+            map.Save(TempFile1);
+            map.Save(TempFile2);
+
+            // load a new copy of the map we just saved
+            Map map2 = Map.LoadFromFile(TempFile1);
+
+            // Since "filename" was already loaded LoadFromFile returns that reference
+            Assert.IsFalse(object.ReferenceEquals(map, map2));
+        }
+
+        [TestMethod]
+        public void MapLoadBasic()
+        {
+            Map map = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "don't serialize me!", Borders.Empty, 1, 1);
+            TileFactory tf2 = new TileFactory(TestUtility.TealImage, "lalala I'm not listening", new Borders(5), 1, 2);
+            var tile = tf1.CreateTile();
+            tile.Mirror = TileMirror.Horizontal | TileMirror.Vertical;
+            var tile2 = tf2.CreateTile();
+
+            map.AddTileFactory(tf1);
+            map.AddTileFactory(tf2);
+            map.AddTile(tile);
+            map.AddTile(tile2);
+
+            map.Save(TempFile1);
+
+            File.Copy(TempFile1, TempFile2, true);
+
+            // load a new copy of the map we just saved
+            Map map2 = Map.LoadFromFile(TempFile2); // real load
+            Map map3 = Map.LoadFromFile(TempFile2); // load from cache
+            Assert.IsTrue(object.ReferenceEquals(map2, map3)); // Map cache should handle the second load
+
+            Assert.IsTrue(map2.TileFactories.Contains(tf1)); // because TileFactory overrides equivalence this is not reference equals
+            Assert.IsTrue(map3.TileFactories.Contains(tf2));
+            Assert.IsTrue(map2.Tiles.Count() == 2);
+        }
+
+        [TestMethod]
+        public void TestMapRefCache()
+        {
+            // Create a new library and save it
+            Map lib = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 2);
+            TileFactory tf2 = new TileFactory(TestUtility.MustardImage, "notred", new Borders(-2), 3, 4);
+            lib.AddTileFactory(tf1);
+            lib.AddTileFactory(tf2);
+
+            // save library - adds to cache by filename
+            lib.Save(TempFile1);
+
+            // make new map - reference library
+            Map map1 = new Map();
+            map1.AddReference(lib);
+            map1.AddTile(tf1.CreateTile());
+            map1.AddTile(tf2.CreateTile());
+
+            // save map
+            map1.Save(TempFile2);
+            
+            // load map - assert references contain library by reference
+            File.Copy(TempFile2, TempFile3, true);
+            Map map2 = Map.LoadFromFile(TempFile3);
+            Assert.IsFalse(object.ReferenceEquals(map1, map2)); // assert map is not psychic
+
+            Assert.IsTrue(map1.Tiles.Count() == map2.Tiles.Count());
+            Assert.IsTrue(map1.References.Count == 1);
+            Assert.IsTrue(map1.References.Count == 1);
+            Assert.IsTrue(object.ReferenceEquals(map1.References[0], map2.References[0]));
+        }
+
+        [TestMethod]
+        public void TestMapRecursiveRefLoader()
+        {
+            Map lib = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 2);
+            TileFactory tf2 = new TileFactory(TestUtility.MustardImage, "notred", new Borders(-2), 3, 4);
+            lib.AddTileFactory(tf1);
+            lib.AddTileFactory(tf2);
+            lib.Save(TempFile1);
+
+            Map map = new Map();
+            map.AddReference(lib);
+            map.AddTile(tf1.CreateTile());
+            map.AddTile(tf2.CreateTile());
+            map.Save(TempFile2);
+
+            WeakReference wLib = new WeakReference(lib);
+            WeakReference wmap = new WeakReference(map);
+            lib = null;
+            map = null;
+            int failsafe = 100;
+            while (wLib.IsAlive && wmap.IsAlive && failsafe > 0)
+            {
+                GC.Collect();
+                System.Threading.Thread.Sleep(100);
+                failsafe--;
+            }
+
+            Assert.IsTrue(failsafe > 0, "We're leaking memory, captain, and the GC just can't take any more!");
+
+            map = Map.LoadFromFile(TempFile2); // Loads both map and lib
+            Assert.IsTrue(map.References.Count == 1);
+            lib = Map.LoadFromFile(TempFile1);
+            Assert.IsTrue(map.References[0] == lib);
+        }
+
+        [TestMethod]
+        public void TestImageRoundTrip()
+        {
+            Map map = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 2);
+            long originalLength = tf1.GetImageStream().Length;
+            map.AddTileFactory(tf1);
+
+            map.Save(TempFile1);
+
+            // fool the cache
+            File.Copy(TempFile1, TempFile2, true);
+            
+            Map map2 = Map.LoadFromFile(TempFile2);
+            
+            Assert.IsTrue(map2.TileFactories.Count == 1);
+
+            Assert.AreEqual(originalLength, map2.TileFactories[0].GetImageStream().Length);
+            
+        }
 
         [TestMethod]
         public void RemoveTile()
@@ -337,16 +515,7 @@ namespace AstralTest.AstralPlane
             var tile2 = tf2.CreateTile();
 
             // Just tossing in an extra check b/c I almost forgot to add the file factory
-            bool threw = false;
-            try
-            {
-                map1.AddTile(tile);
-            }
-            catch
-            {
-                threw = true;
-            }
-            Assert.IsTrue(threw);
+            Assert.IsTrue(TestUtility.TestForThrow(() => map1.AddTile(tile)));
 
             map1.AddTileFactory(tf1);
             map1.AddTileFactory(tf2);
@@ -355,7 +524,7 @@ namespace AstralTest.AstralPlane
 
             map1.RemoveTile(tile);
 
-            string tempFile = Path.GetTempFileName();
+            string tempFile = TempFile1;
             map1.SaveStandalone(tempFile);
 
             using (ZipFileContainer file = new ZipFileContainer(tempFile))
@@ -378,21 +547,13 @@ namespace AstralTest.AstralPlane
             var tile2 = tf2.CreateTile();
 
             // Just tossing in an extra check b/c I almost forgot to add the file factory
-            bool threw = false;
-            try
-            {
-                map1.AddTile(tile);
-            }
-            catch
-            {
-                threw = true;
-            }
+            bool threw = TestUtility.TestForThrow(() => map1.AddTile(tile));
             Assert.IsTrue(threw);
 
             map1.AddTileFactory(tf1);
             map1.AddTileFactory(tf2);
 
-            string tempFile = Path.GetTempFileName();
+            string tempFile = TempFile1;
             map1.SaveStandalone(tempFile, false);
 
             using (ZipFileContainer file = new ZipFileContainer(tempFile))
@@ -405,16 +566,21 @@ namespace AstralTest.AstralPlane
             TestUtility.TryDelete(tempFile);
         }
 
-        // [TestMethod]
+        //[TestMethod]
         public void RemoveTileFactorySimple()
         {
             Map map1 = new Map();
             throw new NotImplementedException();
         }
 
-        // [TestMethod]
+        //[TestMethod]
         public void RemoveTileFactoryFromReference()
         {
+            // Add a TF to library
+            // add a tile of type tf to map
+            // save map1 - tf is not saved in map1
+            // remove tile from library
+            // save map1 - tf is now saved in map1
             Map library = new Map();
             Map map1 = new Map();
             throw new NotImplementedException();
