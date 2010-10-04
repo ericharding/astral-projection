@@ -8,6 +8,7 @@ using System.IO;
 using Astral.Plane.Container;
 using System.Xml;
 using Astral.Plane.Utility;
+using System.Diagnostics;
 
 namespace Astral.Plane
 {
@@ -17,6 +18,16 @@ namespace Astral.Plane
     public class Map
     {
 
+        #region Strings
+        private const string MANIFEST_NAME = "AstralManifest.xml";
+        private const string TILEFACTORY_COLLECTION = "TileTypes";
+        internal const string TILEFACTORY_NODE = "TileType";
+        private const string REFERENCE_COLLECTION = "References";
+        private const string REFERENCE_NODE = "Reference";
+        private const string TILE_COLLECTION = "Tiles";
+        internal const string TILE_NODE = "Tile";
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -25,6 +36,13 @@ namespace Astral.Plane
         public Map()
         {
             // empty map!
+        }
+
+        // Initializies an empty map
+        public Map(int tileSizeX, int tileSizeY)
+        {
+            this.TileSizeX = tileSizeX;
+            this.TileSizeY = tileSizeY;
         }
 
         /// <summary>
@@ -57,6 +75,7 @@ namespace Astral.Plane
             {
                 Load(container);
             }
+            _isDirty = false;
         }
 
         #endregion
@@ -76,14 +95,17 @@ namespace Astral.Plane
         public void AddTileFactory(TileFactory tf)
         {
             if (tf.Map == null && tf.Image == null) throw new InvalidOperationException("Invalid tile factory.");
+            // NOTE: this may *cause* image load.  (Can't delay load an image if we're switching maps b/c we lose the source location)
             if (tf.Map != null && tf.Image == null) throw new InvalidOperationException("Image must be loaded to add to a map");
 
             tf.Map = this;
             _tileFactories.Add(tf);
+            _isDirty = true;
         }
 
         public void RemoveTileFactory(TileFactory tf)
         {
+            _isDirty = true;
             throw new NotImplementedException();
         }
 
@@ -96,11 +118,13 @@ namespace Astral.Plane
 
             // Ok, you may pass
             _tiles.Add(tile);
+            _isDirty = true;
         }
 
         public void RemoveTile(Tile tile)
         {
             _tiles.Remove(tile);
+            _isDirty = true;
         }
 
         public ReadOnlyObservableCollection<TileFactory> TileFactories
@@ -119,19 +143,38 @@ namespace Astral.Plane
             }
         }
 
+        public IList<Map> References
+        {
+            get
+            {
+                return _references.AsReadOnly();
+            }
+        }
+
+
+        public int TileSizeX
+        {
+            get;
+            set;
+        }
+
+        public int TileSizeY
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Save the Map
         /// </summary>
         /// <param name="standalone"></param>
         public void Save()
         {
+            if (!_isDirty && File.Exists(_fileName)) /*noop*/ return;
             if (string.IsNullOrEmpty(_fileName)) throw new FileNotFoundException("No filename");
             this.Save(_fileName);
+            _isDirty = false;
         }
-
-#if DEBUG
-        public bool SaveToDirectory { get; set; }
-#endif
 
         /// <summary>
         /// Save the map to a file.
@@ -139,16 +182,29 @@ namespace Astral.Plane
         public void Save(string filename)
         {
             SafeSave(false, false, filename);
+
+            // If we used to have a different name clear the reference by that name in the cache
+            if (!string.IsNullOrEmpty(_fileName))
+            {
+                Map.sLoadedMaps.Remove(_fileName);
+            }
+
+            _fileName = filename;
+            _isDirty = false;
+            // Add to the cache
+            Map.sLoadedMaps[Path.GetFullPath(filename)] = new WeakReference<Map>(this);
         }
 
         /// <summary>
-        /// Saves a file ready for sharing.  The resulting file will not need your local tile library to be available when loaded
+        /// Saves a file ready for sharing.  The resulting file will not need your local tile library to be available when loaded.
+        /// If this map has references the saved map will not. (the in memory map is unchanged)
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="prune">If true any tileFactory that was explicitly added to the map will be deleted if no tiles reference it</param>
         public void SaveStandalone(string filename, bool prune = true)
         {
             SafeSave(true, prune, filename);
+            // todo: should I add this to the cache?  Not if I don't save the filename
         }
 
         private void SafeSave(bool standalone, bool prune, string filename)
@@ -161,32 +217,22 @@ namespace Astral.Plane
 
         private void Save(bool standalone, bool prune, string filename)
         {
-            /*
-             * <AstralMap ID="">
-             *   <References>
-             *      <Reference path="foo.astral" ID="" />
-             *   </References>
-             *   <TileFactories>
-             *      <TileFactory ID="1234" ImageSource="images/foo.png" Border="0,1,2,3"
-             *   </TileFactories>
-             *   <Tiles>
-             *       <Tile Factory="1234" Position="1,2" ... />
-             *   </Tiles>
-             * </AstralMap>
-             */
-
-            XDocument doc = new XDocument(new XElement("AstralMap"));
-
+            XDocument doc = new XDocument(new XElement("AstralMap", 
+                new XAttribute("TileSizeX", this.TileSizeX), 
+                new XAttribute("TileSizeY", this.TileSizeY)));
+            
             // Serialize the references
             // If this is a standalone map it will contain all of the TileFactories for it's references
             if (!standalone)
             {
-                XElement xRreferences = new XElement("References");
+                XElement xRreferences = new XElement(Map.REFERENCE_COLLECTION);
                 doc.Root.Add(xRreferences);
 
                 foreach (Map m in _references)
                 {
-                    xRreferences.Add(new XElement("Reference", new XAttribute("Source", m._fileName)));
+                    if (string.IsNullOrEmpty(m._fileName)) throw new InvalidOperationException("Cannot save a map with unsaved references");
+                    m.Save(); // For consistency
+                    xRreferences.Add(new XElement(Map.REFERENCE_NODE, new XAttribute("Source", m._fileName)));
                 }
             }
 
@@ -194,7 +240,7 @@ namespace Astral.Plane
             // Since it is "impossible" to add a tile that doesn't have a locateable TileFactory... 
             // we can "safely" write the tiles now and collect the tilefactories that we use
             List<TileFactory> usedTiles = new List<TileFactory>(); // Linear search b/c this should be pretty short.
-            XElement xTiles = new XElement("Tiles");
+            XElement xTiles = new XElement(Map.TILE_COLLECTION);
             doc.Root.Add(xTiles);
             foreach (Tile tile in _tiles)
             {
@@ -221,7 +267,7 @@ namespace Astral.Plane
 
             // Serialize the TileFactories and the associated image bits
             // todo: this logic is a little funky... see how this plays out and maybe change it
-            XElement xTypes = new XElement("TileTypes");
+            XElement xTypes = new XElement(TILEFACTORY_COLLECTION);
             doc.Root.Add(xTypes);
 
             if (standalone)
@@ -243,9 +289,9 @@ namespace Astral.Plane
 
             // Save the xml as AstralManifest.xml
             TryDelete(filename);
-            using (IContainer saveContainer = this.SaveToDirectory ? (IContainer)new FilesystemContainer(filename) : (IContainer)new ZipFileContainer(filename))
+            using (IContainer saveContainer = new ZipFileContainer(filename))
             {
-                XmlWriter writer = XmlWriter.Create(saveContainer.GetFileStream("AstralManifest.xml"), new XmlWriterSettings() { Indent = true });
+                XmlWriter writer = XmlWriter.Create(saveContainer.GetFileStream(MANIFEST_NAME), new XmlWriterSettings() { Indent = true });
                 doc.Save(writer);
                 writer.Close();
 
@@ -259,15 +305,60 @@ namespace Astral.Plane
                     imageStream.Close();
                 }
             }
-
-            _fileName = filename;
         }
 
         private void Load(IContainer file)
         {
+            XDocument doc = XDocument.Load(file.GetFileStream(MANIFEST_NAME, false));
 
+            this.TileSizeX = doc.Root.Attribute("TileSizeX").Parse(Int32.Parse);
+            this.TileSizeY = doc.Root.Attribute("tileSizeY").Parse(Int32.Parse);
             
-            throw new NotImplementedException();
+            // Load references (recursive)
+            XElement references = doc.Root.Element(Map.REFERENCE_COLLECTION);
+            if (references != null)
+            {
+                foreach (XElement r in references.Elements(Map.REFERENCE_NODE))
+                {
+                    string filename = r.Attribute("Source").Value;
+                    if (File.Exists(filename))
+                    {
+                        // Should lazy load maps already in memory
+                        Map refMap = Map.LoadFromFile(filename);
+                        _references.Add(refMap);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException(string.Format("Unresolved reference {0}", filename));
+                    }
+                }
+            }
+
+            // Load TileFactories w/ lazy image load
+            XElement factories = doc.Root.Element(Map.TILEFACTORY_COLLECTION);
+            if (factories != null)
+            {
+                foreach (XElement xfactory in factories.Elements(Map.TILEFACTORY_NODE))
+                {
+                    TileFactory newFactory = TileFactory.FromXML(this, xfactory);
+                    // Not going through AddTileFactory because it forces the image bits to load up.
+                    _tileFactories.Add(newFactory);
+                }
+            }
+
+            // Load Tiles
+            XElement xtiles = doc.Root.Element(Map.TILE_COLLECTION);
+            if (xtiles != null)
+            {
+                foreach (XElement xtile in xtiles.Elements(Map.TILE_NODE))
+                {
+                    string factoryID = xtile.Attribute("Type").Value;
+                    var tileFactory = this.FindTileFactory(factoryID);
+                    Tile newTile = tileFactory.CreateTile();
+                    newTile.LoadFromXML(xtile);
+                    this.AddTile(newTile); // does a check for valid tile factory -- may not be necessary
+                }
+            }
         }
 
         private static void CopyStream(Stream input, Stream output)
@@ -306,18 +397,23 @@ namespace Astral.Plane
 
         private TileFactory FindTileFactory(TileFactory searchFactory)
         {
+            return this.FindTileFactory(searchFactory.TileID);
+        }
+
+        private TileFactory FindTileFactory(string tileID)
+        {
             // todo: Possible performance optimization would be to cache the results of this test ala "dynamic programming"
-            // Once a reference is added it cannot be removed so it is safe to cache
+            // Note: once we implement RemoveTileFactory it is not safe to cache the results
 
             foreach (TileFactory tf in TileFactories)
             {
-                if (tf == searchFactory)
+                if (tf.TileID == tileID)
                     return tf;
             }
 
             foreach (Map refmap in _references)
             {
-                TileFactory match = refmap.FindTileFactory(searchFactory);
+                TileFactory match = refmap.FindTileFactory(tileID);
                 if (match != null) return match;
             }
 
@@ -325,17 +421,20 @@ namespace Astral.Plane
         }
 
 
-        string _fileName;
-        ObservableCollection<TileFactory> _tileFactories = new ObservableCollection<TileFactory>();
-        List<Map> _references = new List<Map>();
-        List<Tile> _tiles = new List<Tile>();
+        private string _fileName;
+        private ObservableCollection<TileFactory> _tileFactories = new ObservableCollection<TileFactory>();
+        private List<Map> _references = new List<Map>();
+        private List<Tile> _tiles = new List<Tile>();
+        private bool _isDirty = true;
 
         private static Dictionary<string, WeakReference<Map>> sLoadedMaps = new Dictionary<string, WeakReference<Map>>();
 
         #endregion
 
-        internal static Stream LoadStream(string _imagePath)
+        internal Stream LoadStream(string _imagePath)
         {
+            if (string.IsNullOrEmpty(this._fileName)) /*Impossible!*/ throw new InvalidOperationException("State invalid.  You cannot delay load an image from a Map which has never been saved.");
+            // Load the zip package
             throw new NotImplementedException();
         }
     }
