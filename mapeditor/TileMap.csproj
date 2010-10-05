@@ -59,9 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="IQuadObject.cs" />
     <Compile Include="MapPane.cs" />
-    <Compile Include="QuadTree.cs" />
     <Compile Include="TileCluster.cs" />
     <Compile Include="TileImportDialog.xaml.cs">
       <DependentUpon>TileImportDialog.xaml</DependentUpon>
