@@ -502,7 +502,6 @@ namespace AstralTest.AstralPlane
             Assert.IsTrue(map2.TileFactories.Count == 1);
 
             Assert.AreEqual(originalLength, map2.TileFactories[0].GetImageStream().Length);
-            
         }
 
         [TestMethod]
