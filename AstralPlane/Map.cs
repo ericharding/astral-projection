@@ -9,6 +9,7 @@ using Astral.Plane.Container;
 using System.Xml;
 using Astral.Plane.Utility;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Astral.Plane
 {
@@ -71,9 +72,12 @@ namespace Astral.Plane
         private Map(string fileName)
         {
             _fileName = fileName;
-            using (IContainer container = new ZipFileContainer(fileName))
+            lock (_fileLock)
             {
-                Load(container);
+                using (IContainer container = new ZipFileContainer(fileName))
+                {
+                    Load(container);
+                }
             }
             _isDirty = false;
         }
@@ -217,10 +221,10 @@ namespace Astral.Plane
 
         private void Save(bool standalone, bool prune, string filename)
         {
-            XDocument doc = new XDocument(new XElement("AstralMap", 
-                new XAttribute("TileSizeX", this.TileSizeX), 
+            XDocument doc = new XDocument(new XElement("AstralMap",
+                new XAttribute("TileSizeX", this.TileSizeX),
                 new XAttribute("TileSizeY", this.TileSizeY)));
-            
+
             // Serialize the references
             // If this is a standalone map it will contain all of the TileFactories for it's references
             if (!standalone)
@@ -288,21 +292,24 @@ namespace Astral.Plane
 
 
             // Save the xml as AstralManifest.xml
-            TryDelete(filename);
-            using (IContainer saveContainer = new ZipFileContainer(filename))
+            lock (_fileLock)
             {
-                XmlWriter writer = XmlWriter.Create(saveContainer.GetFileStream(MANIFEST_NAME), new XmlWriterSettings() { Indent = true });
-                doc.Save(writer);
-                writer.Close();
-
-                // Save images to a sub directory
-                foreach (TileFactory t in usedTiles)
+                TryDelete(filename);
+                using (IContainer saveContainer = new ZipFileContainer(filename))
                 {
-                    Stream saveStream = saveContainer.GetFileStream("images/" + t.TileID);
-                    Stream imageStream = t.GetImageStream();
-                    CopyStream(imageStream, saveStream);
-                    saveStream.Close();
-                    imageStream.Close();
+                    XmlWriter writer = XmlWriter.Create(saveContainer.GetFileStream(MANIFEST_NAME), new XmlWriterSettings() { Indent = true });
+                    doc.Save(writer);
+                    writer.Close();
+
+                    // Save images to a sub directory
+                    foreach (TileFactory t in usedTiles)
+                    {
+                        Stream saveStream = saveContainer.GetFileStream("images/" + t.TileID);
+                        Stream imageStream = t.GetImageStream();
+                        CopyStream(imageStream, saveStream);
+                        saveStream.Close();
+                        imageStream.Close();
+                    }
                 }
             }
         }
@@ -313,7 +320,7 @@ namespace Astral.Plane
 
             this.TileSizeX = doc.Root.Attribute("TileSizeX").Parse(Int32.Parse);
             this.TileSizeY = doc.Root.Attribute("tileSizeY").Parse(Int32.Parse);
-            
+
             // Load references (recursive)
             XElement references = doc.Root.Element(Map.REFERENCE_COLLECTION);
             if (references != null)
@@ -426,16 +433,29 @@ namespace Astral.Plane
         private List<Map> _references = new List<Map>();
         private List<Tile> _tiles = new List<Tile>();
         private bool _isDirty = true;
+        private object _fileLock = new object();
 
         private static Dictionary<string, WeakReference<Map>> sLoadedMaps = new Dictionary<string, WeakReference<Map>>();
 
         #endregion
 
-        internal Stream LoadStream(string _imagePath)
+
+        // !! Caution !!
+        // This function takes a lock on the file and does not release
+        // it until the returned object is disposed!
+        internal IDisposable LoadStream(string imagePath, out Stream imageStream)
         {
             if (string.IsNullOrEmpty(this._fileName)) /*Impossible!*/ throw new InvalidOperationException("State invalid.  You cannot delay load an image from a Map which has never been saved.");
-            // Load the zip package
-            throw new NotImplementedException();
+
+            Monitor.Enter(_fileLock);
+            IContainer zipContainer = new ZipFileContainer(_fileName);
+            imageStream = zipContainer.GetFileStream(imagePath, false);
+
+            return new AnonymousDisposable(() =>
+                {
+                    Monitor.Exit(_fileLock);
+                    zipContainer.Dispose();
+                });
         }
     }
 

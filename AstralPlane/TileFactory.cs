@@ -180,7 +180,6 @@ namespace Astral.Plane
             memStream.Seek(0, SeekOrigin.Begin);
             return memStream;
         }
-        internal bool HasBitmapSource { get { return _bitmapSource != null; } }
 
         #endregion
 
@@ -230,10 +229,13 @@ namespace Astral.Plane
         {
             if (Map == null) throw new InvalidOperationException("Cannot load bitmap from path when not part of a Map");
 
-            Stream s = Map.LoadStream(_imagePath);
-            PngBitmapDecoder decoder = new PngBitmapDecoder(s, BitmapCreateOptions.None, BitmapCacheOption.None);
-            _bitmapSource = decoder.Frames[0];
-            _bitmapSource.Freeze();
+            Stream s;
+            using (Map.LoadStream(_imagePath, out s))
+            {
+                PngBitmapDecoder decoder = new PngBitmapDecoder(s, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                _bitmapSource = decoder.Frames[0];
+                _bitmapSource.Freeze();
+            }
         }
 
         internal XNode ToXML()
