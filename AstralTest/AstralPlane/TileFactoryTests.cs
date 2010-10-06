@@ -17,8 +17,6 @@ namespace AstralTest.AstralPlane
         [TestMethod]
         public void TestHash()
         {
-            
-
             TileFactory redTile1 = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 2, 2);
             TileFactory redTile2 = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 2, 2);
             TileFactory redTile3 = new TileFactory(TestUtility.RedImage, "red", Borders.Empty, 1, 2);
