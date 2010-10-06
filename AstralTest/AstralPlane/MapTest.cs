@@ -399,6 +399,7 @@ namespace AstralTest.AstralPlane
             map.AddTileFactory(tf1);
             map.AddTileFactory(tf2);
             map.AddTile(tile);
+            tile.Note = "Something cool happens here.";
             map.AddTile(tile2);
 
             map.Save(TempFile1);
@@ -413,6 +414,7 @@ namespace AstralTest.AstralPlane
             Assert.IsTrue(map2.TileFactories.Contains(tf1)); // because TileFactory overrides equivalence this is not reference equals
             Assert.IsTrue(map3.TileFactories.Contains(tf2));
             Assert.IsTrue(map2.Tiles.Count() == 2);
+            Assert.IsTrue(map2.Tiles.First().Note == "Something cool happens here.");           
         }
 
         [TestMethod]
