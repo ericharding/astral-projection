@@ -1,6 +1,7 @@
 ﻿<Window x:Class="Astral.Projector.DMScreen"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="clr-namespace:Astral.Projector"
         Title="DMScreen" Height="483" Width="788">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -36,13 +37,7 @@
                 </TransformGroup>
             </TextBlock.RenderTransform>
         </TextBlock>
-        <Rectangle Fill="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.5">
-            <Rectangle.OpacityMask>
-                <DrawingBrush>
-                    
-                </DrawingBrush>
-            </Rectangle.OpacityMask>
-        </Rectangle>
+        <p:AstralScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
         <Border BorderBrush="#111" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Background="Green" VerticalAlignment="top" Height="100" Width="130" BorderThickness="1.9" Opacity="0.7">
             <Grid>

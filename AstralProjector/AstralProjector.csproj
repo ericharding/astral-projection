@@ -61,6 +61,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AstralScreen.cs" />
     <Compile Include="DMScreen.xaml.cs">
       <DependentUpon>DMScreen.xaml</DependentUpon>
     </Compile>
