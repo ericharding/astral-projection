@@ -6,6 +6,7 @@ using System.Windows;
 using System.Xml.Linq;
 using System.Diagnostics;
 using Astral.Plane.Utility;
+using System.Windows.Media.Imaging;
 
 namespace Astral.Plane
 {
@@ -41,6 +42,7 @@ namespace Astral.Plane
         public TileRotation Rotation { get; set; }
         public TileMirror Mirror { get; set; }
         public string Note { get; set; }
+        public BitmapSource Image { get { return this.Factory.Image; } }
    
         internal XNode ToXML()
         {
