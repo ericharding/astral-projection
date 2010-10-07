@@ -65,6 +65,9 @@
     <Compile Include="DMScreen.xaml.cs">
       <DependentUpon>DMScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="InitiativeTracker.xaml.cs">
+      <DependentUpon>InitiativeTracker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -90,6 +93,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="DMScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="InitiativeTracker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
