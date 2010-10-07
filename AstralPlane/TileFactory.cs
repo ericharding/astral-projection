@@ -269,8 +269,12 @@ namespace Astral.Plane
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct Borders : IEquatable<Borders>
+    public class Borders : IEquatable<Borders>
     {
+        private Borders()
+        {
+        }
+
         public Borders(double uniformBorder) : this()
         {
             Left = Top = Right = Bottom = uniformBorder;
@@ -321,6 +325,16 @@ namespace Astral.Plane
         }
 
         #region equality
+
+        public override bool Equals(object other)
+        {
+            return this.Equals(other as Borders);
+        }
+
+        public override int GetHashCode()
+        {
+            return Left.GetHashCode() ^ Right.GetHashCode() ^ Top.GetHashCode() ^ Bottom.GetHashCode();
+        }
 
         public bool Equals(Borders other)
         {
