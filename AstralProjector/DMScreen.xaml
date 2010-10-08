@@ -13,6 +13,7 @@
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
+        
         <Rectangle Grid.Row="1" Grid.ColumnSpan="2">
             <Rectangle.Fill>
                 <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
@@ -28,27 +29,16 @@
         <GridSplitter Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" />
         <GridSplitter Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Style="{StaticResource GridSplitterV}" />
        
-        <Rectangle Fill="Green" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-        <TextBlock FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Text="The Map" RenderTransformOrigin="0.5,0.5">
+        
+        <TextBlock FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Text="The Maph" RenderTransformOrigin="0.5,0.5">
             <TextBlock.RenderTransform>
                 <TransformGroup>
                     <RotateTransform Angle="20" />
-                    <TranslateTransform X="-200" Y="-100" />
                 </TransformGroup>
             </TextBlock.RenderTransform>
         </TextBlock>
-        <p:AstralScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-        <Border BorderBrush="#111" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Background="Green" VerticalAlignment="top" Height="100" Width="130" BorderThickness="1.9" Opacity="0.7">
-            <Grid>
-                <TextBlock Text="The Minimap" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
-                    <TextBlock.RenderTransform>
-                        <RotateTransform Angle="20" />
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-                <Rectangle Width="75" Height="45" Fill="#afff" Margin="39,29,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
-            </Grid>
-        </Border>
+
 
 
         <ListBox Grid.Row="1" Grid.Column="0" Margin="0,5,0,0" Background="Transparent">
@@ -75,7 +65,7 @@
             <CheckBox />
         </WrapPanel>
 
-        
+        <!-- Controls -->
         <StackPanel Grid.Row="1" Grid.Column="1" Margin="5">
             <TextBlock Text="Zoom" />
             <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
@@ -83,6 +73,8 @@
             <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
             <CheckBox Content="Fog of war" IsChecked="True" />
         </StackPanel>
+        
+        <p:InitiativeTracker Grid.Row="0" Grid.Column="1" />
 
     </Grid>
 </Window>
