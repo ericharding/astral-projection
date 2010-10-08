@@ -58,13 +58,13 @@ namespace Astral.Plane
             WeakReference<Map> mapRef = null;
 
             // if the old map is known and the reference is still alive return that
-            if (sLoadedMaps.TryGetValue(fullpath, out mapRef) && mapRef.IsAlive)
+            if (Map.TheMapCache.TryGetValue(fullpath, out mapRef) && mapRef.IsAlive)
             {
                 return mapRef.Target;
             }
 
             Map newMap = new Map(fullpath);
-            sLoadedMaps[fullpath] = new WeakReference<Map>(newMap);
+            Map.TheMapCache[fullpath] = new WeakReference<Map>(newMap);
 
             return newMap;
         }
@@ -190,13 +190,13 @@ namespace Astral.Plane
             // If we used to have a different name clear the reference by that name in the cache
             if (!string.IsNullOrEmpty(_fileName))
             {
-                Map.sLoadedMaps.Remove(_fileName);
+                Map.TheMapCache.Remove(_fileName);
             }
 
             _fileName = filename;
             _isDirty = false;
             // Add to the cache
-            Map.sLoadedMaps[Path.GetFullPath(filename)] = new WeakReference<Map>(this);
+            Map.TheMapCache[Path.GetFullPath(filename)] = new WeakReference<Map>(this);
         }
 
         /// <summary>
@@ -208,18 +208,20 @@ namespace Astral.Plane
         public void SaveStandalone(string filename, bool prune = true)
         {
             SafeSave(true, prune, filename);
-            // todo: should I add this to the cache?  Not if I don't save the filename
+            
+            // Not saving this in the Map cache because it is actually different on disk (Differnet # factories) than it is in memory.
         }
 
         private void SafeSave(bool standalone, bool prune, string filename)
         {
             string tempFile = Path.GetTempFileName();
-            Save(standalone, prune, tempFile);
+            ActuallySave(standalone, prune, tempFile);
             TryDelete(filename);
             File.Move(tempFile, filename);
         }
 
-        private void Save(bool standalone, bool prune, string filename)
+        // All the save overloads end up here.
+        private void ActuallySave(bool standalone, bool prune, string filename)
         {
             XDocument doc = new XDocument(new XElement("AstralMap",
                 new XAttribute("TileSizeX", this.TileSizeX),
@@ -435,7 +437,7 @@ namespace Astral.Plane
         private bool _isDirty = true;
         private object _fileLock = new object();
 
-        private static Dictionary<string, WeakReference<Map>> sLoadedMaps = new Dictionary<string, WeakReference<Map>>();
+        private static Dictionary<string, WeakReference<Map>> TheMapCache = new Dictionary<string, WeakReference<Map>>();
 
         #endregion
 
