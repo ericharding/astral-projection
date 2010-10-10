@@ -3,16 +3,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="PlayerView" Height="306" Width="305">
     <Window.Resources>
-        <Style TargetType="TabControl">
-            
+        <Style TargetType="Expander" x:Key="VerticalExpander">
+            <!--<Setter Property="(Expander.Header).LayoutTransform">
+                <Setter.Value>
+                    <RotateTransform Angle="90" />
+                </Setter.Value>
+            </Setter>-->
         </Style>
     </Window.Resources>
+
     <Grid>
+        <StackPanel Orientation="Vertical">
+            <!--<apc:VisibilityToggleButton BorderBrush="Black" BorderThickness="2" />-->
+            <Expander Header="Test" x:Name="gorramExpander">content</Expander>
+        </StackPanel>
         <StackPanel Orientation="Horizontal">
             <StackPanel.LayoutTransform>
                 <RotateTransform Angle="90" />
             </StackPanel.LayoutTransform>
-            <Expander Header="one" />
+            <Expander Header="one"  />
             <Expander Header="Two" />
             <Expander Header="three" />
         </StackPanel>
