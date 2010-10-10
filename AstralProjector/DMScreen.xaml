@@ -3,33 +3,31 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:p="clr-namespace:Astral.Projector"
         Title="DMScreen" Height="483" Width="788">
-    <Grid>
+    <Window.Resources>
+
+        <LinearGradientBrush x:Key="OrangeCream" StartPoint="0.5,0" EndPoint="0.5,1">
+            <LinearGradientBrush.GradientStops>
+                <GradientStop Offset="0" Color="#fff" />
+                <GradientStop Offset="0.7" Color="#C7D1E3" />
+                <GradientStop Offset="1" Color="#ffff" />
+            </LinearGradientBrush.GradientStops>
+        </LinearGradientBrush>
+
+        <BooleanToVisibilityConverter x:Key="b2v" />
+    </Window.Resources>
+    <Grid Background="{StaticResource Dev10Background}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="2">
-            <Rectangle.Fill>
-                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                    <LinearGradientBrush.GradientStops>
-                        <GradientStop Offset="0" Color="#fff" />
-                        <GradientStop Offset="0.7" Color="Silver" />
-                        <GradientStop Offset="1" Color="#fff" />
-                    </LinearGradientBrush.GradientStops>
-                </LinearGradientBrush>
-            </Rectangle.Fill>
-        </Rectangle>
-        
-        <GridSplitter Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" />
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Style="{StaticResource GridSplitterV}" />
-       
-        
+        <GridSplitter Grid.Row="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" />
+
         <TextBlock FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Text="The Maph" RenderTransformOrigin="0.5,0.5">
             <TextBlock.RenderTransform>
                 <TransformGroup>
@@ -38,43 +36,83 @@
             </TextBlock.RenderTransform>
         </TextBlock>
 
+        <!-- Bottom panel-->
+        <Grid Grid.Row="1" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource OrangeCream}">
+            <ListBox Background="Transparent" >
+                <ListBoxItem>1. Treasure!</ListBoxItem>
+                <ListBoxItem>2. 5 Goblins sitting around a cookfire</ListBoxItem>
+                <ListBoxItem>3. Whent the players enter this area turn on layer 2</ListBoxItem>
+            </ListBox>
+        </Grid>
 
-
-
-        <ListBox Grid.Row="1" Grid.Column="0" Margin="0,5,0,0" Background="Transparent">
-            <ListBoxItem>1. Treasure!</ListBoxItem>
-            <ListBoxItem>2. 5 Goblins sitting around a cookfire</ListBoxItem>
-            <ListBoxItem>3. Whent the players enter this area turn on layer 2</ListBoxItem>
-        </ListBox>
-        
-        <WrapPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40" Grid.Row="1" Margin="2">
-            <WrapPanel.Resources>
-                <Style TargetType="CheckBox">
-                    <Setter Property="Width" Value="10" />
-                    <Setter Property="Height" Value="10" />
+        <!-- Expanders -->
+        <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" x:Name="_expanderCollection" Background="{StaticResource OrangeCream}">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="LayoutTransform">
+                        <Setter.Value>
+                            <RotateTransform Angle="90" />
+                        </Setter.Value>
+                    </Setter>
                 </Style>
-            </WrapPanel.Resources>
-            <TextBlock Text="Layers" />
-            <CheckBox IsChecked="True" />
-            <CheckBox />
-            <CheckBox />
-            <CheckBox />
-            <CheckBox />
-            <CheckBox />
-            <CheckBox />
-            <CheckBox />
-        </WrapPanel>
 
-        <!-- Controls -->
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="5">
+                <Style TargetType="Expander">
+                    <Setter Property="ExpandDirection" Value="Left" />
+                </Style>
+            </StackPanel.Resources>
+
+            <Expander Margin="2" x:Name="_expandCombatMode">
+                <Expander.Header>
+                    <TextBlock Text="Combat Mode" />
+                </Expander.Header>
+            </Expander>
+
+            <!-- Display Settings -->
+            <Expander x:Name="_expandDisplaySettings">
+                <Expander.Header>
+                    <TextBlock Text="Display Settings"  />
+                </Expander.Header>
+            </Expander>
+
+            <Expander x:Name="_expandLayers">
+                <Expander.Header>
+                    <TextBlock Text="Layers"  />
+                </Expander.Header>
+            </Expander>
+        </StackPanel>
+
+        <Grid Visibility="{Binding ElementName=_expandCombatMode, Path=IsExpanded, Converter={StaticResource b2v}}" Grid.Column="1" Grid.RowSpan="2">
+            <p:InitiativeTracker  />
+        </Grid>
+
+        <StackPanel Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandDisplaySettings, Path=IsExpanded, Converter={StaticResource b2v}}" >
             <TextBlock Text="Zoom" />
             <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
             <TextBlock Text="Skew" />
             <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
             <CheckBox Content="Fog of war" IsChecked="True" />
         </StackPanel>
-        
-        <p:InitiativeTracker Grid.Row="0" Grid.Column="1" />
+
+        <Grid Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandLayers, Path=IsExpanded, Converter={StaticResource b2v}}" >
+            <WrapPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40" Grid.Row="1">
+                <WrapPanel.Resources>
+                    <Style TargetType="CheckBox">
+                        <Setter Property="Width" Value="10" />
+                        <Setter Property="Height" Value="10" />
+                    </Style>
+                </WrapPanel.Resources>
+                <TextBlock Text="Layers" />
+                <CheckBox IsChecked="True" />
+                <CheckBox />
+                <CheckBox />
+                <CheckBox />
+                <CheckBox />
+                <CheckBox />
+                <CheckBox />
+                <CheckBox />
+            </WrapPanel>
+        </Grid>
+
 
     </Grid>
 </Window>

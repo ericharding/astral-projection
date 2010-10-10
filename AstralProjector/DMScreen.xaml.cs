@@ -21,6 +21,28 @@ namespace Astral.Projector
         public DMScreen()
         {
             InitializeComponent();
+
+            this.Loaded += new RoutedEventHandler(DMScreen_Loaded);
+        }
+
+        void DMScreen_Loaded(object sender, RoutedEventArgs e)
+        {
+            foreach (var ex in _expanderCollection.Children.OfType<Expander>())
+            {
+                if (ex != null)
+                {
+                    ex.Expanded += new RoutedEventHandler(expander_Expanded);
+                }
+            }
+        }
+
+        void expander_Expanded(object sender, RoutedEventArgs e)
+        {
+            foreach (var ex in _expanderCollection.Children.OfType<Expander>())
+            {
+                if (ex != sender)
+                    ex.IsExpanded = false;
+            }
         }
     }
 }

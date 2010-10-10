@@ -1,31 +1,72 @@
 ﻿<Application x:Class="AstralProjector.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="PlayerView.xaml">
+             StartupUri="DMScreen.xaml">
     <Application.Resources>
+
+        <!-- Visual Studio Colors -->
+        <SolidColorBrush x:Key="VSDarkBlue" Color="#344668" />
+        <SolidColorBrush x:Key="VSMedBlue" Color="#394F73" />
+        <SolidColorBrush x:Key="VSLightBlue" Color="#496696" />
+        <DrawingBrush x:Key="Dev10Background" Viewport="0,0,4,4" TileMode="Tile" ViewportUnits="Absolute">
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="{StaticResource VSDarkBlue}">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="0,0,4,4"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="{StaticResource VSMedBlue}">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="0,0,1,1"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="{StaticResource VSLightBlue}">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="0,1,1,1"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="{StaticResource VSMedBlue}">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="2,2,1,1"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="{StaticResource VSLightBlue}">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="2,3,1,1"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+
+        <!-- Complimentary variations -->
+        <SolidColorBrush x:Key="VSLight_LightTint" Color="#C7D1E3" />
+        <SolidColorBrush x:Key="Compliment_Brown" Color="#967949" />
+
         <Style TargetType="GridSplitter" x:Key="GridSplitterH">
-            <Setter Property="Height" Value="5" />
+            <Setter Property="Height" Value="3" />
             <Setter Property="Background">
                 <Setter.Value>
                     <LinearGradientBrush StartPoint="0.5, 0" EndPoint="0.5, 1">
                         <LinearGradientBrush.GradientStops>
-                            <GradientStop Offset="0" Color="Silver" />
-                            <GradientStop Offset="0.5" Color="#fff" />
-                            <GradientStop Offset="1" Color="Silver" />
+                            <GradientStop Offset="0" Color="Transparent" />
+                            <GradientStop Offset="0.5" Color="#C7D1E3" />
+                            <GradientStop Offset="1" Color="Transparent" />
                         </LinearGradientBrush.GradientStops>
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
         </Style>
         <Style TargetType="GridSplitter" x:Key="GridSplitterV">
-            <Setter Property="Width" Value="5" />
+            <Setter Property="Width" Value="3" />
             <Setter Property="Background">
                 <Setter.Value>
                     <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
                         <LinearGradientBrush.GradientStops>
-                            <GradientStop Offset="0" Color="Silver" />
-                            <GradientStop Offset="0.5" Color="#fff" />
-                            <GradientStop Offset="1" Color="Silver" />
+                            <GradientStop Offset="0" Color="Transparent" />
+                            <GradientStop Offset="0.5" Color="#C7D1E3" />
+                            <GradientStop Offset="1" Color="Transparent" />
                         </LinearGradientBrush.GradientStops>
                     </LinearGradientBrush>
                 </Setter.Value>
