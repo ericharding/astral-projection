@@ -111,6 +111,16 @@
   <ItemGroup>
     <Folder Include="Themes\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AstralPlane\AstralPlane.csproj">
+      <Project>{DA779CA2-6005-4855-9B00-F29929975117}</Project>
+      <Name>AstralPlane</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\mapeditor\TileMap.csproj">
+      <Project>{06AC9780-A7E3-4C8E-8BDD-42EB28392D68}</Project>
+      <Name>TileMap</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
