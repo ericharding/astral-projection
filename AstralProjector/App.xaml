@@ -44,6 +44,14 @@
         <SolidColorBrush x:Key="VSLight_LightTint" Color="#C7D1E3" />
         <SolidColorBrush x:Key="Compliment_Brown" Color="#967949" />
 
+        <LinearGradientBrush x:Key="WhiteAlternativeGradient" StartPoint="0.5,0" EndPoint="0.5,1">
+            <LinearGradientBrush.GradientStops>
+                <GradientStop Offset="0" Color="#fff" />
+                <GradientStop Offset="0.7" Color="#C7D1E3" />
+                <GradientStop Offset="1" Color="#ffff" />
+            </LinearGradientBrush.GradientStops>
+        </LinearGradientBrush>
+
         <Style TargetType="GridSplitter" x:Key="GridSplitterH">
             <Setter Property="Height" Value="3" />
             <Setter Property="Background">

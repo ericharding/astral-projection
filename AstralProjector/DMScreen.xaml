@@ -6,14 +6,6 @@
         Title="DMScreen" Height="483" Width="788">
     <Window.Resources>
 
-        <LinearGradientBrush x:Key="OrangeCream" StartPoint="0.5,0" EndPoint="0.5,1">
-            <LinearGradientBrush.GradientStops>
-                <GradientStop Offset="0" Color="#fff" />
-                <GradientStop Offset="0.7" Color="#C7D1E3" />
-                <GradientStop Offset="1" Color="#ffff" />
-            </LinearGradientBrush.GradientStops>
-        </LinearGradientBrush>
-
         <BooleanToVisibilityConverter x:Key="b2v" />
     </Window.Resources>
     <Grid Background="{StaticResource Dev10Background}">
@@ -23,16 +15,25 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="100"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <GridSplitter Grid.Row="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" />
+        
+        <Menu Grid.Row="0" Grid.ColumnSpan="4">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" />
+            </MenuItem>
+        </Menu>
+        
+        <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" />
 
         
-        
-        <tile:MapPane Background="#25f5"  />
-        <TextBlock FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Text="The Maph" RenderTransformOrigin="0.5,0.5" IsHitTestVisible="False">
+        <!-- The MAP -->
+        <tile:MapPane Background="#0fff" Grid.Row="1" />
+        <TextBlock Grid.Row="1" FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Text="The Maph" RenderTransformOrigin="0.5,0.5" IsHitTestVisible="False">
             <TextBlock.RenderTransform>
                 <TransformGroup>
                     <RotateTransform Angle="20" />
@@ -41,7 +42,7 @@
         </TextBlock>
 
         <!-- Bottom panel-->
-        <Grid Grid.Row="1" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource OrangeCream}">
+        <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
             <ListBox Background="Transparent" >
                 <ListBoxItem>1. Treasure!</ListBoxItem>
                 <ListBoxItem>2. 5 Goblins sitting around a cookfire</ListBoxItem>
@@ -50,7 +51,7 @@
         </Grid>
 
         <!-- Expanders -->
-        <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" x:Name="_expanderCollection" Background="{StaticResource OrangeCream}">
+        <StackPanel Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" x:Name="_expanderCollection" Background="{StaticResource WhiteAlternativeGradient}">
             <StackPanel.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="LayoutTransform">
@@ -65,7 +66,7 @@
                 </Style>
             </StackPanel.Resources>
 
-            <Expander Margin="2" x:Name="_expandCombatMode">
+            <Expander Margin="2" x:Name="_expandCombatMode" IsExpanded="True">
                 <Expander.Header>
                     <TextBlock Text="Combat Mode" />
                 </Expander.Header>
@@ -83,13 +84,21 @@
                     <TextBlock Text="Layers"  />
                 </Expander.Header>
             </Expander>
+            
+            <Expander x:Name="_D20SRD">
+                <Expander.Header>
+                    <TextBlock Text="D20SRD" />
+                </Expander.Header>
+            </Expander>
         </StackPanel>
 
-        <Grid Visibility="{Binding ElementName=_expandCombatMode, Path=IsExpanded, Converter={StaticResource b2v}}" Grid.Column="1" Grid.RowSpan="2">
+        <!-- Combat Mode -->
+        <Grid Visibility="{Binding ElementName=_expandCombatMode, Path=IsExpanded, Converter={StaticResource b2v}}" Grid.Column="1" Grid.RowSpan="2" Grid.Row="1">
             <p:InitiativeTracker  />
         </Grid>
 
-        <StackPanel Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandDisplaySettings, Path=IsExpanded, Converter={StaticResource b2v}}" >
+        <!-- Display Settings -->
+        <StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandDisplaySettings, Path=IsExpanded, Converter={StaticResource b2v}}" >
             <TextBlock Text="Zoom" />
             <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
             <TextBlock Text="Skew" />
@@ -97,7 +106,8 @@
             <CheckBox Content="Fog of war" IsChecked="True" />
         </StackPanel>
 
-        <Grid Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandLayers, Path=IsExpanded, Converter={StaticResource b2v}}" >
+        <!-- Layers -->
+        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandLayers, Path=IsExpanded, Converter={StaticResource b2v}}" >
             <WrapPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40" Grid.Row="1">
                 <WrapPanel.Resources>
                     <Style TargetType="CheckBox">
@@ -117,6 +127,20 @@
             </WrapPanel>
         </Grid>
 
+        <!-- D20 Srd -->
+        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Visibility="{Binding ElementName=_D20SRD, Path=IsExpanded, Converter={StaticResource b2v}}">
+            <WebBrowser Source="http://www.d20srd.org/" />
+        </Grid>
 
+        <!-- Status Bar -->
+        <Grid Grid.Row="3" Grid.ColumnSpan="3">
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="White" />
+                </Style>
+            </Grid.Resources>
+            <Rectangle Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Fill="White" />
+            <TextBlock>Status...</TextBlock>
+        </Grid>
     </Grid>
 </Window>

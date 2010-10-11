@@ -3,46 +3,82 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:i="clr-namespace:Astral.Projector.Initiative"
              mc:Ignorable="d" 
-             d:DesignHeight="301" d:DesignWidth="330">
+             d:DesignHeight="315" d:DesignWidth="299">
+    <UserControl.Resources>
+        <x:Array x:Key="Icons" Type="sys:String">
+            <sys:String>Images/blue.ico</sys:String>
+            <sys:String>Images/gold.ico</sys:String>
+            <sys:String>Images/green.ico</sys:String>
+            <sys:String>Images/purple.ico</sys:String>
+            <sys:String>Images/red.ico</sys:String>
+            <sys:String>Images/redgold.ico</sys:String>
+            <sys:String>Images/silver.ico</sys:String>
+        </x:Array>
+        <DataTemplate x:Key="IconOnlyTemplate">
+            <Image Source="{Binding}" />
+        </DataTemplate>
+
+        <SolidColorBrush x:Key="ControlBackground" Color="#afff" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Background="AliceBlue">
-            <TextBlock VerticalAlignment="Center" Width="85">Joe</TextBlock>
-            <TextBlock VerticalAlignment="Center" Margin="2" TextAlignment="Center" Width="25">12</TextBlock>
-            <TextBlock VerticalAlignment="Center" Margin="2" TextAlignment="Center" Width="35">32hp</TextBlock>
-            <ComboBox x:Name="_cbTeam" SelectedIndex="0" VerticalAlignment="Center" Margin="2">
-                <ComboBoxItem>Team1</ComboBoxItem><!-- use icons -->
-                <ComboBoxItem>Team2</ComboBoxItem>
-            </ComboBox>
-            <Button VerticalAlignment="Center">Add Combatant</Button>
+        <StackPanel Orientation="Horizontal" Background="Transparent">
+            <TextBox VerticalAlignment="Center" Width="85" Background="#afff">Joe</TextBox>
+            <TextBox VerticalAlignment="Center" Margin="2" TextAlignment="Center" Width="25" Background="{StaticResource ControlBackground}">12</TextBox>
+            <TextBox VerticalAlignment="Center" Margin="2" TextAlignment="Center" Width="35" Background="{StaticResource ControlBackground}">32hp</TextBox>
+            <ComboBox x:Name="_cbTeam" SelectedIndex="1" VerticalAlignment="Center" Margin="2" Background="{StaticResource ControlBackground}" 
+                      ItemsSource="{StaticResource Icons}" ItemTemplate="{StaticResource IconOnlyTemplate}" />
+            <Button VerticalAlignment="Center" Margin="1" Background="{StaticResource ControlBackground}">Add</Button>
         </StackPanel>
-        <ListBox Grid.Row="1">
-            <ListBoxItem>Joe - 12</ListBoxItem>
-            <ListBoxItem>Ted - 10</ListBoxItem>
-            <ListBoxItem>Orc - 5</ListBoxItem>
-            <ListBoxItem>Joe - 12</ListBoxItem>
-            <ListBoxItem>Ted - 10</ListBoxItem>
-            <ListBoxItem>Orc - 5</ListBoxItem>
-            <ListBoxItem>Joe - 12</ListBoxItem>
-            <ListBoxItem>Ted - 10</ListBoxItem>
-            <ListBoxItem>Orc - 5</ListBoxItem>
-            <ListBoxItem>Ability Expire: Bull's Strength</ListBoxItem>
-            <ListBoxItem>Joe - 12</ListBoxItem>
-            <ListBoxItem>Ted - 10</ListBoxItem>
-            <ListBoxItem>Orc - 5</ListBoxItem>
+
+        <TextBlock Text="{Binding Path=CurrentTurn, StringFormat=Turn - {0}}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" />
+        <ListBox Grid.Row="1" x:Name="_initiativeList" Background="{StaticResource WhiteAlternativeGradient}" HorizontalContentAlignment="Stretch">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition  />
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Image Source="{Binding TeamImage}" Grid.RowSpan="2" />
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="2" FontWeight="Bold" />
+                        <TextBlock Grid.Column="2" Grid.Row="1"  Margin="0,0,0,5">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}/{1}">
+                                    <Binding Path="CurrentHealth" />
+                                    <Binding Path="MaxHealth" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <i:UnitInitiative Name="Joe" MaxHealth="30" CurrentHealth="30" TeamImage="/Images/gold.ico" />
+            <i:UnitInitiative Name="Stinky" MaxHealth="10" CurrentHealth="9" TeamImage="/Images/green.ico" />
+            <i:UnitInitiative Name="Mr. Red" MaxHealth="30" CurrentHealth="30" TeamImage="/Images/red.ico" />
+
         </ListBox>
-        <StackPanel Orientation="Horizontal" Grid.Row="2" Background="Azure">
-            <Button VerticalAlignment="Center">Clear</Button>
-            <ComboBox VerticalAlignment="Center" Margin="5" SelectedIndex="0">
-                <ComboBoxItem>All Factions</ComboBoxItem>
-                <ComboBoxItem>Team1</ComboBoxItem>
-                <ComboBoxItem>Team2</ComboBoxItem>
-            </ComboBox>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Background="Transparent">
+            <ComboBox VerticalAlignment="Center" Margin="2" SelectedIndex="1" Background="{StaticResource ControlBackground}"
+                      ItemsSource="{StaticResource Icons}" ItemTemplate="{StaticResource IconOnlyTemplate}"/>
+            <Button VerticalAlignment="Center" Margin="2" Background="{StaticResource ControlBackground}">Clear</Button>
+            <Button VerticalAlignment="Center" Margin="2" Background="{StaticResource ControlBackground}" Content="Heal" />
         </StackPanel>
     </Grid>
 </UserControl>

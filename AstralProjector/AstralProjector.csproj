@@ -68,6 +68,7 @@
     <Compile Include="InitiativeTracker.xaml.cs">
       <DependentUpon>InitiativeTracker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Initiative\InitiativeManager.cs" />
     <Compile Include="PlayerView.xaml.cs">
       <DependentUpon>PlayerView.xaml</DependentUpon>
     </Compile>
@@ -120,6 +121,15 @@
       <Project>{06AC9780-A7E3-4C8E-8BDD-42EB28392D68}</Project>
       <Name>TileMap</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\blue.ico" />
+    <Resource Include="Images\gold.ico" />
+    <Resource Include="Images\green.ico" />
+    <Resource Include="Images\purple.ico" />
+    <Resource Include="Images\red.ico" />
+    <Resource Include="Images\redgold.ico" />
+    <Resource Include="Images\silver.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
