@@ -43,6 +43,9 @@ namespace Astral.Plane
         public TileMirror Mirror { get; set; }
         public string Note { get; set; }
         public BitmapSource Image { get { return this.Factory.Image; } }
+        public Borders Borders { get { return this.Factory.Borders; } }
+        public int TilesHorizontal { get { return this.Factory.TilesHorizontal; } }
+        public int TilesVertical { get { return this.Factory.TilesVertical; } }
    
         internal XNode ToXML()
         {
