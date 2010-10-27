@@ -131,6 +131,27 @@
     <Resource Include="Images\redgold.ico" />
     <Resource Include="Images\silver.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\X_Black.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Plus_Orange.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Flag_Blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Flag_Green.png" />
+    <Resource Include="Images\Flag_Purple.png" />
+    <Resource Include="Images\Flag_Red.png" />
+    <Resource Include="Images\Flag_Yellow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\NOT.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\skull.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

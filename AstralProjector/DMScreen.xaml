@@ -33,13 +33,6 @@
         
         <!-- The MAP -->
         <tile:MapPane Background="#0fff" Grid.Row="1" />
-        <TextBlock Grid.Row="1" FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Text="The Maph" RenderTransformOrigin="0.5,0.5" IsHitTestVisible="False">
-            <TextBlock.RenderTransform>
-                <TransformGroup>
-                    <RotateTransform Angle="20" />
-                </TransformGroup>
-            </TextBlock.RenderTransform>
-        </TextBlock>
 
         <!-- Bottom panel-->
         <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
@@ -92,9 +85,9 @@
             </Expander>
         </StackPanel>
 
-        <!-- Combat Mode -->
+        <!-- Combat Initiative tracker -->
         <Grid Visibility="{Binding ElementName=_expandCombatMode, Path=IsExpanded, Converter={StaticResource b2v}}" Grid.Column="1" Grid.RowSpan="2" Grid.Row="1">
-            <p:InitiativeTracker  />
+            <p:InitiativeTracker Width="300" />
         </Grid>
 
         <!-- Display Settings -->
@@ -107,7 +100,7 @@
         </StackPanel>
 
         <!-- Layers -->
-        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandLayers, Path=IsExpanded, Converter={StaticResource b2v}}" >
+        <Grid Grid.Row="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandLayers, Path=IsExpanded, Converter={StaticResource b2v}}" Grid.ColumnSpan="2" >
             <WrapPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40" Grid.Row="1">
                 <WrapPanel.Resources>
                     <Style TargetType="CheckBox">

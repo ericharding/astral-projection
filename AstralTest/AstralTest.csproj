@@ -37,6 +37,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -57,6 +58,7 @@
     <Compile Include="AstralPlane\ContainerTest.cs" />
     <Compile Include="AstralPlane\MapTest.cs" />
     <Compile Include="AstralPlane\TileFactoryTests.cs" />
+    <Compile Include="InitiativeManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\TestUtility.cs" />
   </ItemGroup>
@@ -64,6 +66,14 @@
     <ProjectReference Include="..\AstralPlane\AstralPlane.csproj">
       <Project>{DA779CA2-6005-4855-9B00-F29929975117}</Project>
       <Name>AstralPlane</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AstralProjector\AstralProjector.csproj">
+      <Project>{3E72CCB9-CEF1-416C-B806-BF8614538FD3}</Project>
+      <Name>AstralProjector</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\mapeditor\TileMap.csproj">
+      <Project>{06AC9780-A7E3-4C8E-8BDD-42EB28392D68}</Project>
+      <Name>TileMap</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
