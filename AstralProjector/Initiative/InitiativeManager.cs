@@ -6,6 +6,20 @@ using System.Collections.Specialized;
 
 namespace Astral.Projector.Initiative
 {
+
+    /*
+     * 1 Full turn is 6 seconds.
+     * 
+     * Actions:
+     * Full action - 6 seconds
+     * Standard action - 4 seconds
+     * Move action - 2? seconds
+     * Swift action - 0.5 seconds (or free but limited to 1 per 6 seconds?)
+     * 
+     * Actions page: http://www.d20srd.org/srd/combat/actionsincombat.htm#immediateActions
+     * 
+     */
+
     public class InitiativeManager : IList<InitiativeEvent>, INotifyCollectionChanged
     {
         int _maxFuture;
@@ -109,7 +123,7 @@ namespace Astral.Projector.Initiative
         }
     }
 
-    public abstract class InitiativeEvent : ICloneable
+    public abstract class InitiativeEvent 
     {
         public string Name { get; set; }
         public int Initiative { get; set; }
@@ -121,7 +135,7 @@ namespace Astral.Projector.Initiative
         }
     }
 
-    public class UnitInitiative : InitiativeEvent
+    public class Unit : InitiativeEvent
     {
         public int CurrentHealth { get; set; }
         public int MaxHealth { get; set; }

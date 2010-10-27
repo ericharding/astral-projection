@@ -18,6 +18,14 @@ namespace Astral.Projector
     /// <summary>
     /// Interaction logic for InitiativeTracker.xaml
     /// </summary>
+    /// 
+
+
+    /* todo
+     * 
+     * 1. Add Status effects - disabled / dying
+     * 2. Add Health back on
+     */
     public partial class InitiativeTracker : UserControl
     {
         InitiativeManager _unitInitiative;
@@ -36,8 +44,19 @@ namespace Astral.Projector
                 new UnitInitiative() { Name = "Mr. Stinky", MaxHealth = 30, CurrentHealth = 30, Initiative = 10, TeamImage = "/Images/green.ico" },
                 new UnitInitiative() { Name = "Zombie 2", MaxHealth = 30, CurrentHealth = 30, Initiative = 10, TeamImage = "/Images/green.ico" });
 
+            _initiativeList.Items.Clear();
             _initiativeList.ItemsSource = _unitInitiative;
             this.DataContext = _initiativeList;
+        }
+
+        private void _initiativeList_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void _initiativeList_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+
         }
 
 
