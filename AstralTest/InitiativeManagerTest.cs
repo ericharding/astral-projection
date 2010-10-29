@@ -16,8 +16,7 @@ namespace AstralTest
         [TestMethod()]
         public void InitiativeManagerConstructorTest()
         {
-            int turns = 0; // TODO: Initialize to an appropriate value
-            InitiativeManager target = new InitiativeManager(turns);
+            TurnManager target = new TurnManager();
             Assert.Inconclusive("TODO: Implement code to verify target");
         }
     }

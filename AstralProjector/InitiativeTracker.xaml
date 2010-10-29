@@ -25,8 +25,55 @@
         <DataTemplate x:Key="IconOnlyTemplate">
             <Image Source="{Binding}" Width="16"  Height="16" />
         </DataTemplate>
+        
         <ControlTemplate TargetType="Button" x:Key="NoButton">
-            <ContentPresenter />
+            <Grid>
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#0000" BorderThickness="2" CornerRadius="3" Name="myBorder" Background="#1000" />
+                <ContentPresenter Margin="2,0,2,0" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <BeginStoryboard.Storyboard>
+                                <Storyboard>
+                                    <ColorAnimation To="Black" Duration="0:0:0.5" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="BorderBrush.Color" />
+                                </Storyboard>
+                            </BeginStoryboard.Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <BeginStoryboard.Storyboard>
+                                <Storyboard>
+                                    <ColorAnimation To="Transparent" Duration="0:0:0.9" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="BorderBrush.Color" />
+                                </Storyboard>
+                            </BeginStoryboard.Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <BeginStoryboard.Storyboard>
+                                <Storyboard>
+                                    <ColorAnimation To="Silver" Duration="0:0:0.1" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="Background.Color" />
+                                </Storyboard>
+                            </BeginStoryboard.Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <BeginStoryboard.Storyboard>
+                                <Storyboard>
+                                    <ColorAnimation To="#1000" Duration="0:0:0.3" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="Background.Color" />
+                                </Storyboard>
+                            </BeginStoryboard.Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </ControlTemplate.Triggers>
+            
         </ControlTemplate>
 
         <SolidColorBrush x:Key="ControlBackground" Color="#afff" />
@@ -47,8 +94,8 @@
         <TextBlock Text="{Binding Path=CurrentTurn, StringFormat=Turn - {0}}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" />
         <ListBox Grid.Row="1" x:Name="_initiativeList" Background="{StaticResource WhiteAlternativeGradient}" HorizontalContentAlignment="Stretch"
                  PreviewMouseDown="_initiativeList_PreviewMouseDown" PreviewMouseMove="_initiativeList_PreviewMouseMove">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type i:Actor}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="20" />
@@ -72,12 +119,6 @@
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
-                        <!-- 
-                        Need controls for:
-                            health up/down
-                            skip turn
-                            kill
-                        -->
                         <StackPanel Orientation="Horizontal" Grid.RowSpan="2" Grid.Column="3" >
                             <StackPanel.Resources>
                                 <Style TargetType="TextBlock">
@@ -87,17 +128,19 @@
                                     <Setter Property="Margin" Value="3" />
                                 </Style>
                             </StackPanel.Resources>
-                            
-                            
-                            <Button Template="{StaticResource NoButton}">
-                                <TextBlock Text="Std" Foreground="DarkBlue" />
+
+                            <Button Template="{StaticResource NoButton}" ToolTip="Full - 6 seconds">
+                                <TextBlock Text=" F " Foreground="Firebrick" />
                             </Button>
-                            <Button Template="{StaticResource NoButton}">
-                                <TextBlock Text="Full" Foreground="Firebrick" />
+                            <Button Template="{StaticResource NoButton}" ToolTip="Standard - 4 seconds">
+                                <TextBlock Text=" S " Foreground="DarkBlue" />
                             </Button>
-                            <Button Template="{StaticResource NoButton}">
-                                <!--<Image Source="/Images/Delete" Width="16" Height="16" Margin="2" VerticalAlignment="Center" />-->
-                                <Image  SnapsToDevicePixels="True" Width="16" Height="16" Margin="3" VerticalAlignment="Center">
+                            <Button Template="{StaticResource NoButton}" ToolTip="Minor - 2.5 seconds">
+                                <TextBlock Text=" M " Foreground="Green" />
+                            </Button>
+
+                            <Button Template="{StaticResource NoButton}" ToolTip="Aaarrgghhh...">
+                                <Image  SnapsToDevicePixels="True" Width="16" Height="16" Margin="3,0,3,0" VerticalAlignment="Center">
                                     <Image.Source>
                                         <BitmapImage UriSource="/images/skull.png" DecodePixelHeight="16" DecodePixelWidth="16" />
                                     </Image.Source>
@@ -106,11 +149,11 @@
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
+            </ListBox.Resources>
 
-            <i:UnitInitiative Name="Joe" MaxHealth="30" CurrentHealth="30" TeamImage="/Images/gold.ico" />
-            <i:UnitInitiative Name="Stinky" MaxHealth="10" CurrentHealth="9" TeamImage="/Images/green.ico" />
-            <i:UnitInitiative Name="Mr. Red" MaxHealth="30" CurrentHealth="30" TeamImage="/Images/red.ico" />
+            <i:Actor Name="Joe" MaxHealth="30" CurrentHealth="30" TeamImage="/Images/gold.ico" />
+            <i:Actor Name="Stinky" MaxHealth="10" CurrentHealth="9" TeamImage="/Images/green.ico" />
+            <i:Actor Name="Mr. Red" MaxHealth="30" CurrentHealth="30" TeamImage="/Images/red.ico" />
 
         </ListBox>
         <StackPanel Orientation="Horizontal" Grid.Row="2" Background="Transparent">
