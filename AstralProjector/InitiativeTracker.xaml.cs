@@ -28,7 +28,7 @@ namespace Astral.Projector
      */
     public partial class InitiativeTracker : UserControl
     {
-        InitiativeManager _unitInitiative;
+        TurnManager _unitInitiative;
 
         public InitiativeTracker()
         {
@@ -39,14 +39,7 @@ namespace Astral.Projector
 
         void InitiativeTracker_Loaded(object sender, RoutedEventArgs e)
         {
-            _unitInitiative = new InitiativeManager(5,
-                new UnitInitiative() { Name = "Joe", MaxHealth = 30, CurrentHealth = 30, Initiative = 10, TeamImage = "Images/gold.ico" },
-                new UnitInitiative() { Name = "Mr. Stinky", MaxHealth = 30, CurrentHealth = 30, Initiative = 10, TeamImage = "/Images/green.ico" },
-                new UnitInitiative() { Name = "Zombie 2", MaxHealth = 30, CurrentHealth = 30, Initiative = 10, TeamImage = "/Images/green.ico" });
-
-            _initiativeList.Items.Clear();
-            _initiativeList.ItemsSource = _unitInitiative;
-            this.DataContext = _initiativeList;
+            
         }
 
         private void _initiativeList_PreviewMouseDown(object sender, MouseButtonEventArgs e)

@@ -68,7 +68,8 @@
     <Compile Include="InitiativeTracker.xaml.cs">
       <DependentUpon>InitiativeTracker.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Initiative\InitiativeManager.cs" />
+    <Compile Include="Initiative\InitiativeEvent.cs" />
+    <Compile Include="Initiative\TurnManager.cs" />
     <Compile Include="PlayerView.xaml.cs">
       <DependentUpon>PlayerView.xaml</DependentUpon>
     </Compile>
