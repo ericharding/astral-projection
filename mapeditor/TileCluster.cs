@@ -27,6 +27,7 @@ namespace TileMap
 		{
 			_factory = tf;
 			_tile = tf.CreateTile();
+//			_tile.Rotation = (TileRotation)90;
 			TileSize = tileSize;
 		}
 
@@ -36,10 +37,15 @@ namespace TileMap
 			TileSize = new Size(newWidth, newHeight);
 		}
 
-		private const int LEFTBORDER = 1, TOPBORDER = 2, RIGHTBORDER = 3, BOTTOMBORDER = 4;
-		private double GetBorder(int side)
+		private const int LEFTBORDER = 3, TOPBORDER = 2, RIGHTBORDER = 1, BOTTOMBORDER = 0;
+		private double GetBorder(int side, bool corrected)
 		{
 			// TODO: compensate for flip/rotate here
+			if (corrected)
+			{
+				side += ((int)_tile.Rotation / 90);
+				side %= 4;
+			}
 
 			switch (side)
 			{
@@ -55,18 +61,22 @@ namespace TileMap
 		{
 			Size newSize = new Size();
 
+			double imgWidth = _factory.Image.PixelWidth - GetBorder(LEFTBORDER, false) - GetBorder(RIGHTBORDER, false);
+			double imgHeight = _factory.Image.PixelHeight - GetBorder(TOPBORDER, false) - GetBorder(BOTTOMBORDER, false);
 			double width = _factory.TilesHorizontal * _tileSize.Width;
 			double height = _factory.TilesVertical * _tileSize.Height;
-			double offsetL = (width * GetBorder(LEFTBORDER)) / _factory.Image.PixelWidth;
-			double offsetR = (width * GetBorder(RIGHTBORDER)) / _factory.Image.PixelWidth;
-			double offsetT = (height * GetBorder(TOPBORDER)) / _factory.Image.PixelHeight;
-			double offsetB = (height * GetBorder(BOTTOMBORDER)) / _factory.Image.PixelHeight;
+			double offsetL = (width * GetBorder(LEFTBORDER, false)) / imgWidth;
+			double offsetR = (width * GetBorder(RIGHTBORDER, false)) / imgWidth;
+			double offsetT = (height * GetBorder(TOPBORDER, false)) / imgHeight;
+			double offsetB = (height * GetBorder(BOTTOMBORDER, false)) / imgHeight;
+			double offsetL_c = (width * GetBorder(LEFTBORDER, true)) / imgWidth;
+			double offsetT_c = (height * GetBorder(TOPBORDER, true)) / imgHeight;
 			newSize.Width = width + offsetL + offsetR;
 			newSize.Height = height + offsetT + offsetB;
 
 			_drawSize = newSize;
 
-			_borderOffset = new Vector(offsetL, offsetT);
+			_borderOffset = new Vector(offsetL_c, offsetT_c);
 		}
 
 		private void UpdateBounds()
@@ -80,14 +90,23 @@ namespace TileMap
 
 		public void Draw(DrawingContext dc, Vector offset)
 		{
-			dc.DrawImage(_factory.Image, new Rect(new Point(_bounds.X - offset.X, _bounds.Y - offset.Y), _drawSize));
+			Point where = new Point(_bounds.X - offset.X, _bounds.Y - offset.Y);
+
+			double center = Math.Min(_drawSize.Width / 2, _drawSize.Height / 2);
+			dc.PushTransform(new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center));
+			dc.DrawImage(_factory.Image, new Rect(where, _drawSize));
+			dc.Pop();
 		}
 
 		public void Draw(DrawingContext dc, Point where, double opacity)
 		{
 			where.Offset(-_borderOffset.X, -_borderOffset.Y);
+
+			double center = Math.Min(_drawSize.Width / 2, _drawSize.Height / 2);
+			dc.PushTransform(new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center));
 			dc.PushOpacity(opacity);
 			dc.DrawImage(_factory.Image, new Rect(where, _drawSize));
+			dc.Pop();
 			dc.Pop();
 		}
 	}
