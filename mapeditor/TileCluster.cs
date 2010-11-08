@@ -20,12 +20,10 @@ namespace TileMap
 		private Rect _bounds;
 		private Size _drawSize, _tileSize;
 		private Vector _borderOffset;
-		private TileFactory _factory;
 		private Tile _tile;
 
 		public TileCluster(TileFactory tf, Size tileSize)
 		{
-			_factory = tf;
 			_tile = tf.CreateTile();
 //			_tile.Rotation = (TileRotation)90;
 			TileSize = tileSize;
@@ -49,10 +47,10 @@ namespace TileMap
 
 			switch (side)
 			{
-				case LEFTBORDER: return _factory.Borders.Left;
-				case TOPBORDER: return _factory.Borders.Top;
-				case RIGHTBORDER: return _factory.Borders.Right;
-				case BOTTOMBORDER: return _factory.Borders.Bottom;
+				case LEFTBORDER: return _tile.Borders.Left;
+				case TOPBORDER: return _tile.Borders.Top;
+				case RIGHTBORDER: return _tile.Borders.Right;
+				case BOTTOMBORDER: return _tile.Borders.Bottom;
 				default: return 0;
 			}
 		}
@@ -61,10 +59,10 @@ namespace TileMap
 		{
 			Size newSize = new Size();
 
-			double imgWidth = _factory.Image.PixelWidth - GetBorder(LEFTBORDER, false) - GetBorder(RIGHTBORDER, false);
-			double imgHeight = _factory.Image.PixelHeight - GetBorder(TOPBORDER, false) - GetBorder(BOTTOMBORDER, false);
-			double width = _factory.TilesHorizontal * _tileSize.Width;
-			double height = _factory.TilesVertical * _tileSize.Height;
+			double imgWidth = _tile.Image.PixelWidth - GetBorder(LEFTBORDER, false) - GetBorder(RIGHTBORDER, false);
+			double imgHeight = _tile.Image.PixelHeight - GetBorder(TOPBORDER, false) - GetBorder(BOTTOMBORDER, false);
+			double width = _tile.TilesHorizontal * _tileSize.Width;
+			double height = _tile.TilesVertical * _tileSize.Height;
 			double offsetL = (width * GetBorder(LEFTBORDER, false)) / imgWidth;
 			double offsetR = (width * GetBorder(RIGHTBORDER, false)) / imgWidth;
 			double offsetT = (height * GetBorder(TOPBORDER, false)) / imgHeight;
@@ -94,7 +92,7 @@ namespace TileMap
 
 			double center = Math.Min(_drawSize.Width / 2, _drawSize.Height / 2);
 			dc.PushTransform(new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center));
-			dc.DrawImage(_factory.Image, new Rect(where, _drawSize));
+			dc.DrawImage(_tile.Image, new Rect(where, _drawSize));
 			dc.Pop();
 		}
 
@@ -105,7 +103,7 @@ namespace TileMap
 			double center = Math.Min(_drawSize.Width / 2, _drawSize.Height / 2);
 			dc.PushTransform(new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center));
 			dc.PushOpacity(opacity);
-			dc.DrawImage(_factory.Image, new Rect(where, _drawSize));
+			dc.DrawImage(_tile.Image, new Rect(where, _drawSize));
 			dc.Pop();
 			dc.Pop();
 		}
