@@ -113,9 +113,29 @@ namespace TileMap
 			TileCluster tile = new TileCluster(tf, new Size(_tileWidth, _tileHeight));
 			this.OnTileSizeUpdated += new TileSizeUpdatedDelegate(tile.map_OnTileSizeUpdated);
 			tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
+			tile.Rotation = _tileToPlacePreview.Rotation;
+			tile.Mirror = _tileToPlacePreview.Mirror;
 			_tiles.Insert(tile);
 
 			this.InvalidateVisual();
+		}
+
+		public void RotatePreview(bool clockwise)
+		{
+			if (_tileToPlacePreview != null)
+			{
+				_tileToPlacePreview.RotateTile(clockwise);
+				this.InvalidateVisual();
+			}
+		}
+
+		public void MirrorPreview(bool horizontal)
+		{
+			if (_tileToPlacePreview != null)
+			{
+				_tileToPlacePreview.MirrorTile(horizontal);
+				this.InvalidateVisual();
+			}
 		}
 
 		private void ResizeTiles(int newWidth, int newHeight)

@@ -16,6 +16,8 @@ namespace TileMap
 		public Rect Bounds { get { return _bounds; } }
 		private Size TileSize { set { _tileSize = value; UpdateDrawSize(); UpdateBounds(); } }
 		public Point Position { get { return _tile.Location; } set { _tile.Location = value; UpdateBounds(); } }
+		public TileRotation Rotation { get { return _tile.Rotation; } set { _tile.Rotation = value; } }
+		public TileMirror Mirror { get { return _tile.Mirror; } set { _tile.Mirror = value; } }
 
 		private Rect _bounds;
 		private Size _drawSize, _tileSize;
@@ -41,6 +43,17 @@ namespace TileMap
 			// TODO: compensate for flip/rotate here
 			if (corrected)
 			{
+				if ((_tile.Mirror & TileMirror.Horizontal) == TileMirror.Horizontal)
+				{
+					if (side == LEFTBORDER || side == RIGHTBORDER)
+						side += 2;
+				}
+				if ((_tile.Mirror & TileMirror.Vertical) == TileMirror.Vertical)
+				{
+					if (side == TOPBORDER || side == BOTTOMBORDER)
+						side += 2;
+				}
+
 				side += ((int)_tile.Rotation / 90);
 				side %= 4;
 			}
@@ -86,24 +99,73 @@ namespace TileMap
 				BoundsChanged(this, new EventArgs());
 		}
 
+		public void RotateTile(bool clockwise)
+		{
+			int newRot;
+
+			if (clockwise)
+				newRot = ((int)_tile.Rotation + 90) % 360;
+			else
+			{
+				newRot = (int)_tile.Rotation - 90;
+				newRot = newRot < 0 ? 270 : newRot;
+			}
+
+			_tile.Rotation = (TileRotation) newRot;
+
+			UpdateDrawSize();
+			UpdateBounds();
+		}
+
+		public void MirrorTile(bool horizontal)
+		{
+			if (horizontal)
+				_tile.Mirror ^= TileMirror.Horizontal;
+			else
+				_tile.Mirror ^= TileMirror.Vertical;
+
+			UpdateDrawSize();
+			UpdateBounds();
+		}
+
 		public void Draw(DrawingContext dc, Vector offset)
 		{
+			int mirrorX = 1, mirrorY = 1;
+
+			if ((_tile.Mirror & TileMirror.Horizontal) == TileMirror.Horizontal)
+				mirrorX = -1;
+
+			if ((_tile.Mirror & TileMirror.Vertical) == TileMirror.Vertical)
+				mirrorY = -1;
+
 			Point where = new Point(_bounds.X - offset.X, _bounds.Y - offset.Y);
 
 			double center = Math.Min(_drawSize.Width / 2, _drawSize.Height / 2);
+			dc.PushTransform(new ScaleTransform(mirrorX, mirrorY, where.X + _drawSize.Width / 2, where.Y + _drawSize.Height / 2));
 			dc.PushTransform(new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center));
 			dc.DrawImage(_tile.Image, new Rect(where, _drawSize));
+			dc.Pop();
 			dc.Pop();
 		}
 
 		public void Draw(DrawingContext dc, Point where, double opacity)
 		{
+			int mirrorX = 1, mirrorY = 1;
+
+			if ((_tile.Mirror & TileMirror.Horizontal) == TileMirror.Horizontal)
+				mirrorX = -1;
+
+			if ((_tile.Mirror & TileMirror.Vertical) == TileMirror.Vertical)
+				mirrorY = -1;
+
 			where.Offset(-_borderOffset.X, -_borderOffset.Y);
 
 			double center = Math.Min(_drawSize.Width / 2, _drawSize.Height / 2);
+			dc.PushTransform(new ScaleTransform(mirrorX, mirrorY, where.X + _drawSize.Width / 2, where.Y + _drawSize.Height / 2));
 			dc.PushTransform(new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center));
 			dc.PushOpacity(opacity);
 			dc.DrawImage(_tile.Image, new Rect(where, _drawSize));
+			dc.Pop();
 			dc.Pop();
 			dc.Pop();
 		}
