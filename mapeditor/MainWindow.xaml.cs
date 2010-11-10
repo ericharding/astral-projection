@@ -82,6 +82,18 @@ namespace TileMap
 				case Key.RightShift:
 					mapPane.IsSnapToGrid = false;
 					break;
+				case Key.R:
+					mapPane.RotatePreview(true);
+					break;
+				case Key.L:
+					mapPane.RotatePreview(false);
+					break;
+				case Key.H:
+					mapPane.MirrorPreview(true);
+					break;
+				case Key.V:
+					mapPane.MirrorPreview(false);
+					break;
 			}
 		}
 
