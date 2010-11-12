@@ -46,6 +46,7 @@
     <Compile Include="Container\FilesystemContainer.cs" />
     <Compile Include="Container\IContainer.cs" />
     <Compile Include="Container\ZipFileContainer.cs" />
+    <Compile Include="IMapDisplay.cs" />
     <Compile Include="QuadTree\IQuadObject.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
