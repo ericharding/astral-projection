@@ -27,7 +27,6 @@ namespace TileMap
 		public TileCluster(TileFactory tf, Size tileSize)
 		{
 			_tile = tf.CreateTile();
-//			_tile.Rotation = (TileRotation)90;
 			TileSize = tileSize;
 		}
 
@@ -40,7 +39,6 @@ namespace TileMap
 		private const int LEFTBORDER = 3, TOPBORDER = 2, RIGHTBORDER = 1, BOTTOMBORDER = 0;
 		private double GetBorder(int side, bool corrected)
 		{
-			// TODO: compensate for flip/rotate here
 			if (corrected)
 			{
 				if ((_tile.Mirror & TileMirror.Horizontal) == TileMirror.Horizontal)
@@ -92,6 +90,7 @@ namespace TileMap
 
 		private void UpdateBounds()
 		{
+			// TODO: take rotate/mirror into account here
 			Point realPos = new Point(_tile.Location.X - _borderOffset.X, _tile.Location.Y - _borderOffset.Y);
 			_bounds = new Rect(realPos, _drawSize);
 

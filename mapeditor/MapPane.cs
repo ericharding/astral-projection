@@ -18,19 +18,23 @@ namespace TileMap
 		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); } }
 		public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
 		public bool IsDrawGrid { get { return _drawGrid; } set { _drawGrid = value; this.InvalidateVisual(); } }
+		public bool HasFileName { get { return !string.IsNullOrEmpty(_mapFileName); } }
+		public bool Dirty { get { return _dirty; } }
 		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
 		public delegate void TileSizeUpdatedDelegate(int newWidth, int newHeight);
 		public event TileSizeUpdatedDelegate OnTileSizeUpdated;
 
 		private const long _origin = 0x7FFFFFFF;
 		private Pen _gridPen = new Pen(Brushes.Black, 1);
-		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true, _drawGrid = true;
+		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true, _drawGrid = true, _dirty = false;
 		private Point _mousePos, _mouseHover;
 		private long _offsetX = _origin, _offsetY = _origin;
 		private int _tileWidth = 50, _tileHeight = 50;
+		private string _mapFileName;
 		private TileFactory _tileToPlace;
 		private TileCluster _tileToPlacePreview;
-		private QuadTree<TileCluster> _tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
+		private QuadTree<TileCluster> _tiles;
+		private Map _map;
 
 		public MapPane()
 		{
@@ -45,6 +49,8 @@ namespace TileMap
 			this.MouseEnter += new MouseEventHandler(MapPane_MouseEnter);
 			this.MouseLeftButtonDown += new MouseButtonEventHandler(MapPane_MouseLeftButtonDown);
 			this.MouseLeftButtonUp += new MouseButtonEventHandler(MapPane_MouseLeftButtonUp);
+
+			this.Clear();
 		}
 
 		private void MapPane_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -117,6 +123,8 @@ namespace TileMap
 			tile.Mirror = _tileToPlacePreview.Mirror;
 			_tiles.Insert(tile);
 
+			_dirty = true;
+
 			this.InvalidateVisual();
 		}
 
@@ -153,6 +161,31 @@ namespace TileMap
 				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
 
 			this.InvalidateVisual();
+		}
+
+		public void Clear()
+		{
+			_tiles = null;
+			_map = null;
+			GC.Collect();
+			_tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
+			_map = new Map(_tileWidth, _tileHeight);
+
+			_dirty = false;
+
+			this.InvalidateVisual();
+		}
+
+		public void Save()
+		{
+			this.Save(_mapFileName);
+		}
+
+		public void Save(string fileName)
+		{
+			_map.Save(fileName);
+
+			_dirty = false;
 		}
 
 		private void LoadMap(Map map)

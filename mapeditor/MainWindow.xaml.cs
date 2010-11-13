@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -23,11 +24,14 @@ namespace TileMap
 	public partial class MainWindow : Window
 	{
 		private Map _library = new Map();
-		private const string _libraryFileName = "library.astral";
+		private readonly string _libraryFileName = AppDomain.CurrentDomain.BaseDirectory + "library.astral";
 
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			if (File.Exists(_libraryFileName))
+				_library = Map.LoadFromFile(_libraryFileName);
 
 			viewTiles.ItemsSource = _library.TileFactories;
 		}
@@ -36,7 +40,7 @@ namespace TileMap
 		{
 			OpenFileDialog open = new OpenFileDialog();
 
-			if ((bool) open.ShowDialog())
+			if ((bool) open.ShowDialog(this))
 			{
 				Uri file = new Uri(open.FileName);
 				BitmapImage img = new BitmapImage(file);
@@ -48,6 +52,7 @@ namespace TileMap
 				{
 					TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
 					_library.AddTileFactory(tf);
+					_library.SaveStandalone(_libraryFileName, false);
 				}
 			}
 		}
@@ -72,6 +77,36 @@ namespace TileMap
 
 		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
+			if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+			{
+				switch (e.Key)
+				{
+					case Key.S:
+						menuSaveAs_Click(null, null);
+						break;
+				}
+
+				return;
+			}
+
+			if (Keyboard.Modifiers == ModifierKeys.Control)
+			{
+				switch (e.Key)
+				{
+					case Key.N:
+						menuNew_Click(null, null);
+						break;
+					case Key.O:
+						menuOpen_Click(null, null);
+						break;
+					case Key.S:
+						menuSave_Click(null, null);
+						break;
+				}
+
+				return;
+			}
+
 			switch (e.Key)
 			{
 				case Key.Escape:
@@ -116,6 +151,44 @@ namespace TileMap
 				Zoom(-5);
 		}
 
+		private bool SaveIfNeeded(bool saveAs, bool warn = true)
+		{
+			if (saveAs || mapPane.Dirty)
+			{
+				if (saveAs || !mapPane.HasFileName)
+				{
+					if (warn)
+					{
+						MessageBoxResult result = MessageBox.Show("The map has been changed since the last save.\n\nSave now?", "Save?", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Yes);
+
+						if (result == MessageBoxResult.Cancel)
+							return false;
+						else if (result == MessageBoxResult.No)
+							return true;
+					}
+
+					SaveFileDialog save = new SaveFileDialog();
+
+					if ((bool)save.ShowDialog(this))
+					{
+						mapPane.Save(save.FileName);
+
+						return true;
+					}
+					else
+						return false;
+				}
+				else
+				{
+					mapPane.Save();
+
+					return true;
+				}
+			}
+
+			return true;
+		}
+
 		private void Zoom(int pixels)
 		{
 			if (mapPane.TileWidth + pixels <= 0 || mapPane.TileHeight + pixels <= 0)
@@ -123,6 +196,42 @@ namespace TileMap
 
 			mapPane.TileWidth += pixels;
 			mapPane.TileHeight += pixels;
+		}
+
+		private void menuNew_Click(object sender, RoutedEventArgs e)
+		{
+			if (!SaveIfNeeded(false))
+				return;
+
+			mapPane.Clear();
+		}
+
+		private void menuOpen_Click(object sender, RoutedEventArgs e)
+		{
+			if (!SaveIfNeeded(false))
+				return;
+
+			// load file
+		}
+
+		private void menuSave_Click(object sender, RoutedEventArgs e)
+		{
+			this.SaveIfNeeded(false, false);
+		}
+
+		private void menuSaveAs_Click(object sender, RoutedEventArgs e)
+		{
+			this.SaveIfNeeded(true, false);
+		}
+
+		private void menuExit_Click(object sender, RoutedEventArgs e)
+		{
+			this.Close();
+		}
+
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			e.Cancel = !SaveIfNeeded(false);
 		}
 	}
 }
