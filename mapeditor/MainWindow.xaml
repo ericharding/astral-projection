@@ -2,16 +2,16 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:tilemap="clr-namespace:TileMap"
-        Title="Astral Map" Height="480" Width="640" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseWheel="Window_MouseWheel">
+        Title="Astral Map" Height="480" Width="640" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseWheel="Window_MouseWheel" Closing="Window_Closing">
     <Grid>
 		<DockPanel HorizontalAlignment="Stretch" Name="dockPanel1" VerticalAlignment="Stretch">
 			<Menu Name="menu1" VerticalAlignment="Top" DockPanel.Dock="Top">
-				<MenuItem Header="_File" IsEnabled="False">
-					<MenuItem Header="_New"/>
-					<MenuItem Header="_Open..."/>
-					<MenuItem Header="_Save"/>
-					<MenuItem Header="Save _As..."/>
-					<MenuItem Header="E_xit"/>
+				<MenuItem Header="_File" IsEnabled="True">
+					<MenuItem Header="_New" InputGestureText="Ctrl+N" Name="menuNew" Click="menuNew_Click"/>
+					<MenuItem Header="_Open..." InputGestureText="Ctrl+O" Name="menuOpen" Click="menuOpen_Click"/>
+					<MenuItem Header="_Save" InputGestureText="Ctrl+S" Name="menuSave" Click="menuSave_Click"/>
+					<MenuItem Header="Save _As..." InputGestureText="Ctrl+Shift+S" Name="menuSaveAs" Click="menuSaveAs_Click"/>
+					<MenuItem Header="E_xit" Name="menuExit" Click="menuExit_Click"/>
 				</MenuItem>
 			</Menu>
 			<Grid>
