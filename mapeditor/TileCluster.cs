@@ -31,6 +31,12 @@ namespace TileMap
 			TileSize = tileSize;
 		}
 
+		public TileCluster(Tile tile, Size tileSize)
+		{
+			_tile = tile;
+			TileSize = tileSize;
+		}
+
 		public void map_OnTileSizeUpdated(int newWidth, int newHeight)
 		{
 			_tile.Location = new Point(_tile.Location.X * ((double)newWidth / _tileSize.Width), _tile.Location.Y * ((double)newHeight / _tileSize.Height));
