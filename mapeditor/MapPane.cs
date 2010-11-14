@@ -36,7 +36,7 @@ namespace TileMap
 		private TileFactory _tileToPlace;
 		private TileCluster _tileToPlacePreview;
 		private QuadTree<TileCluster> _tiles;
-		private Map _map;
+		private Map _map, _library;
 
 		public MapPane()
 		{
@@ -118,14 +118,28 @@ namespace TileMap
 			_scrolling = true;
 		}
 
+		public void SetLibrary(Map library)
+		{
+			if (library == null)
+				return;
+
+			_library = library;
+			_map.AddReference(_library);
+		}
+
 		private void PlaceTile(TileFactory tf, Point where, bool relativeToCanvas)
 		{
+			if (_library == null)
+				throw new InvalidOperationException("Use SetLibrary() before PlaceTile()");
+
 			TileCluster tile = new TileCluster(tf, new Size(_tileWidth, _tileHeight));
 			this.OnTileSizeUpdated += new TileSizeUpdatedDelegate(tile.map_OnTileSizeUpdated);
 			tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
 			tile.Rotation = _tileToPlacePreview.Rotation;
 			tile.Mirror = _tileToPlacePreview.Mirror;
 			_tiles.Insert(tile);
+
+			_map.AddTile(tile.Tile);
 
 			_dirty = true;
 
@@ -177,6 +191,9 @@ namespace TileMap
 			_tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
 			_map = new Map(_tileWidth, _tileHeight);
 
+			this.SetLibrary(_library);
+
+			_mapFileName = null;
 			_dirty = false;
 
 			this.InvalidateVisual();
@@ -199,6 +216,7 @@ namespace TileMap
 		{
 			this.Clear();
 			_map = map;
+			_mapFileName = map.FileName;
 
 			// TODO: populate _tiles
 		}
