@@ -236,7 +236,14 @@ namespace TileMap
 				}
 			}
 
-			return new Size(maxX - minX, maxY - minY);
+			try
+			{
+				return new Size(maxX - minX, maxY - minY);
+			}
+			catch
+			{
+				return new Size(0, 0);
+			}
 		}
 
 		private Point CanvasToReal(Point canvasPoint)
