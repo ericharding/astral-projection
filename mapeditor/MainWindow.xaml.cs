@@ -33,6 +33,8 @@ namespace TileMap
 			if (File.Exists(_libraryFileName))
 				_library = Map.LoadFromFile(_libraryFileName);
 
+			mapPane.SetLibrary(_library);
+
 			viewTiles.ItemsSource = _library.TileFactories;
 		}
 

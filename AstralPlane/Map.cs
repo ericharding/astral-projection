@@ -168,6 +168,14 @@ namespace Astral.Plane
             set;
         }
 
+        public string FileName
+        {
+            get
+            {
+                return _fileName;
+            }
+        }
+
         /// <summary>
         /// Save the Map
         /// </summary>
