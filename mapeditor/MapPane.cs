@@ -11,7 +11,7 @@ using Astral.Plane;
 
 namespace TileMap
 {
-	public class MapPane : Canvas
+	public class MapPane : Canvas, IMapDisplay
 	{
 		public int TileWidth { get { return _tileWidth; } set { ResizeTiles(value, _tileHeight); } }
 		public int TileHeight { get { return _tileHeight; } set { ResizeTiles(_tileWidth, value); } }
@@ -21,8 +21,10 @@ namespace TileMap
 		public bool HasFileName { get { return !string.IsNullOrEmpty(_mapFileName); } }
 		public bool Dirty { get { return _dirty; } }
 		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
+		public Size MapDimensions { get { return ComputeMapSize(); } }
 		public delegate void TileSizeUpdatedDelegate(int newWidth, int newHeight);
 		public event TileSizeUpdatedDelegate OnTileSizeUpdated;
+		public event Action<long, long> MapPositionChanged;
 
 		private const long _origin = 0x7FFFFFFF;
 		private Pen _gridPen = new Pen(Brushes.Black, 1);
@@ -96,6 +98,8 @@ namespace TileMap
 				_offsetY += (long) (newPos.Y - _mousePos.Y);
 				_mousePos = newPos;
 
+				MapPositionUpdated();
+
 				this.InvalidateVisual();
 			}
 
@@ -160,6 +164,8 @@ namespace TileMap
 			if (_tileToPlacePreview != null)
 				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
 
+			MapPositionUpdated();
+
 			this.InvalidateVisual();
 		}
 
@@ -183,13 +189,54 @@ namespace TileMap
 
 		public void Save(string fileName)
 		{
+			_mapFileName = fileName;
 			_map.Save(fileName);
 
 			_dirty = false;
 		}
 
-		private void LoadMap(Map map)
+		public void SetMap(Map map)
 		{
+			this.Clear();
+			_map = map;
+
+			// TODO: populate _tiles
+		}
+
+		public void SetMapPosition(long X, long Y)
+		{
+			_offsetX = X;
+			_offsetY = Y;
+
+			MapPositionUpdated();
+
+			this.InvalidateVisual();
+		}
+
+		private void MapPositionUpdated()
+		{
+			if (MapPositionChanged != null)
+				MapPositionChanged(_offsetX, _offsetY);
+		}
+
+		private Size ComputeMapSize()
+		{
+			double minX = long.MaxValue, minY = long.MaxValue, maxX = long.MinValue, maxY = long.MinValue;
+
+			foreach (var node in _tiles.GetAllNodes())
+			{
+				foreach (TileCluster tile in node.Objects)
+				{
+					Rect b = tile.Bounds;
+
+					minX = Math.Min(minX, b.Left);
+					minY = Math.Min(minY, b.Top);
+					maxX = Math.Max(maxX, b.Right);
+					maxY = Math.Max(maxY, b.Bottom);
+				}
+			}
+
+			return new Size(maxX - minX, maxY - minY);
 		}
 
 		private Point CanvasToReal(Point canvasPoint)
