@@ -218,7 +218,12 @@ namespace TileMap
 			_map = map;
 			_mapFileName = map.FileName;
 
-			// TODO: populate _tiles
+			foreach (Tile t in _map.Tiles)
+				_tiles.Insert(new TileCluster(t, new Size(_tileWidth, _tileHeight)));
+
+			_offsetX = _offsetY = _origin;
+
+			this.InvalidateVisual();
 		}
 
 		public void SetMapPosition(long X, long Y)

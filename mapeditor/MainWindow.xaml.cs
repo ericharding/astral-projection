@@ -213,7 +213,16 @@ namespace TileMap
 			if (!SaveIfNeeded(false))
 				return;
 
-			// load file
+			OpenFileDialog open = new OpenFileDialog();
+
+			if ((bool) open.ShowDialog(this))
+			{
+				Map load = Map.LoadFromFile(open.FileName);
+
+				// TODO: sanity check
+
+				mapPane.SetMap(load);
+			}
 		}
 
 		private void menuSave_Click(object sender, RoutedEventArgs e)
