@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace Astral.Plane
 {
-    interface IMapDisplay
+    public interface IMapDisplay
     {
         void SetMap(Map map);
 
