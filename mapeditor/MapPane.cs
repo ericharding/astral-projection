@@ -18,13 +18,13 @@ namespace TileMap
 		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); } }
 		public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
 		public bool IsDrawGrid { get { return _drawGrid; } set { _drawGrid = value; this.InvalidateVisual(); } }
-		public bool HasFileName { get { return !string.IsNullOrEmpty(_mapFileName); } }
-		public bool Dirty { get { return _dirty; } }
+		public string FileName { get { return _mapFileName; } private set { _mapFileName = value; FileInfoUpdated(); } }
+		public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
 		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
 		public Size MapDimensions { get { return ComputeMapSize(); } }
-		public delegate void TileSizeUpdatedDelegate(int newWidth, int newHeight);
-		public event TileSizeUpdatedDelegate OnTileSizeUpdated;
+		public event Action<int, int> OnTileSizeUpdated;
 		public event Action<long, long> MapPositionChanged;
+		public event Action OnFileInfoUpdated;
 
 		private const long _origin = 0x7FFFFFFF;
 		private Pen _gridPen = new Pen(Brushes.Black, 1);
@@ -133,7 +133,7 @@ namespace TileMap
 				throw new InvalidOperationException("Use SetLibrary() before PlaceTile()");
 
 			TileCluster tile = new TileCluster(tf, new Size(_tileWidth, _tileHeight));
-			this.OnTileSizeUpdated += new TileSizeUpdatedDelegate(tile.map_OnTileSizeUpdated);
+			this.OnTileSizeUpdated += new Action<int, int>(tile.map_OnTileSizeUpdated);
 			tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
 			tile.Rotation = _tileToPlacePreview.Rotation;
 			tile.Mirror = _tileToPlacePreview.Mirror;
@@ -141,7 +141,7 @@ namespace TileMap
 
 			_map.AddTile(tile.Tile);
 
-			_dirty = true;
+			this.Dirty = true;
 
 			this.InvalidateVisual();
 		}
@@ -193,8 +193,8 @@ namespace TileMap
 
 			this.SetLibrary(_library);
 
-			_mapFileName = null;
-			_dirty = false;
+			this.FileName = null;
+			this.Dirty = false;
 
 			this.InvalidateVisual();
 		}
@@ -206,17 +206,17 @@ namespace TileMap
 
 		public void Save(string fileName)
 		{
-			_mapFileName = fileName;
+			this.FileName = fileName;
 			_map.Save(fileName);
 
-			_dirty = false;
+			this.Dirty = false;
 		}
 
 		public void SetMap(Map map)
 		{
 			this.Clear();
 			_map = map;
-			_mapFileName = map.FileName;
+			this.FileName = map.FileName;
 
 			foreach (Tile t in _map.Tiles)
 				_tiles.Insert(new TileCluster(t, new Size(_tileWidth, _tileHeight)));
@@ -240,6 +240,12 @@ namespace TileMap
 		{
 			if (MapPositionChanged != null)
 				MapPositionChanged(_offsetX, _offsetY);
+		}
+
+		private void FileInfoUpdated()
+		{
+			if (OnFileInfoUpdated != null)
+				OnFileInfoUpdated();
 		}
 
 		private Size ComputeMapSize()

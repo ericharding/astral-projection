@@ -25,10 +25,14 @@ namespace TileMap
 	{
 		private Map _library = new Map();
 		private readonly string _libraryFileName = AppDomain.CurrentDomain.BaseDirectory + "library.astral";
+		private const string _fileFilter = "Astral Projection files (*.astral)|*.astral|All files (*.*)|*.*";
 
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			mapPane.OnFileInfoUpdated += new Action(this.UpdateTitle);
+			UpdateTitle();
 
 			if (File.Exists(_libraryFileName))
 				_library = Map.LoadFromFile(_libraryFileName);
@@ -157,19 +161,20 @@ namespace TileMap
 		{
 			if (saveAs || mapPane.Dirty)
 			{
-				if (saveAs || !mapPane.HasFileName)
+				if (warn)
 				{
-					if (warn)
-					{
-						MessageBoxResult result = MessageBox.Show("The map has been changed since the last save.\n\nSave now?", "Save?", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Yes);
+					MessageBoxResult result = MessageBox.Show("The map has been changed since the last save.\n\nSave now?", "Save?", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Yes);
 
-						if (result == MessageBoxResult.Cancel)
-							return false;
-						else if (result == MessageBoxResult.No)
-							return true;
-					}
+					if (result == MessageBoxResult.Cancel)
+						return false;
+					else if (result == MessageBoxResult.No)
+						return true;
+				}
 
+				if (saveAs || string.IsNullOrEmpty(mapPane.FileName))
+				{
 					SaveFileDialog save = new SaveFileDialog();
+					save.Filter = _fileFilter;
 
 					if ((bool)save.ShowDialog(this))
 					{
@@ -200,6 +205,11 @@ namespace TileMap
 			mapPane.TileHeight += pixels;
 		}
 
+		private void UpdateTitle()
+		{
+			this.Title = "Astral Map - " + (mapPane.FileName ?? "(no file)") + (mapPane.Dirty ? "*" : "");
+		}
+
 		private void menuNew_Click(object sender, RoutedEventArgs e)
 		{
 			if (!SaveIfNeeded(false))
@@ -214,6 +224,7 @@ namespace TileMap
 				return;
 
 			OpenFileDialog open = new OpenFileDialog();
+			open.Filter = _fileFilter;
 
 			if ((bool) open.ShowDialog(this))
 			{
