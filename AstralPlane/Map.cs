@@ -329,7 +329,7 @@ namespace Astral.Plane
             XDocument doc = XDocument.Load(file.GetFileStream(MANIFEST_NAME, false));
 
             this.TileSizeX = doc.Root.Attribute("TileSizeX").Parse(Int32.Parse);
-            this.TileSizeY = doc.Root.Attribute("tileSizeY").Parse(Int32.Parse);
+            this.TileSizeY = doc.Root.Attribute("TileSizeY").Parse(Int32.Parse);
 
             // Load references (recursive)
             XElement references = doc.Root.Element(Map.REFERENCE_COLLECTION);
