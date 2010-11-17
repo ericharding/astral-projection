@@ -228,6 +228,8 @@ namespace TileMap
 
 			if ((bool) open.ShowDialog(this))
 			{
+				mapPane.Clear();
+
 				Map load = Map.LoadFromFile(open.FileName);
 
 				// TODO: sanity check
