@@ -16,7 +16,7 @@ namespace Astral.Plane
     /*
      * Responsible for loading, saving and holding map tile data
      */
-    public class Map
+    public class Map : IDisposable
     {
 
         #region Strings
@@ -155,7 +155,6 @@ namespace Astral.Plane
             }
         }
 
-
         public int TileSizeX
         {
             get;
@@ -200,7 +199,7 @@ namespace Astral.Plane
             {
                 Map.TheMapCache.Remove(_fileName);
             }
-
+             
             _fileName = filename;
             _isDirty = false;
             // Add to the cache
@@ -218,6 +217,11 @@ namespace Astral.Plane
             SafeSave(true, prune, filename);
             
             // Not saving this in the Map cache because it is actually different on disk (Differnet # factories) than it is in memory.
+        }
+
+        public void Dispose()
+        {
+            EvictFromCache(this);
         }
 
         private void SafeSave(bool standalone, bool prune, string filename)
@@ -405,6 +409,16 @@ namespace Astral.Plane
             catch { }
         }
 
+        private static void EvictFromCache(Map map)
+        {
+            // Evict this map from the cache but do not evict it's references.
+            // Sometimes it's useful to be able to discard changes to a map and reload from disk
+            string fullpath = Path.GetFullPath(map.FileName);
+            if (Map.TheMapCache.ContainsKey(fullpath))
+            {
+                Map.TheMapCache.Remove(fullpath);
+            }
+        }
 
         #endregion
 
