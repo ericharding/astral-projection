@@ -320,7 +320,7 @@ namespace AstralTest.AstralPlane
             string tempFile = TempFile2;
 
             library.Save(tempLibrary);
-            map1.SaveStandalone(tempFile); // Should just have a reference to library and include no images
+            map1.ExportStandalone(tempFile); // Should just have a reference to library and include no images
 
             using (ZipFileContainer file = new ZipFileContainer(tempFile))
             {
@@ -527,7 +527,7 @@ namespace AstralTest.AstralPlane
             map1.RemoveTile(tile);
 
             string tempFile = TempFile1;
-            map1.SaveStandalone(tempFile);
+            map1.ExportStandalone(tempFile);
 
             using (ZipFileContainer file = new ZipFileContainer(tempFile))
             {
@@ -556,7 +556,7 @@ namespace AstralTest.AstralPlane
             map1.AddTileFactory(tf2);
 
             string tempFile = TempFile1;
-            map1.SaveStandalone(tempFile, false);
+            map1.ExportStandalone(tempFile, false);
 
             using (ZipFileContainer file = new ZipFileContainer(tempFile))
             {
@@ -566,6 +566,43 @@ namespace AstralTest.AstralPlane
             }
 
             TestUtility.TryDelete(tempFile);
+        }
+
+        [TestMethod]
+        public void RevertToSaved()
+        {
+            Map map1 = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "Teal is for real!", Borders.Empty, 1, 1);
+            TileFactory tf2 = new TileFactory(TestUtility.TealImage, "lalala I'm not listening", new Borders(5), 1, 2);
+            var tile = tf1.CreateTile();
+            var tile2 = tf2.CreateTile();
+
+            map1.AddTileFactory(tf1);
+            map1.AddTileFactory(tf2);
+            map1.AddTile(tile);
+            map1.AddTile(tile2);
+
+            map1.Save(this.TempFile1);
+
+            Assert.IsTrue(map1.TileFactories.Count == 2);
+            Assert.IsTrue(map1.Tiles.Count() == 2);
+
+            TileFactory tf3 = new TileFactory(TestUtility.RedImage, "Red Image!", Borders.Empty, 1, 2);
+            var tile3 = tf3.CreateTile();
+            var tile4 = tf1.CreateTile();
+            var tile5 = tf2.CreateTile();
+
+            map1.AddTileFactory(tf3);
+            map1.AddTile(tile3);
+            map1.AddTile(tile4);
+            map1.AddTile(tile5);
+
+            Assert.IsTrue(map1.TileFactories.Count == 3);
+            Assert.IsTrue(map1.Tiles.Count() == 5);
+
+            map1.RevertToLastSave();
+            Assert.IsTrue(map1.TileFactories.Count == 2);
+            Assert.IsTrue(map1.Tiles.Count() == 2);
         }
 
         //[TestMethod]

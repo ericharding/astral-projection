@@ -2,32 +2,97 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Data;
+using System.Diagnostics;
 
 namespace Astral.Projector.Initiative
 {
-    public class InitiativeEvent : IComparable
+    public enum Team
     {
-        public string Name { get; set; }
-        public string TeamImage { get; set; }
-        public DateTime NextAction { get; private set; }
+        None,
+        Blue,
+        Gold,
+        Green,
+        Purple,
+        Red,
+        RedGold,
+        Silver,
+        BlueFlag,
+        GreenFlag,
+        PurpleFlag,
+        RedFlag,
+        YellowFlag
+    }
 
-        public IEnumerable<DateTime> NextActions
+    public enum ActionType
+    {
+        FullRound,
+        Standard,
+        Minor,
+        Swift,
+    }
+
+    public abstract class Event : IComparable
+    {
+        private string _name;
+
+        public Event(string name)
         {
-            get
-            {
-                for(int x=0; x<=TurnManager.FUTURE_TURNS; x++)
-                {
-                    yield return NextAction + TimeSpan.FromSeconds(TurnManager.FULLROUND_SECONDS * x);
-                }
-            }
+            _name = name;
+            this.ScheduledAction = InitiativeManager.Now;
         }
+
+        public string Name { get { return _name; } }
+        
+        public DateTime ScheduledAction { get; private set; }
+
+        public void TakeAction(ActionType type)
+        {
+            Debug.Assert(ScheduledAction >= InitiativeManager.Now);
+            if (ScheduledAction <= InitiativeManager.Now)
+            {
+                ScheduledAction = InitiativeManager.Now;
+            }
+
+            ScheduledAction += InitiativeManager.GetActionLength(type);
+        }
+
 
         public int CompareTo(object obj)
         {
-            InitiativeEvent other = obj as InitiativeEvent;
+            Event other = obj as Event;
             if (other == null) return -1;
 
-            return this.NextAction.CompareTo(other.NextAction);
+            return this.ScheduledAction.CompareTo(other.ScheduledAction);
         }
     }
+
+    // Player or monster
+    public class Actor : Event
+    {
+        public Actor(string name, Team team): base(name)
+        {
+            this.Team = team;
+        }
+
+        public Team Team { get; private set; }
+    }
+
+    public class TurnEnding : Event
+    {
+        public TurnEnding(string name)
+            :base(name)
+        {
+            
+        }
+    }
+
+    public class SpellEffect : Event
+    {
+        public SpellEffect(string name)
+            : base(name)
+        {
+        }
+    }
+
 }

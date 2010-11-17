@@ -58,7 +58,7 @@
     <Compile Include="AstralPlane\ContainerTest.cs" />
     <Compile Include="AstralPlane\MapTest.cs" />
     <Compile Include="AstralPlane\TileFactoryTests.cs" />
-    <Compile Include="InitiativeManagerTest.cs" />
+    <Compile Include="AstralProjector\InitiativeManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\TestUtility.cs" />
   </ItemGroup>
@@ -85,7 +85,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="TileMap\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

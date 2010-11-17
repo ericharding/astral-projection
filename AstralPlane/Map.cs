@@ -16,10 +16,11 @@ namespace Astral.Plane
     /*
      * Responsible for loading, saving and holding map tile data
      */
-    public class Map : IDisposable
+    public class Map
     {
-
         #region Strings
+        private const int MAP_VERSION = 1;
+
         private const string MANIFEST_NAME = "AstralManifest.xml";
         private const string TILEFACTORY_COLLECTION = "TileTypes";
         internal const string TILEFACTORY_NODE = "TileType";
@@ -52,8 +53,6 @@ namespace Astral.Plane
         /// <param name="fileName">A file conforming to the AstralMap spec</param>
         public static Map LoadFromFile(string filename)
         {
-            // todo: bug: If map is edited from a different source we cannot reload it
-
             string fullpath = Path.GetFullPath(filename);
             WeakReference<Map> mapRef = null;
 
@@ -93,7 +92,10 @@ namespace Astral.Plane
         /// <param name="includedMap"></param>
         public void AddReference(Map includedMap)
         {
-            _references.Add(includedMap);
+            if (!_references.Contains(includedMap))
+            {
+                _references.Add(includedMap);
+            }
         }
 
         public void AddTileFactory(TileFactory tf)
@@ -212,16 +214,32 @@ namespace Astral.Plane
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="prune">If true any tileFactory that was explicitly added to the map will be deleted if no tiles reference it</param>
-        public void SaveStandalone(string filename, bool prune = true)
+        public void ExportStandalone(string filename, bool prune = true)
         {
             SafeSave(true, prune, filename);
-            
+
+            if (string.IsNullOrEmpty(_fileName))
+            {
+                _fileName = filename;
+            }
             // Not saving this in the Map cache because it is actually different on disk (Differnet # factories) than it is in memory.
         }
 
-        public void Dispose()
+        public void RevertToLastSave()
         {
-            EvictFromCache(this);
+            if (string.IsNullOrEmpty(_fileName)) throw new InvalidOperationException("Cannot revert to file.  This map has not been saved or loaded since it was created.");
+
+            // no-op
+            if (!_isDirty) return;
+
+            lock (_fileLock)
+            {
+                using (IContainer container = new ZipFileContainer(_fileName))
+                {
+                    Load(container);
+                }
+                _isDirty = false;
+            }
         }
 
         private void SafeSave(bool standalone, bool prune, string filename)
@@ -236,6 +254,7 @@ namespace Astral.Plane
         private void ActuallySave(bool standalone, bool prune, string filename)
         {
             XDocument doc = new XDocument(new XElement("AstralMap",
+                new XAttribute("MapVersion", MAP_VERSION),
                 new XAttribute("TileSizeX", this.TileSizeX),
                 new XAttribute("TileSizeY", this.TileSizeY)));
 
@@ -332,11 +351,23 @@ namespace Astral.Plane
         {
             XDocument doc = XDocument.Load(file.GetFileStream(MANIFEST_NAME, false));
 
+            var versionAttribute = doc.Root.Attribute("MapVersion");
+            // Intentionally allowing no map version to pass by and "try" to load
+            if (versionAttribute != null)
+            {
+                int mapVersion = versionAttribute.Parse(Int32.Parse);
+                if (mapVersion < Map.MAP_VERSION)
+                {
+                    throw new Exception("Map file format too old.");
+                }
+            }
+
             this.TileSizeX = doc.Root.Attribute("TileSizeX").Parse(Int32.Parse);
             this.TileSizeY = doc.Root.Attribute("TileSizeY").Parse(Int32.Parse);
 
             // Load references (recursive)
             XElement references = doc.Root.Element(Map.REFERENCE_COLLECTION);
+            _references.Clear();
             if (references != null)
             {
                 foreach (XElement r in references.Elements(Map.REFERENCE_NODE))
@@ -357,6 +388,7 @@ namespace Astral.Plane
 
             // Load TileFactories w/ lazy image load
             XElement factories = doc.Root.Element(Map.TILEFACTORY_COLLECTION);
+            _tileFactories.Clear();
             if (factories != null)
             {
                 foreach (XElement xfactory in factories.Elements(Map.TILEFACTORY_NODE))
@@ -369,6 +401,7 @@ namespace Astral.Plane
 
             // Load Tiles
             XElement xtiles = doc.Root.Element(Map.TILE_COLLECTION);
+            _tiles.Clear();
             if (xtiles != null)
             {
                 foreach (XElement xtile in xtiles.Elements(Map.TILE_NODE))
@@ -407,17 +440,6 @@ namespace Astral.Plane
                 }
             }
             catch { }
-        }
-
-        private static void EvictFromCache(Map map)
-        {
-            // Evict this map from the cache but do not evict it's references.
-            // Sometimes it's useful to be able to discard changes to a map and reload from disk
-            string fullpath = Path.GetFullPath(map.FileName);
-            if (Map.TheMapCache.ContainsKey(fullpath))
-            {
-                Map.TheMapCache.Remove(fullpath);
-            }
         }
 
         #endregion

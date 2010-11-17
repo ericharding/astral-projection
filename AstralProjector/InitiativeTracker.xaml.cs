@@ -28,7 +28,7 @@ namespace Astral.Projector
      */
     public partial class InitiativeTracker : UserControl
     {
-        TurnManager _unitInitiative;
+        InitiativeManager _unitInitiative;
 
         public InitiativeTracker()
         {
@@ -54,5 +54,7 @@ namespace Astral.Projector
 
 
     }
+
+    
 
 }

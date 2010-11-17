@@ -192,9 +192,6 @@ namespace TileMap
 		{
 			_tiles = null;
 
-			if (_map != null && !string.IsNullOrEmpty(_map.FileName))
-				_map.Dispose();
-
 			_map = null;
 			GC.Collect();
 			_tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);

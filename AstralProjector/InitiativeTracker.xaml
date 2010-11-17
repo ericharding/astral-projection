@@ -150,11 +150,6 @@
                     </Grid>
                 </DataTemplate>
             </ListBox.Resources>
-
-            <i:Actor Name="Joe" MaxHealth="30" CurrentHealth="30" TeamImage="/Images/gold.ico" />
-            <i:Actor Name="Stinky" MaxHealth="10" CurrentHealth="9" TeamImage="/Images/green.ico" />
-            <i:Actor Name="Mr. Red" MaxHealth="30" CurrentHealth="30" TeamImage="/Images/red.ico" />
-
         </ListBox>
         <StackPanel Orientation="Horizontal" Grid.Row="2" Background="Transparent">
             <ComboBox VerticalAlignment="Center" Margin="2" SelectedIndex="1" Background="{StaticResource ControlBackground}"
