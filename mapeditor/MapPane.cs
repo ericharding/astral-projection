@@ -178,7 +178,12 @@ namespace TileMap
 			if (_tileToPlacePreview != null)
 				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
 
+			_map.TileSizeX = _tileWidth;
+			_map.TileSizeY = _tileHeight;
+
 			MapPositionUpdated();
+
+			this.Dirty = true;
 
 			this.InvalidateVisual();
 		}
@@ -186,12 +191,21 @@ namespace TileMap
 		public void Clear()
 		{
 			_tiles = null;
+
+			if (_map != null && !string.IsNullOrEmpty(_map.FileName))
+				_map.Dispose();
+
 			_map = null;
 			GC.Collect();
 			_tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
 			_map = new Map(_tileWidth, _tileHeight);
 
 			this.SetLibrary(_library);
+
+			_offsetX = _offsetY = _origin;
+			_tileWidth = _tileHeight = 50;
+
+			MapPositionUpdated();
 
 			this.FileName = null;
 			this.Dirty = false;
@@ -218,10 +232,20 @@ namespace TileMap
 			_map = map;
 			this.FileName = map.FileName;
 
-			foreach (Tile t in _map.Tiles)
-				_tiles.Insert(new TileCluster(t, new Size(_tileWidth, _tileHeight)));
-
 			_offsetX = _offsetY = _origin;
+			_tileWidth = _map.TileSizeX;
+			_tileHeight = _map.TileSizeY;
+
+			MapPositionUpdated();
+
+			foreach (Tile t in _map.Tiles)
+			{
+				TileCluster tc = new TileCluster(t, new Size(_tileWidth, _tileHeight));
+				this.OnTileSizeUpdated += new Action<int, int>(tc.map_OnTileSizeUpdated);
+				_tiles.Insert(tc);
+			}
+
+			this.Dirty = false;
 
 			this.InvalidateVisual();
 		}
