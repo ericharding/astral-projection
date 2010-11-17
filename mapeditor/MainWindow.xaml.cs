@@ -58,7 +58,7 @@ namespace TileMap
 				{
 					TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
 					_library.AddTileFactory(tf);
-					_library.SaveStandalone(_libraryFileName, false);
+                    _library.Save(_libraryFileName);
 				}
 			}
 		}
