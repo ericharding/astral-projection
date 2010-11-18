@@ -605,6 +605,29 @@ namespace AstralTest.AstralPlane
             Assert.IsTrue(map1.Tiles.Count() == 2);
         }
 
+        [TestMethod]
+        public void TileDirtyTest()
+        {
+            Map map1 = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "Teal is for real!", Borders.Empty, 1, 1);
+            TileFactory tf2 = new TileFactory(TestUtility.TealImage, "lalala I'm not listening", new Borders(5), 1, 2);
+            var tile = tf1.CreateTile();
+            var tile2 = tf2.CreateTile();
+
+            map1.AddTileFactory(tf1);
+            map1.AddTileFactory(tf2);
+            map1.AddTile(tile);
+            map1.AddTile(tile2);
+
+            Assert.IsTrue(map1.IsDirty);
+            map1.Save(this.TempFile1);
+
+            Assert.IsFalse(map1.IsDirty);
+
+            tile.Layer = 3;
+            Assert.IsTrue(map1.IsDirty);
+        }
+
         //[TestMethod]
         public void RemoveTileFactorySimple()
         {

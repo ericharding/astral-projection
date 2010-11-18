@@ -51,13 +51,19 @@ namespace Astral.Plane
         /// Loads map data from the specified file
         /// </summary>
         /// <param name="fileName">A file conforming to the AstralMap spec</param>
+        /// 
         public static Map LoadFromFile(string filename)
+        {
+            return LoadFromFile(filename, true);
+        }
+
+        public static Map LoadFromFile(string filename, bool allowCache)
         {
             string fullpath = Path.GetFullPath(filename);
             WeakReference<Map> mapRef = null;
 
             // if the old map is known and the reference is still alive return that
-            if (Map.TheMapCache.TryGetValue(fullpath, out mapRef) && mapRef.IsAlive)
+            if (allowCache && Map.TheMapCache.TryGetValue(fullpath, out mapRef) && mapRef.IsAlive)
             {
                 return mapRef.Target;
             }
@@ -176,6 +182,8 @@ namespace Astral.Plane
                 return _fileName;
             }
         }
+
+        internal bool IsDirty { get { return _isDirty; } set { _isDirty = value; } }
 
         /// <summary>
         /// Save the Map
@@ -376,7 +384,7 @@ namespace Astral.Plane
                     if (File.Exists(filename))
                     {
                         // Should lazy load maps already in memory
-                        Map refMap = Map.LoadFromFile(filename);
+                        Map refMap = Map.LoadFromFile(filename, true);
                         _references.Add(refMap);
                     }
                     else
