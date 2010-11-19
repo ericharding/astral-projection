@@ -22,8 +22,10 @@ namespace TileMap
 		public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
 		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
 		public Size MapDimensions { get { return ComputeMapSize(); } }
+		public Tuple<long, long> MapPosition { get { return Tuple.Create<long, long>(_offsetX, _offsetY); } }
 		public event Action<long, long> MapPositionChanged;
 		public event Action OnFileInfoUpdated;
+		public event Action MapChanged;
 
 		private const long _origin = 0x7FFFFFFF;
 		private Pen _gridPen = new Pen(Brushes.Black, 1);
@@ -205,13 +207,13 @@ namespace TileMap
 			_offsetX = _offsetY = _origin;
 			_tileWidth = _tileHeight = 50;
 
-			MapPositionUpdated();
-
 			if (_tileToPlacePreview != null)
 				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
 
 			this.FileName = null;
 			this.Dirty = false;
+
+			MapUpdated();
 
 			this.InvalidateVisual();
 		}
@@ -236,7 +238,6 @@ namespace TileMap
 
 		public void SetMap(Map map)
 		{
-			// TODO: call the revert function somewhere in here
 			this.Clear();
 			_map = map;
 			this.FileName = map.FileName;
@@ -244,8 +245,6 @@ namespace TileMap
 			_offsetX = _offsetY = _origin;
 			_tileWidth = _map.TileSizeX;
 			_tileHeight = _map.TileSizeY;
-
-			MapPositionUpdated();
 
 			foreach (Tile t in _map.Tiles)
 			{
@@ -257,6 +256,8 @@ namespace TileMap
 				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
 
 			this.Dirty = false;
+
+			MapUpdated();
 
 			this.InvalidateVisual();
 		}
@@ -284,6 +285,12 @@ namespace TileMap
 		{
 			if (OnFileInfoUpdated != null)
 				OnFileInfoUpdated();
+		}
+
+		private void MapUpdated()
+		{
+			if (MapChanged != null)
+				MapChanged();
 		}
 
 		private Size ComputeMapSize()
