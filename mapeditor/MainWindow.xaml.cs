@@ -58,7 +58,7 @@ namespace TileMap
 				{
 					TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
 					_library.AddTileFactory(tf);
-                    _library.Save(_libraryFileName);
+					_library.Save(_libraryFileName);
 				}
 			}
 		}
@@ -228,8 +228,6 @@ namespace TileMap
 
 			if ((bool) open.ShowDialog(this))
 			{
-				mapPane.Clear();
-
 				Map load = Map.LoadFromFile(open.FileName);
 
 				// TODO: sanity check
