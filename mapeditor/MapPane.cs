@@ -207,6 +207,9 @@ namespace TileMap
 
 			MapPositionUpdated();
 
+			if (_tileToPlacePreview != null)
+				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
+
 			this.FileName = null;
 			this.Dirty = false;
 
@@ -224,6 +227,11 @@ namespace TileMap
 			_map.Save(fileName);
 
 			this.Dirty = false;
+		}
+
+		public void Export(string fileName)
+		{
+			_map.ExportStandalone(fileName);
 		}
 
 		public void SetMap(Map map)
@@ -245,6 +253,9 @@ namespace TileMap
 				_tiles.Insert(tc);
 			}
 
+			if (_tileToPlacePreview != null)
+				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
+
 			this.Dirty = false;
 
 			this.InvalidateVisual();
@@ -252,6 +263,9 @@ namespace TileMap
 
 		public void SetMapPosition(long X, long Y)
 		{
+			if (X < 0 || Y < 0)
+				X = Y = _origin;
+
 			_offsetX = X;
 			_offsetY = Y;
 

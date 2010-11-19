@@ -90,6 +90,9 @@ namespace TileMap
 					case Key.S:
 						menuSaveAs_Click(null, null);
 						break;
+					case Key.E:
+						menuExport_Click(null, null);
+						break;
 				}
 
 				return;
@@ -134,6 +137,9 @@ namespace TileMap
 					break;
 				case Key.V:
 					mapPane.MirrorPreview(false);
+					break;
+				case Key.D0:
+					menuGoToOrigin_Click(null, null);
 					break;
 			}
 		}
@@ -246,9 +252,24 @@ namespace TileMap
 			this.SaveIfNeeded(true, false);
 		}
 
+		private void menuExport_Click(object sender, RoutedEventArgs e)
+		{
+			SaveFileDialog save = new SaveFileDialog();
+			save.Filter = _fileFilter;
+			save.Title = "Export";
+
+			if ((bool)save.ShowDialog(this))
+				mapPane.Export(save.FileName);
+		}
+
 		private void menuExit_Click(object sender, RoutedEventArgs e)
 		{
 			this.Close();
+		}
+
+		private void menuGoToOrigin_Click(object sender, RoutedEventArgs e)
+		{
+			mapPane.SetMapPosition(-1, -1);
 		}
 
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

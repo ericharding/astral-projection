@@ -12,7 +12,12 @@
 					<MenuItem Header="_Save" InputGestureText="Ctrl+S" Name="menuSave" Click="menuSave_Click"/>
 					<MenuItem Header="Save _As..." InputGestureText="Ctrl+Shift+S" Name="menuSaveAs" Click="menuSaveAs_Click"/>
 					<Separator/>
+					<MenuItem Header="_Export..." InputGestureText="Ctrl+Shift+E" Name="menuExport" Click="menuExport_Click"/>
+					<Separator/>
 					<MenuItem Header="E_xit" Name="menuExit" Click="menuExit_Click"/>
+				</MenuItem>
+				<MenuItem Header="_View">
+					<MenuItem Header="Go To _Origin" InputGestureText="Zero" Name="menuGoToOrigin" Click="menuGoToOrigin_Click"/>
 				</MenuItem>
 			</Menu>
 			<Grid>
