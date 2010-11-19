@@ -22,7 +22,6 @@ namespace TileMap
 		public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
 		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
 		public Size MapDimensions { get { return ComputeMapSize(); } }
-		public event Action<int, int> OnTileSizeUpdated;
 		public event Action<long, long> MapPositionChanged;
 		public event Action OnFileInfoUpdated;
 
@@ -133,7 +132,6 @@ namespace TileMap
 				throw new InvalidOperationException("Use SetLibrary() before PlaceTile()");
 
 			TileCluster tile = new TileCluster(tf, new Size(_tileWidth, _tileHeight));
-			this.OnTileSizeUpdated += new Action<int, int>(tile.map_OnTileSizeUpdated);
 			tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
 			tile.Rotation = _tileToPlacePreview.Rotation;
 			tile.Mirror = _tileToPlacePreview.Mirror;
@@ -172,8 +170,14 @@ namespace TileMap
 			_tileWidth = newWidth;
 			_tileHeight = newHeight;
 
-			if (OnTileSizeUpdated != null)
-				OnTileSizeUpdated(_tileWidth, _tileHeight);
+			List<TileCluster> temp = new List<TileCluster>();
+
+			foreach (var node in _tiles.GetAllNodes())
+				foreach (TileCluster tile in node.Objects)
+					temp.Add(tile);
+
+			foreach (TileCluster tile in temp)
+				tile.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
 
 			if (_tileToPlacePreview != null)
 				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
@@ -191,7 +195,6 @@ namespace TileMap
 		public void Clear()
 		{
 			_tiles = null;
-
 			_map = null;
 			GC.Collect();
 			_tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
@@ -225,6 +228,7 @@ namespace TileMap
 
 		public void SetMap(Map map)
 		{
+			// TODO: call the revert function somewhere in here
 			this.Clear();
 			_map = map;
 			this.FileName = map.FileName;
@@ -238,7 +242,6 @@ namespace TileMap
 			foreach (Tile t in _map.Tiles)
 			{
 				TileCluster tc = new TileCluster(t, new Size(_tileWidth, _tileHeight));
-				this.OnTileSizeUpdated += new Action<int, int>(tc.map_OnTileSizeUpdated);
 				_tiles.Insert(tc);
 			}
 
