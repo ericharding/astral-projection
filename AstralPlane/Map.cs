@@ -54,7 +54,9 @@ namespace Astral.Plane
         /// 
         public static Map LoadFromFile(string filename)
         {
-            return LoadFromFile(filename, true);
+            Map ret = LoadFromFile(filename, true);
+            ret.RevertToLastSave();
+            return ret;
         }
 
         public static Map LoadFromFile(string filename, bool allowCache)
@@ -163,16 +165,18 @@ namespace Astral.Plane
             }
         }
 
+        private int _tileSizeX;
         public int TileSizeX
         {
-            get;
-            set;
+            get { return _tileSizeX; }
+            set { _tileSizeX = value; _isDirty = true; }
         }
 
+        private int _tileSizeY;
         public int TileSizeY
         {
-            get;
-            set;
+            get { return _tileSizeY; }
+            set { _tileSizeY = value; _isDirty = true; }
         }
 
         public string FileName
@@ -225,11 +229,6 @@ namespace Astral.Plane
         public void ExportStandalone(string filename, bool prune = true)
         {
             SafeSave(true, prune, filename);
-
-            if (string.IsNullOrEmpty(_fileName))
-            {
-                _fileName = filename;
-            }
             // Not saving this in the Map cache because it is actually different on disk (Differnet # factories) than it is in memory.
         }
 

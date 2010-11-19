@@ -12,9 +12,11 @@ namespace AstralTest.Utility
 {
     class TestUtility
     {
-
+        [ThreadStatic]
         private static BitmapSource _red = null;
+        [ThreadStatic]
         private static BitmapSource _mustard = null;
+        [ThreadStatic]
         private static BitmapSource _teal = null;
 
         public static BitmapSource RedImage
