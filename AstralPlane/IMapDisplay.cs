@@ -12,8 +12,12 @@ namespace Astral.Plane
 
         event Action<long, long> MapPositionChanged;
 
+		event Action MapChanged;
+
         void SetMapPosition(long X, long Y);
 
         Size MapDimensions { get; }
+
+		Tuple<long, long> MapPosition { get; }
     }
 }
