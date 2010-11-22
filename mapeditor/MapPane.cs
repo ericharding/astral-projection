@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using CSharpQuadTree;
 using Astral.Plane;
+using System.Collections;
 
 namespace TileMap
 {
@@ -16,6 +17,7 @@ namespace TileMap
 		public int TileWidth { get { return _tileWidth; } set { ResizeTiles(value, _tileHeight); } }
 		public int TileHeight { get { return _tileHeight; } set { ResizeTiles(_tileWidth, value); } }
 		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); } }
+        public int ActivePlacementLayer { get; set; }
 		public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
 		public bool IsDrawGrid { get { return _drawGrid; } set { _drawGrid = value; this.InvalidateVisual(); } }
 		public string FileName { get { return _mapFileName; } private set { _mapFileName = value; FileInfoUpdated(); } }
@@ -23,6 +25,7 @@ namespace TileMap
 		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
 		public Size MapDimensions { get { return ComputeMapSize(); } }
 		public Tuple<long, long> MapPosition { get { return Tuple.Create<long, long>(_offsetX, _offsetY); } }
+        public BitArray LayerMap { get { return _layerMap; } }
 		public event Action<long, long> MapPositionChanged;
 		public event Action OnFileInfoUpdated;
 		public event Action MapChanged;
@@ -38,6 +41,7 @@ namespace TileMap
 		private TileCluster _tileToPlacePreview;
 		private QuadTree<TileCluster> _tiles;
 		private Map _map, _library;
+        private BitArray _layerMap;
 
 		public MapPane()
 		{
@@ -64,7 +68,7 @@ namespace TileMap
 
 				if (_tileToPlace != null)
 				{
-					PlaceTile(_tileToPlace, _snapToGrid ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true);
+					PlaceTile(_tileToPlace, _snapToGrid ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true, this.ActivePlacementLayer);
 				}
 			}
 		}
@@ -128,15 +132,18 @@ namespace TileMap
 			_map.AddReference(_library);
 		}
 
-		private void PlaceTile(TileFactory tf, Point where, bool relativeToCanvas)
+		private void PlaceTile(TileFactory tf, Point where, bool relativeToCanvas, int layer)
 		{
 			if (_library == null)
 				throw new InvalidOperationException("Use SetLibrary() before PlaceTile()");
+
+            ExpandLayerMap(layer);
 
 			TileCluster tile = new TileCluster(tf, new Size(_tileWidth, _tileHeight));
 			tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
 			tile.Rotation = _tileToPlacePreview.Rotation;
 			tile.Mirror = _tileToPlacePreview.Mirror;
+            tile.Layer = layer;
 			_tiles.Insert(tile);
 
 			_map.AddTile(tile.Tile);
@@ -145,6 +152,15 @@ namespace TileMap
 
 			this.InvalidateVisual();
 		}
+
+        private void ExpandLayerMap(int layer)
+        {
+            if (_layerMap.Count+1 < layer)
+            {
+                var oldMap = _layerMap;
+                _layerMap = new BitArray(layer+1, true);
+            }
+        }
 
 		public void RotatePreview(bool clockwise)
 		{
@@ -201,6 +217,7 @@ namespace TileMap
 			GC.Collect();
 			_tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
 			_map = new Map(_tileWidth, _tileHeight);
+            _layerMap = new BitArray(1, true);
 
 			this.SetLibrary(_library);
 
@@ -254,6 +271,8 @@ namespace TileMap
 
 			if (_tileToPlacePreview != null)
 				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
+
+            ExpandLayerMap(_map.Layers);
 
 			this.Dirty = false;
 
@@ -365,9 +384,12 @@ namespace TileMap
 
 			foreach (TileCluster tc in _tiles.Query(new Rect(_origin - _offsetX, _origin - _offsetY, w, h)))
 			{
-				Vector offset = new Vector(_origin - _offsetX, _origin - _offsetY);
+                if (_layerMap[tc.Layer])
+                {
+                    Vector offset = new Vector(_origin - _offsetX, _origin - _offsetY);
 
-				tc.Draw(dc, offset);
+                    tc.Draw(dc, offset);
+                }
 			}
 
 			if (_hoverTile)
