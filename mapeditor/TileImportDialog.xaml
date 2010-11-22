@@ -33,12 +33,12 @@
 				</LinearGradientBrush>
 			</Rectangle.Fill>
 		</Rectangle>
-		<Viewbox Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="5" StretchDirection="Both">
+		<Viewbox Name="viewBoxTile" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="5" StretchDirection="Both">
 			<Grid>
 				<Image Name="imageTile" Stretch="Fill"/>
-				<tilemap:OverlayGrid x:Name="overlayTile"/>
 			</Grid>
 		</Viewbox>
+		<tilemap:OverlayGrid x:Name="overlayTile" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="5" Width="{Binding ElementName=viewBoxTile, Path=ActualWidth}" Height="{Binding ElementName=viewBoxTile, Path=ActualHeight}"/>
 		<Rectangle Grid.Column="2" Grid.Row="5" Height="2" Grid.ColumnSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
 		<Rectangle Grid.Column="5" Grid.Row="2" Width="2" Grid.RowSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
 		<WindowsFormsHost Grid.Column="3" Grid.Row="0" Margin="5">
