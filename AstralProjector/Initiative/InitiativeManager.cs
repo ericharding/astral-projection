@@ -71,7 +71,12 @@ namespace Astral.Projector.Initiative
             }
         }
 
-        public void AddActor(Event actor)
+        public void AddActor(Actor actor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddEffect(SpellEffect bullsStrength)
         {
             throw new NotImplementedException();
         }
