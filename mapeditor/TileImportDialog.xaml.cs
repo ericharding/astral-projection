@@ -31,9 +31,10 @@ namespace TileMap
 		public TileImportDialog(string name, BitmapImage image)
 		{
 			InitializeComponent();
-			RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
 
 			imageTile.Source = image;
+			imageTile.Width = image.PixelWidth;
+			imageTile.Height = image.PixelHeight;
 
 			tbTileName.Text = name.Split('.')[0];
 
@@ -84,7 +85,7 @@ namespace TileMap
 		public OverlayGrid()
 		{
 			this.Background = Brushes.Transparent;
-			_gridPen = new Pen(Brushes.OrangeRed, 2);
+			_gridPen = new Pen(Brushes.OrangeRed, 1.5);
 			_gridPen.DashStyle = DashStyles.Dash;
 		}
 

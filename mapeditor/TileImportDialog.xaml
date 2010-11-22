@@ -35,8 +35,8 @@
 		</Rectangle>
 		<Viewbox Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="5" StretchDirection="Both">
 			<Grid>
-				<Image Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="3" Name="imageTile" Stretch="None"/>
-				<tilemap:OverlayGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="overlayTile"/>
+				<Image Name="imageTile" Stretch="Fill"/>
+				<tilemap:OverlayGrid x:Name="overlayTile"/>
 			</Grid>
 		</Viewbox>
 		<Rectangle Grid.Column="2" Grid.Row="5" Height="2" Grid.ColumnSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
