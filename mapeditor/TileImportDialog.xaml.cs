@@ -40,6 +40,8 @@ namespace TileMap
 
 			tbPixelsHoriz.Text = string.Format("{0}px", image.PixelWidth);
 			tbPixelsVert.Text = string.Format("{0}px", image.PixelHeight);
+
+			overlayTile.ImageSize = new Size(image.PixelWidth, image.PixelHeight);
 		}
 
 		private void Update()
@@ -79,6 +81,7 @@ namespace TileMap
 		public double BorderRight { get; set; }
 		public double BorderBottom { get; set; }
 		public double BorderLeft { get; set; }
+		public Size ImageSize { get; set; }
 
 		private Pen _gridPen;
 
@@ -94,16 +97,19 @@ namespace TileMap
 			base.OnRender(dc);
 
 			double w = this.RenderSize.Width, h = this.RenderSize.Height;
+			double wi = this.ImageSize.Width, hi = this.ImageSize.Height;
 
 			for (int i = 0; i <= TilesHoriz; i++)
 			{
-				double x = (i * ((w - BorderRight - BorderLeft) / TilesHoriz)) + BorderLeft;
+				double x = (i * ((wi - BorderRight - BorderLeft) / TilesHoriz)) + BorderLeft;
+				x *= w / wi;
 				dc.DrawLine(_gridPen, new Point(x, 0), new Point(x, h));
 			}
 
 			for (int i = 0; i <= TilesVert; i++)
 			{
-				double y = (i * ((h - BorderBottom - BorderTop) / TilesVert)) + BorderTop;
+				double y = (i * ((hi - BorderBottom - BorderTop) / TilesVert)) + BorderTop;
+				y *= h / hi;
 				dc.DrawLine(_gridPen, new Point(0, y), new Point(w, y));
 			}
 		}
