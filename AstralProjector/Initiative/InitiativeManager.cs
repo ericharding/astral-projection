@@ -122,5 +122,10 @@ namespace Astral.Projector.Initiative
         {
             throw new NotImplementedException();
         }
+
+        public void Reset()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

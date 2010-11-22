@@ -20,8 +20,6 @@ namespace AstralTest
 
             string[] names = { "Joe", "Stinky", "Orc 1", "Orc 2", "Orc 3" };
 
-            Tuple<string, bool>[] nameFlags = names.Select(s => new Tuple<string, bool>(s, false)).ToArray();
-
             Actor[] actors = {  new Actor("Joe", Team.Gold),
                                 new Actor("Stinky", Team.Gold),
                                 new Actor("Orc 1", Team.Green),
@@ -114,6 +112,16 @@ namespace AstralTest
             VerifyInitiativeState(mgr, "Joe", "Stinky", "Orc 1", "Orc 2", "Turn 2", "Turn 3", "Stun", "Orc 3", "Turn 4", "Turn 5", "Bull's Strength", "Turn 6");
 
             // What happens when Orc3's stun is healed? - drag/drop?
+
+            // End of combat
+            mgr.Clear(Team.Green);
+            VerifyInitiativeState(mgr, "Joe", "Stinky", "Turn 2", "Turn 3", "Stun", "Turn 4", "Turn 5", "Bull's Strength", "Turn 6");
+            
+            // Clear spell effects and reset turn count
+            mgr.Reset();
+            joe.MoveBefore(stinky);
+            VerifyInitiativeState(mgr, "Joe", "Stinky", "Turn 1", "Turn 2", "Turn 3", "Turn 4", "Turn 5", "Turn 6");
+
         }
 
         private void VerifyInitiativeState(InitiativeManager mgr, params string[] args)
