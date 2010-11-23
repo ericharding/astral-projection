@@ -111,12 +111,14 @@ namespace TileMap
 		private void MapPane_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			_scrolling = false;
+			Mouse.Capture(null);
 		}
 
 		private void MapPane_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			_mousePos = e.GetPosition(this);
 			_scrolling = true;
+			Mouse.Capture(this);
 		}
 
 		public void SetLibrary(Map library)

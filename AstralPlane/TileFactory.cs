@@ -163,7 +163,7 @@ namespace Astral.Plane
 
         public override string ToString()
         {
-			return string.Format("{0} ({1}x{2})", _tags, _tilesHoriz, _tilesVert);
+			return string.Format("\u200B{0} ({1}x{2})", _tags, _tilesHoriz, _tilesVert);
         }
 
         #region Internal
