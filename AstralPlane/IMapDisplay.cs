@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Collections;
 
 namespace Astral.Plane
 {
@@ -19,5 +20,7 @@ namespace Astral.Plane
         Size MapDimensions { get; }
 
 		Tuple<long, long> MapPosition { get; }
+
+        BitArray LayerMap { get; }
     }
 }

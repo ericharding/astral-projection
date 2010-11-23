@@ -40,7 +40,16 @@ namespace Astral.Plane
         private Point _location;
         public Point Location { get { return _location; } set { _location = value; Dirty(); } }
         private int _layer;
-        public int Layer { get { return _layer; } set { _layer = value; Dirty(); } }
+        public int Layer
+        {
+            get { return _layer; }
+            set
+            {
+                if (_layer < 0) throw new ArgumentException("Layer must be positive");
+                _layer = value;
+                Dirty();
+            }
+        }
         private TileRotation _rotation;
         public TileRotation Rotation { get { return _rotation; } set { _rotation = value; Dirty(); } }
         private TileMirror _mirror;
@@ -52,7 +61,7 @@ namespace Astral.Plane
         public Borders Borders { get { return this.Factory.Borders; } }
         public int TilesHorizontal { get { return this.Factory.TilesHorizontal; } }
         public int TilesVertical { get { return this.Factory.TilesVertical; } }
-   
+
         internal XNode ToXML()
         {
             return new XElement(Map.TILE_NODE,
@@ -69,7 +78,7 @@ namespace Astral.Plane
             Debug.Assert(this.Factory != null);
 
             this.Location = element.Attribute("Location").Parse(Point.Parse);
-            this.Layer = element.Attribute("Layer").Parse(Int32.Parse);
+            this.Layer = (int)element.Attribute("Layer").Parse(UInt32.Parse);
             this.Rotation = element.Attribute("Rotation").Parse(s => (TileRotation)Enum.Parse(typeof(TileRotation), s));
             this.Mirror = element.Attribute("Mirror").Parse(s => (TileMirror)Enum.Parse(typeof(TileMirror), s));
             this.Note = element.Attribute("Note").Parse(s => s);
@@ -83,6 +92,6 @@ namespace Astral.Plane
                 map.IsDirty = true;
             }
         }
-        
+
     }
 }
