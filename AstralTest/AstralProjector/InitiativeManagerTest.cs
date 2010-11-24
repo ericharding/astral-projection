@@ -6,8 +6,6 @@ using System.Collections.Generic;
 
 namespace AstralTest
 {
-
-
     /// <summary>
     ///This is a test class for InitiativeManagerTest and is intended
     ///to contain all InitiativeManagerTest Unit Tests
@@ -15,17 +13,12 @@ namespace AstralTest
     [TestClass()]
     public class InitiativeManagerTest
     {
-        [Flags]
-        enum FooBar { foo, bar }
-
         [TestMethod()]
         public void InitiativeManagerConstructorTest()
         {
             InitiativeManager mgr = new InitiativeManager();
 
             string[] names = { "Joe", "Stinky", "Orc 1", "Orc 2", "Orc 3" };
-
-            Tuple<string, bool>[] nameFlags = names.Select(s => new Tuple<string, bool>(s, false)).ToArray();
 
             Actor[] actors = {  new Actor("Joe", Team.Gold),
                                 new Actor("Stinky", Team.Gold),
@@ -70,24 +63,73 @@ namespace AstralTest
             mgr.MoveBefore(mgr["Joe"], mgr.Events[0]);
             mgr.MoveAfter(stinky, mgr["joe"]);
             mgr.MoveAfter(orc1, stinky);
+            mgr["Orc 2"].MoveAfter(orc1);
+            joe.MoveBefore(stinky); // no change
 
             Assert.IsTrue(mgr.Events[0] == joe);
             Assert.IsTrue(mgr.Events[1] == stinky);
             Assert.IsTrue(mgr.Events[2] == mgr["Orc 1"]);
             Assert.IsTrue(mgr.Events[turnEnd] is TurnEnding);
 
+            VerifyInitiativeState(mgr, "Joe", "Stinky", "Orc 1", "Orc 2", "Orc 3", "Turn 1");
+
             // Advance the turn
+            DateTime oldNow = InitiativeManager.Now;
+            DateTime nextActionTime = mgr.Events[1].ScheduledAction;
             Event nextGuy = mgr.Next;
             Assert.IsTrue(nextGuy == joe);
             DateTime joeCurrent = joe.ScheduledAction;
             nextGuy.TakeAction(ActionType.FullRound); // joe goes again in 6 seconds
             Assert.IsTrue(joe.ScheduledAction == joeCurrent + InitiativeManager.FullRound);
 
-            // expect turn ending to move forward
+            // Time should have moved forward
+            Assert.IsTrue(oldNow < InitiativeManager.Now);
+            // It should now be time for the next actor to act
+            Assert.IsTrue(InitiativeManager.Now == nextActionTime);
+
+            // expect turn ending event to be 1 space closer (now before Joe)
             turnEnd--;
             Assert.IsTrue(mgr.Events[turnEnd] is TurnEnding);
             Assert.IsTrue(mgr.Events[turnEnd + 1] == joe);
 
+            // Test status effects
+            // Bull's Strength spell lasts 6 seconds 
+            SpellEffect bullsStrength = new SpellEffect("Bull's Strength", TimeSpan.FromSeconds(InitiativeManager.FullRound.TotalSeconds * 6));
+            mgr.AddEffect(bullsStrength);
+
+            VerifyInitiativeState(mgr, "Stinky", "Orc 1", "Orc 2", "Orc 3", "Turn 1", "Joe", "Turn 2", "Turn 3", "Turn 4", "Turn 5", "Bull's Strength", "Turn 6");
+
+            mgr.Next.TakeAction(ActionType.FullRound);
+            mgr.Next.TakeAction(ActionType.FullRound);
+            mgr.Next.TakeAction(ActionType.FullRound);
+            Assert.IsTrue(mgr.Next.Name == "Orc 3");
+            VerifyInitiativeState(mgr, "Orc 3", "Turn 1", "Joe", "Stinky", "Orc 1", "Orc 2", "Turn 2", "Turn 3", "Turn 4", "Turn 5", "Bull's Strength", "Turn 6");
+            
+            // Orc3 is stunned for 3 rounds
+            mgr.AddEffect(new SpellEffect("Stun", TimeSpan.FromSeconds(InitiativeManager.FullRound.TotalSeconds * 3)));
+            mgr["Orc 3"].MoveAfter(mgr["Stun"]);
+
+            VerifyInitiativeState(mgr, "Joe", "Stinky", "Orc 1", "Orc 2", "Turn 2", "Turn 3", "Stun", "Orc 3", "Turn 4", "Turn 5", "Bull's Strength", "Turn 6");
+
+            // What happens when Orc3's stun is healed? - drag/drop?
+
+            // End of combat
+            mgr.Clear(Team.Green);
+            VerifyInitiativeState(mgr, "Joe", "Stinky", "Turn 2", "Turn 3", "Stun", "Turn 4", "Turn 5", "Bull's Strength", "Turn 6");
+            
+            // Clear spell effects and reset turn count
+            mgr.Reset();
+            joe.MoveBefore(stinky);
+            VerifyInitiativeState(mgr, "Joe", "Stinky", "Turn 1", "Turn 2", "Turn 3", "Turn 4", "Turn 5", "Turn 6");
+
+        }
+
+        private void VerifyInitiativeState(InitiativeManager mgr, params string[] args)
+        {
+            for (int x = 0; x < args.Length; x++)
+            {
+                Assert.IsTrue(mgr.Events[x].Name != args[x], "Expected: {0} found {1} at position {2}", args[x], mgr.Events[x].Name, x);
+            }
         }
     }
 }

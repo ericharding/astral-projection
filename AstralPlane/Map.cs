@@ -187,6 +187,17 @@ namespace Astral.Plane
             }
         }
 
+        /// <summary>
+        /// Count of layers used in this map. (Computed on demand)
+        /// </summary>
+        public int Layers
+        {
+            get
+            {
+                return (int)_tiles.Max(t => t.Layer);
+            }
+        }
+
         internal bool IsDirty { get { return _isDirty; } set { _isDirty = value; } }
 
         /// <summary>
@@ -451,7 +462,6 @@ namespace Astral.Plane
 
         #endregion
 
-
         #region private
 
 
@@ -511,5 +521,4 @@ namespace Astral.Plane
                 });
         }
     }
-
 }
