@@ -65,6 +65,16 @@ namespace Astral.Projector.Initiative
 
             return this.ScheduledAction.CompareTo(other.ScheduledAction);
         }
+
+        public void MoveAfter(Event other)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveBefore(Event other)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     // Player or monster
@@ -89,9 +99,12 @@ namespace Astral.Projector.Initiative
 
     public class SpellEffect : Event
     {
-        public SpellEffect(string name)
+        private TimeSpan _duration;
+        
+        public SpellEffect(string name, TimeSpan duration)
             : base(name)
         {
+            _duration = duration;
         }
     }
 
