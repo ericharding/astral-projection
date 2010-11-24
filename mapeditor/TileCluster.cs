@@ -18,6 +18,7 @@ namespace TileMap
 		public Point Position { get { return _tile.Location; } set { _tile.Location = value; UpdateBounds(); } }
 		public TileRotation Rotation { get { return _tile.Rotation; } set { _tile.Rotation = value; } }
 		public TileMirror Mirror { get { return _tile.Mirror; } set { _tile.Mirror = value; } }
+        public int Layer { get { return _tile.Layer; } internal set { _tile.Layer = value; } }
 		internal Tile Tile { get { return _tile; } }
 
 		private Rect _bounds;
