@@ -161,11 +161,6 @@ namespace Astral.Plane
             get { return _tilesVert; }
         }
 
-        public override string ToString()
-        {
-			return string.Format("\u200B{0} ({1}x{2})", _tags, _tilesHoriz, _tilesVert);
-        }
-
         #region Internal
 
         internal Stream GetImageStream()

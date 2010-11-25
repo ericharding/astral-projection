@@ -24,7 +24,8 @@ namespace TileMap
 		public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
 		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
 		public Size MapDimensions { get { return ComputeMapSize(); } }
-		public Tuple<long, long> MapPosition { get { return Tuple.Create<long, long>(_offsetX, _offsetY); } }
+        public long MapPositionX { get { return _offsetX; } }
+        public long MapPositionY { get { return _offsetY; } }
 		public BitArray LayerMap { get { return _layerMap; } }
 		public event Action<long, long> MapPositionChanged;
 		public event Action OnFileInfoUpdated;
@@ -260,6 +261,7 @@ namespace TileMap
 			_map = map;
 			this.FileName = map.FileName;
 
+            ExpandLayerMap(_map.Layers);
 			_offsetX = _offsetY = _origin;
 			_tileWidth = _map.TileSizeX;
 			_tileHeight = _map.TileSizeY;
@@ -272,8 +274,6 @@ namespace TileMap
 
 			if (_tileToPlacePreview != null)
 				_tileToPlacePreview.map_OnTileSizeUpdated(_tileWidth, _tileHeight);
-
-			ExpandLayerMap(_map.Layers);
 
 			this.Dirty = false;
 
