@@ -54,6 +54,7 @@
     <Compile Include="Tile.cs" />
     <Compile Include="TileFactory.cs" />
     <Compile Include="Utility\AnonymousDisposable.cs" />
+    <Compile Include="Utility\NativeMethods.cs" />
     <Compile Include="Utility\WeakReference.cs" />
     <Compile Include="Utility\XAttributeExtensions.cs" />
   </ItemGroup>

@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using Astral.Plane;
 
 namespace Astral.Projector
 {
@@ -23,23 +24,14 @@ namespace Astral.Projector
         {
             InitializeComponent();
 
-            this.Loaded += Expander_Loaded;
+            this.Loaded += new RoutedEventHandler(PlayerView_Loaded);
         }
 
-        private void Expander_Expanded(object sender, RoutedEventArgs e)
+        void PlayerView_Loaded(object sender, RoutedEventArgs e)
         {
-
+            Map map = Map.LoadFromFile(@"C:\Users\Eric\Documents\TestMap_export.astral");
+            _dmMapView.SetMap(map);
         }
 
-        private void Expander_Collapsed(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Expander_Loaded(object sender, RoutedEventArgs e)
-        {
-
-
-        }
     }
 }

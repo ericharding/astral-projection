@@ -10,6 +10,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.Win32;
+using Astral.Plane;
 
 namespace Astral.Projector
 {
@@ -18,11 +20,15 @@ namespace Astral.Projector
     /// </summary>
     public partial class DMScreen : Window
     {
+        private IMapDisplay _map;
+
         public DMScreen()
         {
             InitializeComponent();
 
             this.Loaded += new RoutedEventHandler(DMScreen_Loaded);
+            _map = (IMapDisplay)this.FindName("_dmMapView");
+            
         }
 
         void DMScreen_Loaded(object sender, RoutedEventArgs e)
@@ -42,6 +48,21 @@ namespace Astral.Projector
             {
                 if (ex != sender)
                     ex.IsExpanded = false;
+            }
+        }
+
+        private void MenuOpen_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Astral Maps|*.astral";
+            ofd.CheckFileExists = true;
+
+            if (ofd.ShowDialog() == true)
+            {
+                Map map = Map.LoadFromFile(ofd.FileName);
+                _map.SetMap(map);
+
+                var dims = _map.MapDimensions;
             }
         }
     }

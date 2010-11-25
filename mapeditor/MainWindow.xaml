@@ -42,8 +42,16 @@
 											<MenuItem Header="Delete" Click="MenuItemDeleteImportedTile_Click"/>
 										</ContextMenu>
 									</StackPanel.ContextMenu>
-									<TextBlock Text="{Binding}"/>
-									<Image MaxHeight="125" MaxWidth="125" Source="{Binding Path=Image}"/>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} ({1},{2})">
+                                                <Binding Path="Tags[0]" />
+                                                <Binding Path="TilesHorizontal" />
+                                                <Binding Path="TilesVertical" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <Image MaxHeight="125" MaxWidth="125" Source="{Binding Path=Image}"/>
 								</StackPanel>
 							</DataTemplate>
 						</ListView.ItemTemplate>

@@ -5,7 +5,6 @@
         xmlns:tile="clr-namespace:TileMap;assembly=AstralMap"
         Title="DMScreen" Height="483" Width="788">
     <Window.Resources>
-
         <BooleanToVisibilityConverter x:Key="b2v" />
     </Window.Resources>
     <Grid Background="{StaticResource Dev10Background}">
@@ -24,7 +23,7 @@
         
         <Menu Grid.Row="0" Grid.ColumnSpan="4">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" />
+                <MenuItem Header="_Open" Click="MenuOpen_Click" />
             </MenuItem>
         </Menu>
         
@@ -32,7 +31,8 @@
 
         
         <!-- The MAP -->
-        <tile:MapPane Background="#0fff" Grid.Row="1" />
+        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" />
+        <!--<p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1"  />-->
 
         <!-- Bottom panel-->
         <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
@@ -92,11 +92,13 @@
 
         <!-- Display Settings -->
         <StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandDisplaySettings, Path=IsExpanded, Converter={StaticResource b2v}}" >
+            <CheckBox Content="Show Map" IsChecked="False" />
             <TextBlock Text="Zoom" />
             <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
             <TextBlock Text="Skew" />
             <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
             <CheckBox Content="Fog of war" IsChecked="True" />
+            
         </StackPanel>
 
         <!-- Layers -->

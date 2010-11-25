@@ -66,6 +66,7 @@
     <Compile Include="DMScreen.xaml.cs">
       <DependentUpon>DMScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FogOfWar.cs" />
     <Compile Include="InitiativeTracker.xaml.cs">
       <DependentUpon>InitiativeTracker.xaml</DependentUpon>
     </Compile>
@@ -110,10 +111,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Themes\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\AstralPlane\AstralPlane.csproj">
       <Project>{DA779CA2-6005-4855-9B00-F29929975117}</Project>
