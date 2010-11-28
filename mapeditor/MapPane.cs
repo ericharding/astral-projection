@@ -23,7 +23,7 @@ namespace TileMap
 		public string FileName { get { return _mapFileName; } private set { _mapFileName = value; FileInfoUpdated(); } }
 		public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
 		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
-		public Size MapDimensions { get { return ComputeMapSize(); } }
+		public Rect MapBounds { get { return ComputeMapSize(); } }
         public long MapPositionX { get { return _offsetX; } }
         public long MapPositionY { get { return _offsetY; } }
 		public BitArray LayerMap { get { return _layerMap; } }
@@ -158,7 +158,7 @@ namespace TileMap
 
 		private void ExpandLayerMap(int layer)
 		{
-			if (_layerMap.Count+1 < layer)
+			if (_layerMap.Count < layer+1)
 			{
 				_layerMap = new BitArray(layer+1, true);
 			}
@@ -313,7 +313,7 @@ namespace TileMap
 				MapChanged();
 		}
 
-		private Size ComputeMapSize()
+		private Rect ComputeMapSize()
 		{
 			double minX = long.MaxValue, minY = long.MaxValue, maxX = long.MinValue, maxY = long.MinValue;
 
@@ -332,11 +332,11 @@ namespace TileMap
 
 			try
 			{
-				return new Size(maxX - minX, maxY - minY);
+                return new Rect(minX, minY, maxX - minX, maxY - minY);
 			}
 			catch
 			{
-				return new Size(0, 0);
+                return default(Rect);
 			}
 		}
 

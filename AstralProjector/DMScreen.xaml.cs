@@ -62,7 +62,7 @@ namespace Astral.Projector
                 Map map = Map.LoadFromFile(ofd.FileName);
                 _map.SetMap(map);
 
-                var dims = _map.MapDimensions;
+                var dims = _map.MapBounds;
             }
         }
     }

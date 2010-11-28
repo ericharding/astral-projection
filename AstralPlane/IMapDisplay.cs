@@ -17,7 +17,7 @@ namespace Astral.Plane
 
         void SetMapPosition(long X, long Y);
 
-        Size MapDimensions { get; }
+        Rect MapBounds { get; }
 
         long MapPositionX { get; }
         long MapPositionY { get; }

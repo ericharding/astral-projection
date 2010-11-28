@@ -20,7 +20,7 @@ namespace Astral.Projector
     {
         IMapDisplay _map;
         WriteableBitmap _fogImage;
-        Size _mapSize;
+        Rect _mapDims;
 
         static FogOfWar()
         {
@@ -62,7 +62,7 @@ namespace Astral.Projector
             {
                 feOld.MouseDown -= new MouseButtonEventHandler(map_PreviewMouseDown);
                 feOld.MouseMove -= new MouseEventHandler(map_PreviewMouseMove);
-                _map.MapChanged -= CreateFogBitmap;
+                _map.MapChanged -= UpdateFogBitmap;
             }
 
             _map = newMap;
@@ -72,17 +72,22 @@ namespace Astral.Projector
                 map.MouseDown += new MouseButtonEventHandler(map_PreviewMouseDown);
                 map.MouseMove += new MouseEventHandler(map_PreviewMouseMove);
             }
-            _map.MapChanged += CreateFogBitmap;
+            _map.MapChanged += UpdateFogBitmap;
             _map.MapPositionChanged += new Action<long, long>(_map_MapPositionChanged);
 
-            CreateFogBitmap();
+            UpdateFogBitmap();
         }
 
-        private void CreateFogBitmap()
+        private void UpdateFogBitmap()
         {
-            // For now lets make the fog 5kx5k
-            // Then use all the clicks as percentage
-            _fogImage = new WriteableBitmap(4096, 4096, 96, 96, PixelFormats.Pbgra32, null);
+            _mapDims = _map.MapBounds;
+
+            if (_mapDims.Height > 0 && _mapDims.Width > 0)
+            {
+                // For now lets just make the fog big
+                // Then use all the clicks as percentage
+                _fogImage = new WriteableBitmap(4096 * 2, 4096 * 2, 96, 96, PixelFormats.Pbgra32, null);
+            }
         }
 
         void _map_MapPositionChanged(long arg1, long arg2)
@@ -92,6 +97,9 @@ namespace Astral.Projector
 
         void map_PreviewMouseMove(object sender, MouseEventArgs e)
         {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+            }
         }
 
         void map_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -101,6 +109,21 @@ namespace Astral.Projector
                 Point clickPoint = e.GetPosition(this);
                 Point mapPoint = new Point(clickPoint.X + _map.MapPositionX, clickPoint.Y + _map.MapPositionY);
             }
+        }
+
+        public Point PixelToMapCoord(Point pixel)
+        {
+            return new Point(TranslateX(pixel.X), TranslateY(pixel.Y));
+        }
+
+        public double TranslateX(double x)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double TranslateY(double y)
+        {
+            throw new NotImplementedException();
         }
 
         protected override void OnRender(DrawingContext dc)
