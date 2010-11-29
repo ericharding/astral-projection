@@ -8,6 +8,6 @@
     <Grid>
 
         <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" />
-        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.5" IsHitTestVisible="False" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" x:Name="_fog" />
     </Grid>
 </Window>

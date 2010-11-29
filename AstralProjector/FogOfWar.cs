@@ -13,6 +13,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Astral.Plane;
 using Astral.Plane.Utility;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 namespace Astral.Projector
 {
@@ -20,7 +23,7 @@ namespace Astral.Projector
     {
         IMapDisplay _map;
         WriteableBitmap _fogImage;
-        Rect _mapDims;
+        Int32Rect _mapBounds;
 
         static FogOfWar()
         {
@@ -55,6 +58,20 @@ namespace Astral.Projector
             self.SetMapDisplay((IMapDisplay)args.NewValue);
         }
 
+        public Color FogColor
+        {
+            get { return (Color)GetValue(FogColorProperty); }
+            set { SetValue(FogColorProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FogColor.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FogColorProperty =
+            DependencyProperty.Register("FogColor", typeof(Color), typeof(FogOfWar), new UIPropertyMetadata(Colors.Black));
+
+
+        public bool ShowMapBounds { get; set; }
+        
+
         public void SetMapDisplay(IMapDisplay newMap)
         {
             FrameworkElement feOld = _map as FrameworkElement;
@@ -75,18 +92,29 @@ namespace Astral.Projector
             _map.MapChanged += UpdateFogBitmap;
             _map.MapPositionChanged += new Action<long, long>(_map_MapPositionChanged);
 
-            UpdateFogBitmap();
+            UpdateFogBitmap(false);
         }
 
         private void UpdateFogBitmap()
         {
-            _mapDims = _map.MapBounds;
+            UpdateFogBitmap(false);
+        }
 
-            if (_mapDims.Height > 0 && _mapDims.Width > 0)
+        private void UpdateFogBitmap(bool copy)
+        {
+            if (copy)
             {
-                // For now lets just make the fog big
-                // Then use all the clicks as percentage
-                _fogImage = new WriteableBitmap(4096 * 2, 4096 * 2, 96, 96, PixelFormats.Pbgra32, null);
+                throw new NotImplementedException();
+            }
+
+            var dims = _map.MapBounds;
+            _mapBounds = new Int32Rect((int)dims.X, (int)dims.Y, (int)dims.Width, (int)dims.Height);
+
+            if (_mapBounds.Height > 0 && _mapBounds.Width > 0)
+            {
+                _fogImage = new WriteableBitmap(_mapBounds.Width, _mapBounds.Height, 96, 96, PixelFormats.Pbgra32, null);
+                _fogImage.Fill(this.FogColor);
+                this.InvalidateVisual();
             }
         }
 
@@ -99,6 +127,7 @@ namespace Astral.Projector
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                ClearFogAt(e.GetPosition(this));
             }
         }
 
@@ -106,34 +135,57 @@ namespace Astral.Projector
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                Point clickPoint = e.GetPosition(this);
-                Point mapPoint = new Point(clickPoint.X + _map.MapPositionX, clickPoint.Y + _map.MapPositionY);
+                Point position = e.GetPosition(this);
+                ClearFogAt(position);
             }
         }
 
-        public Point PixelToMapCoord(Point pixel)
+        private void ClearFogAt(Point position)
         {
-            return new Point(TranslateX(pixel.X), TranslateY(pixel.Y));
-        }
+            var viewPort = _map.MapViewport;
+            int pixelX = (int)(position.X - viewPort.X - _mapBounds.X);
+            int pixelY = (int)(position.Y - viewPort.Y - _mapBounds.Y);
 
-        public double TranslateX(double x)
-        {
-            throw new NotImplementedException();
-        }
 
-        public double TranslateY(double y)
-        {
-            throw new NotImplementedException();
+            Color color = Colors.Transparent;
+            if (Keyboard.IsKeyDown(Key.LeftShift))
+            {
+                color = Colors.Black;
+            }
+
+            _fogImage.DrawCircle((int)pixelX, (int)pixelY, _map.TileSize/2, color);
         }
 
         protected override void OnRender(DrawingContext dc)
         {
-            Pen p = new Pen(Brushes.Black, 2);
-            dc.DrawRectangle(Brushes.Red, p, new Rect(100, 100, 200, 200));
-
-
-
             base.OnRender(dc);
+
+            if (_map == null || _fogImage == null) return;
+
+            var viewport = _map.MapViewport;
+            double x = _mapBounds.X + viewport.X;
+            double y = _mapBounds.Y + viewport.Y;
+
+            // Draw the fog bitmap
+            dc.DrawImage(_fogImage, new Rect(x, y, _fogImage.PixelWidth, _fogImage.PixelHeight));
+
+
+            // Draw a FogColor rectangle around all areas not covered by fog
+            SolidColorBrush borderBrush = new SolidColorBrush(this.FogColor);
+
+            dc.DrawRectangle(borderBrush, null, new Rect(0, 0, Math.Max(x, 0), this.ActualHeight));
+            dc.DrawRectangle(borderBrush, null, new Rect(0, 0, this.ActualWidth, Math.Max(y, 0)));
+            double fogEndRight = x + _fogImage.PixelWidth;
+            dc.DrawRectangle(borderBrush, null, new Rect(fogEndRight, 0, Math.Max(0, this.ActualWidth - fogEndRight), this.ActualHeight));
+            double fogendBottom = y + _fogImage.PixelHeight;
+            dc.DrawRectangle(borderBrush, null, new Rect(0, fogendBottom, this.ActualWidth, Math.Max(0, this.ActualHeight - fogendBottom)));
+
+            // For debuggin
+            if (ShowMapBounds)
+            {
+                Pen p = new Pen(Brushes.Red, 1.0);
+                dc.DrawRectangle(null, p, new Rect(x, y, _mapBounds.Width, _mapBounds.Height));
+            }
         }
     }
 }

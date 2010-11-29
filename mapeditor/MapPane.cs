@@ -16,6 +16,7 @@ namespace TileMap
 	{
 		public int TileWidth { get { return _tileWidth; } set { ResizeTiles(value, _tileHeight); } }
 		public int TileHeight { get { return _tileHeight; } set { ResizeTiles(_tileWidth, value); } }
+        public int TileSize { get { return Math.Max(_tileWidth, _tileHeight); } }
 		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); } }
 		public int ActivePlacementLayer { get; set; }
 		public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
@@ -24,8 +25,7 @@ namespace TileMap
 		public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
 		public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
 		public Rect MapBounds { get { return ComputeMapSize(); } }
-        public long MapPositionX { get { return _offsetX; } }
-        public long MapPositionY { get { return _offsetY; } }
+        public Rect MapViewport { get { return new Rect(_offsetX - _origin, _offsetY - _origin, this.ActualWidth, this.ActualHeight); } }
 		public BitArray LayerMap { get { return _layerMap; } }
 		public event Action<long, long> MapPositionChanged;
 		public event Action OnFileInfoUpdated;
@@ -330,14 +330,15 @@ namespace TileMap
 				}
 			}
 
-			try
-			{
+			
+            double width = maxX - minX;
+            double height = maxY - minY;
+            if (width >= 0 && height >= 0)
+            {
                 return new Rect(minX, minY, maxX - minX, maxY - minY);
-			}
-			catch
-			{
-                return default(Rect);
-			}
+            }
+			
+            return default(Rect);
 		}
 
 		private Point CanvasToReal(Point canvasPoint)
