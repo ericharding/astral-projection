@@ -18,9 +18,9 @@ namespace Astral.Plane
         void SetMapPosition(long X, long Y);
 
         Rect MapBounds { get; }
+        Rect MapViewport { get; }
 
-        long MapPositionX { get; }
-        long MapPositionY { get; }
+        int TileSize { get; }
 
         double ActualWidth { get; }
         double ActualHeight { get; }

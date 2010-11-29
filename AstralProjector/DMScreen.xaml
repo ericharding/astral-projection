@@ -27,15 +27,14 @@
             </MenuItem>
         </Menu>
         
-        <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" />
-
+        <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" Visibility="Collapsed" />
         
         <!-- The MAP -->
-        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" />
-        <!--<p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1"  />-->
+        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" Grid.RowSpan="2" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" Grid.RowSpan="2" />
 
         <!-- Bottom panel-->
-        <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
+        <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}" Visibility="Collapsed">
             <ListBox Background="Transparent" >
                 <ListBoxItem>1. Treasure!</ListBoxItem>
                 <ListBoxItem>2. 5 Goblins sitting around a cookfire</ListBoxItem>
@@ -59,7 +58,7 @@
                 </Style>
             </StackPanel.Resources>
 
-            <Expander Margin="2" x:Name="_expandCombatMode" IsExpanded="True">
+            <Expander Margin="2" x:Name="_expandCombatMode">
                 <Expander.Header>
                     <TextBlock Text="Combat Mode" />
                 </Expander.Header>
@@ -78,9 +77,15 @@
                 </Expander.Header>
             </Expander>
             
-            <Expander x:Name="_D20SRD">
+            <Expander x:Name="_expandD20SRD">
                 <Expander.Header>
                     <TextBlock Text="D20SRD" />
+                </Expander.Header>
+            </Expander>
+            
+            <Expander x:Name="_expandEffects">
+                <Expander.Header>
+                    <TextBlock Text="Effects" />
                 </Expander.Header>
             </Expander>
         </StackPanel>
@@ -98,7 +103,6 @@
             <TextBlock Text="Skew" />
             <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
             <CheckBox Content="Fog of war" IsChecked="True" />
-            
         </StackPanel>
 
         <!-- Layers -->
@@ -123,8 +127,12 @@
         </Grid>
 
         <!-- D20 Srd -->
-        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Visibility="{Binding ElementName=_D20SRD, Path=IsExpanded, Converter={StaticResource b2v}}">
-            <WebBrowser Source="http://www.d20srd.org/" />
+        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandD20SRD, Path=IsExpanded, Converter={StaticResource b2v}}">
+            <WebBrowser Source="http://digitalsorcery.net/d20/" />
+        </Grid>
+        
+        <Grid Grid.Row ="1" Grid.Column="0" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandEffects, Path=IsEnabled, Converter={StaticResource b2v}}">
+            <!-- todo -->
         </Grid>
 
         <!-- Status Bar -->

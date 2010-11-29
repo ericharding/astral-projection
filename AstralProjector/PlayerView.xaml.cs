@@ -29,7 +29,7 @@ namespace Astral.Projector
 
         void PlayerView_Loaded(object sender, RoutedEventArgs e)
         {
-            Map map = Map.LoadFromFile(@"C:\Users\Eric\Documents\TestMap_export.astral");
+            Map map = Map.LoadFromFile(@"C:\Users\eric\Desktop\maps\TestMap_export.astral");
             _dmMapView.SetMap(map);
         }
 
