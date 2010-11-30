@@ -10,17 +10,16 @@ namespace Astral.Plane
     public interface IMapDisplay
     {
         void SetMap(Map map);
+        event Action MapChanged;
 
         event Action<long, long> MapPositionChanged;
-
-		event Action MapChanged;
-
         void SetMapPosition(long X, long Y);
-
+        
         Rect MapBounds { get; }
         Rect MapViewport { get; }
+        int TileSize { get; set; }
 
-        int TileSize { get; }
+        event Action<int> TileSizeChanged;
 
         double ActualWidth { get; }
         double ActualHeight { get; }
