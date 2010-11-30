@@ -11,6 +11,7 @@ namespace Astral.Projector
     public class PlayerViewController
     {
         PlayerView _pv = new PlayerView();
+        long _x, _y;
 
         public PlayerViewController()
         {
@@ -49,6 +50,7 @@ namespace Astral.Projector
             set
             {
                 _pv.MapView.TileSize = value;
+                _pv.MapView.SetMapPosition(_x, _y);
             }
         }
 
@@ -69,6 +71,8 @@ namespace Astral.Projector
         public void UpdateMapPosition(long x, long y)
         {
             _pv.MapView.SetMapPosition(x, y);
+            _x = x;
+            _y = y;
         }
 
         //
