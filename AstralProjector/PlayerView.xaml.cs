@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using Astral.Plane;
+using TileMap;
 
 namespace Astral.Projector
 {
@@ -23,15 +24,10 @@ namespace Astral.Projector
         public PlayerView()
         {
             InitializeComponent();
-
-            this.Loaded += new RoutedEventHandler(PlayerView_Loaded);
         }
 
-        void PlayerView_Loaded(object sender, RoutedEventArgs e)
-        {
-            Map map = Map.LoadFromFile(@"C:\Users\eric\Desktop\maps\TestMap_export.astral");
-            _dmMapView.SetMap(map);
-        }
+        public MapPane MapView { get { return _mapView; } }
+        public FogOfWar Fog { get { return _fog; } }
 
     }
 }

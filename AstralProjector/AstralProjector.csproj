@@ -62,7 +62,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\TeamToImageConverter.cs" />
-    <Compile Include="IPlayerView.cs" />
     <Compile Include="PlayerViewController.cs" />
     <Compile Include="Utility\WriteableBitmapEx.cs" />
   </ItemGroup>

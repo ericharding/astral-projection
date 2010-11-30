@@ -80,6 +80,8 @@ namespace Astral.Projector
                 feOld.MouseDown -= new MouseButtonEventHandler(map_PreviewMouseDown);
                 feOld.MouseMove -= new MouseEventHandler(map_PreviewMouseMove);
                 _map.MapChanged -= UpdateFogBitmap;
+                _map.MapPositionChanged -= _map_MapPositionChanged;
+                _map.TileSizeChanged -= _map_TileSizeChanged;
             }
 
             _map = newMap;
@@ -90,9 +92,15 @@ namespace Astral.Projector
                 map.MouseMove += new MouseEventHandler(map_PreviewMouseMove);
             }
             _map.MapChanged += UpdateFogBitmap;
-            _map.MapPositionChanged += new Action<long, long>(_map_MapPositionChanged);
+            _map.MapPositionChanged += _map_MapPositionChanged;
+            _map.TileSizeChanged += _map_TileSizeChanged;
 
             UpdateFogBitmap(false);
+        }
+
+        void _map_TileSizeChanged(int obj)
+        {
+            UpdateFogBitmap(true);
         }
 
         private void UpdateFogBitmap()
@@ -102,18 +110,22 @@ namespace Astral.Projector
 
         private void UpdateFogBitmap(bool copy)
         {
-            if (copy)
-            {
-                throw new NotImplementedException();
-            }
-
             var dims = _map.MapBounds;
             _mapBounds = new Int32Rect((int)dims.X, (int)dims.Y, (int)dims.Width, (int)dims.Height);
 
             if (_mapBounds.Height > 0 && _mapBounds.Width > 0)
             {
+                WriteableBitmap oldBitmap = _fogImage;
+
                 _fogImage = new WriteableBitmap(_mapBounds.Width, _mapBounds.Height, 96, 96, PixelFormats.Pbgra32, null);
-                _fogImage.Fill(this.FogColor);
+                if (copy)
+                {
+                    oldBitmap.BlitTo(_fogImage);
+                }
+                else
+                {
+                    _fogImage.Fill(this.FogColor);
+                }
                 this.InvalidateVisual();
             }
         }
@@ -127,7 +139,8 @@ namespace Astral.Projector
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                ClearFogAt(e.GetPosition(this));
+                Point position = e.GetPosition(this);
+                ChangeFog(position.X / this.ActualWidth, position.Y / this.ActualHeight, !Keyboard.IsKeyDown(Key.LeftShift));
             }
         }
 
@@ -136,25 +149,37 @@ namespace Astral.Projector
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point position = e.GetPosition(this);
-                ClearFogAt(position);
+                ChangeFog(position.X / this.ActualWidth, position.Y / this.ActualHeight, !Keyboard.IsKeyDown(Key.LeftShift));
             }
         }
 
-        private void ClearFogAt(Point position)
+        public void ChangeFog(double x, double y, bool clear)
         {
-            var viewPort = _map.MapViewport;
-            int pixelX = (int)(position.X - viewPort.X - _mapBounds.X);
-            int pixelY = (int)(position.Y - viewPort.Y - _mapBounds.Y);
-
-
-            Color color = Colors.Transparent;
-            if (Keyboard.IsKeyDown(Key.LeftShift))
-            {
-                color = Colors.Black;
-            }
-
-            _fogImage.DrawCircle((int)pixelX, (int)pixelY, _map.TileSize/2, color);
+            ChangeFog(x, y, _map.TileSize, clear);
         }
+
+        public void ChangeFog(double x, double y, int size, bool clear)
+        {
+            // Translate from percentage to pixel
+            int pixelX = (int)(this.ActualWidth * x);
+            int pixelY = (int)(this.ActualHeight * y);
+
+            // Offset pixel values by the viewport/map offset
+            var viewPort = _map.MapViewport;
+            pixelX = (int)(pixelX - viewPort.X - _mapBounds.X);
+            pixelY = (int)(pixelY - viewPort.Y - _mapBounds.Y);
+
+            Color color = clear ? Colors.Transparent : Colors.Black;
+
+            _fogImage.DrawCircle(pixelX, pixelY, size / 2, color);
+
+            if (this.FogChanged != null)
+            {
+                FogChanged(x, y, size, clear);
+            }
+        }
+
+        public event Action<double, double, int, bool> FogChanged;
 
         protected override void OnRender(DrawingContext dc)
         {
@@ -168,7 +193,6 @@ namespace Astral.Projector
 
             // Draw the fog bitmap
             dc.DrawImage(_fogImage, new Rect(x, y, _fogImage.PixelWidth, _fogImage.PixelHeight));
-
 
             // Draw a FogColor rectangle around all areas not covered by fog
             SolidColorBrush borderBrush = new SolidColorBrush(this.FogColor);

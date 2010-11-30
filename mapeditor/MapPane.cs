@@ -16,7 +16,8 @@ namespace TileMap
 	{
 		public int TileWidth { get { return _tileWidth; } set { ResizeTiles(value, _tileHeight); } }
 		public int TileHeight { get { return _tileHeight; } set { ResizeTiles(_tileWidth, value); } }
-        public int TileSize { get { return Math.Max(_tileWidth, _tileHeight); } }
+        public int TileSize { get { return Math.Max(_tileWidth, _tileHeight); } set { ResizeTiles(value, value); } }
+        public event Action<int> TileSizeChanged;
 		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); } }
 		public int ActivePlacementLayer { get; set; }
 		public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
@@ -210,6 +211,11 @@ namespace TileMap
 			this.Dirty = true;
 
 			this.InvalidateVisual();
+
+            if (this.TileSizeChanged != null)
+            {
+                this.TileSizeChanged(this.TileSize);
+            }
 		}
 
 		public void Clear()

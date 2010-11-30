@@ -3,11 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:p="clr-namespace:Astral.Projector"
         xmlns:tile="clr-namespace:TileMap;assembly=AstralMap"
-        Title="PlayerView" Height="337" Width="402">
+        WindowStyle="None" Title="PlayerView" Height="337" Width="402">
 
     <Grid>
-
-        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" />
-        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" x:Name="_fog" />
+        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_mapView" IsEnabled="False" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_mapView}" Grid.Row="1" x:Name="_fog" Opacity="0.9" />
     </Grid>
 </Window>

@@ -30,8 +30,8 @@
         <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" Visibility="Collapsed" />
         
         <!-- The MAP -->
-        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" Grid.RowSpan="2" />
-        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" Grid.RowSpan="2" />
+        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" Grid.RowSpan="2" MouseWheel="_dmMapView_MouseWheel" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" Grid.RowSpan="2" ClipToBounds="True" x:Name="_fog" />
 
         <!-- Bottom panel-->
         <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}" Visibility="Collapsed">
@@ -96,14 +96,37 @@
         </Grid>
 
         <!-- Display Settings -->
-        <StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandDisplaySettings, Path=IsExpanded, Converter={StaticResource b2v}}" >
-            <CheckBox Content="Show Map" IsChecked="False" />
-            <TextBlock Text="Zoom" />
-            <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
-            <TextBlock Text="Skew" />
-            <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />
-            <CheckBox Content="Fog of war" IsChecked="True" />
-        </StackPanel>
+        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandDisplaySettings, Path=IsExpanded, Converter={StaticResource b2v}}" Background="{StaticResource WhiteAlternativeGradient}" >
+            <StackPanel x:Name="_settingsPanel" Margin="8">
+                <CheckBox Content="Show Map" IsChecked="{Binding Path=IsMapVisible, Mode=TwoWay}" />
+                <TextBlock Text="Zoom" />
+                <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="100" Value="{Binding Path=ZoomLevel, Mode=TwoWay}" />
+                <!--<TextBlock Text="Skew" />
+                <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />-->
+                <CheckBox Content="Fog of war" IsChecked="True" IsEnabled="False" ToolTip="eh?" />
+                
+                <GroupBox Header="Layers" Margin="0,5,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <!-- todo implement-->
+                        <CheckBox Content="DM 0"  Grid.Row="0" Click="Layer_CheckBox_Click" IsChecked="True" />
+                        <CheckBox Content="Player 0"  Grid.Row="0" Grid.Column="1" Click="Layer_CheckBox_Click" IsChecked="True" />
+                        <CheckBox Content="DM 1"  Grid.Row="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 1"  Grid.Row="1" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 2"  Grid.Row="2" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 2" Grid.Row="2" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                    </Grid>
+                </GroupBox>
+            </StackPanel>
+        </Border>
 
         <!-- Layers -->
         <Grid Grid.Row="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandLayers, Path=IsExpanded, Converter={StaticResource b2v}}" Grid.ColumnSpan="2" >

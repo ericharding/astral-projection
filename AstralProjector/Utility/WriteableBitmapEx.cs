@@ -19,10 +19,10 @@ namespace Astral.Projector
         public static unsafe void Fill(this WriteableBitmap self, Int32Rect rect, Color color)
         {
             uint col = GetColorBytes(ref color, IsPremultipliedFormat(self));
-            ApplyPixelFunction(self, rect, (p) => col);
+            ApplyPixelFunction(self, rect, (x, y, p) => col);
         }
 
-        public static unsafe void ApplyPixelFunction(this WriteableBitmap self, Int32Rect rect, Func<uint, uint> colorFunction)
+        public static unsafe void ApplyPixelFunction(this WriteableBitmap self, Int32Rect rect, Func<int, int, uint, uint> colorFunction)
         {
             if (self == null) return;
 
@@ -48,7 +48,7 @@ namespace Astral.Projector
                         int piX = safeRect.X + x;
                         int piY = safeRect.Y + y;
                         int byteOffset = (piY * self.BackBufferStride) + (piX * 4); // Assuming 32bpp
-                        pixels[byteOffset / 4] = colorFunction(pixels[byteOffset/4]);
+                        pixels[byteOffset / 4] = colorFunction(x, y, pixels[byteOffset/4]);
                     }
                 }
 
@@ -59,6 +59,12 @@ namespace Astral.Projector
                 self.Unlock();
             }
         }
+
+        public static void BlitTo(this WriteableBitmap self, WriteableBitmap other)
+        {
+            // todo
+        }
+
 
         unsafe private static bool IsPremultipliedFormat(WriteableBitmap self)
         {
