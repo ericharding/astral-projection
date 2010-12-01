@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using Astral.Plane;
+using System.Windows.Threading;
 
 namespace Astral.Projector
 {
@@ -70,6 +71,7 @@ namespace Astral.Projector
 
         private void MenuOpen_Click(object sender, RoutedEventArgs e)
         {
+            _dmMapView.IsEnabled = false;
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "Astral Maps|*.astral";
             ofd.CheckFileExists = true;
@@ -80,8 +82,13 @@ namespace Astral.Projector
                 _map.SetMap(map);
                 _map.LayerMap.SetAll(false);
                 _map.LayerMap[0] = true;
+                if (_map.LayerMap.Count > 1)
+                    _map.LayerMap[1] = true;
+                _tbMapNotes.Text = map.Notes;
 
                 _pvc.LoadMap(ofd.FileName);
+
+                Dispatcher.In(TimeSpan.FromSeconds(0.2), () => _dmMapView.IsEnabled = true);
             }
         }
 
@@ -117,6 +124,23 @@ namespace Astral.Projector
                 _dmMapView.InvalidateVisual();
             }
 
+        }
+
+        private void ResetFog_Button_Click(object sender, RoutedEventArgs e)
+        {
+            _pvc.ResetFog();
+        }
+
+        private void ManualAdjust_Button_Click(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = (FrameworkElement)sender;
+            string tag = fe.Tag.ToString();
+            bool horizontal = tag == "left" || tag == "right";
+            int offset = 1;
+            if (tag == "left" || tag == "up")
+                offset *= -1;
+
+            _pvc.ManualAdjust(horizontal, offset);
         }
     }
 }
