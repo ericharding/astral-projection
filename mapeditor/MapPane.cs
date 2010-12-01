@@ -21,7 +21,8 @@ namespace TileMap
 		public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); } }
 		public int ActivePlacementLayer { get; set; }
 		public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
-		public bool IsDrawGrid { get { return _drawGrid; } set { _drawGrid = value; this.InvalidateVisual(); } }
+		public bool IsDrawGridUnder { get { return _drawGridUnder; } set { _drawGridUnder = value; this.InvalidateVisual(); } }
+        public bool IsDrawGridOver { get { return _drawGridOver; } set { _drawGridOver = value; this.InvalidateVisual(); } }
 		public string FileName { get { return _mapFileName; } private set { _mapFileName = value; FileInfoUpdated(); } }
 		public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
         public string MapNotes { get { return _map.Notes; } set { _map.Notes = value; } }
@@ -35,7 +36,7 @@ namespace TileMap
 
 		private const long _origin = 0x7FFFFFFF;
 		private Pen _gridPen = new Pen(Brushes.Black, 1);
-		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true, _drawGrid = true, _dirty = false;
+		private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true, _drawGridUnder = true, _drawGridOver=false, _dirty = false;
 		private Point _mousePos, _mouseHover;
 		private long _offsetX = _origin, _offsetY = _origin;
 		private int _tileWidth = 50, _tileHeight = 50;
@@ -376,19 +377,9 @@ namespace TileMap
 
 			double w = this.RenderSize.Width, h = this.RenderSize.Height;
 
-			if (_drawGrid)
+			if (_drawGridUnder)
 			{
-				for (double i = 0.5; i <= (w + _tileWidth); i += _tileWidth)
-				{
-					double x = (i + (_offsetX - _origin) % _tileWidth);
-					dc.DrawLine(_gridPen, new Point(x, 0), new Point(x, h));
-				}
-
-				for (double i = 0.5; i <= (h + _tileHeight); i += _tileHeight)
-				{
-					double y = (i + (_offsetY - _origin) % _tileHeight);
-					dc.DrawLine(_gridPen, new Point(0, y), new Point(w, y));
-				}
+                DrawGrid(dc, w, h);
 			}
 
 			foreach (TileCluster tc in _tiles.Query(new Rect(_origin - _offsetX, _origin - _offsetY, w, h)))
@@ -401,6 +392,11 @@ namespace TileMap
 				}
 			}
 
+            if (_drawGridOver)
+            {
+                DrawGrid(dc, w, h);
+            }
+
 			if (_hoverTile)
 			{
 				if (_tileToPlacePreview != null)
@@ -409,5 +405,20 @@ namespace TileMap
 				}
 			}
 		}
+
+        private void DrawGrid(DrawingContext dc, double w, double h)
+        {
+            for (double i = 0.5; i <= (w + _tileWidth); i += _tileWidth)
+            {
+                double x = (i + (_offsetX - _origin) % _tileWidth);
+                dc.DrawLine(_gridPen, new Point(x, 0), new Point(x, h));
+            }
+
+            for (double i = 0.5; i <= (h + _tileHeight); i += _tileHeight)
+            {
+                double y = (i + (_offsetY - _origin) % _tileHeight);
+                dc.DrawLine(_gridPen, new Point(0, y), new Point(w, y));
+            }
+        }
 	}
 }

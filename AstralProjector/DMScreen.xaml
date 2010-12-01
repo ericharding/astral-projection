@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:p="clr-namespace:Astral.Projector"
         xmlns:tile="clr-namespace:TileMap;assembly=AstralMap"
-        Title="DMScreen" Height="483" Width="788">
+        Title="DMScreen" Height="562" Width="789">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="b2v" />
     </Window.Resources>
@@ -148,6 +148,13 @@
                         <CheckBox Content="Player 6" Grid.Row="6" Grid.Column="1" Click="Layer_CheckBox_Click" />
                     </Grid>
                 </GroupBox>
+                
+                <TextBlock Text="Draw Grid:" />
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="_rbNoGrid" Content="No Grid" Checked="GridConfig_Checked" Margin="3" />
+                    <RadioButton x:Name="_rbUnderGrid" Content="Under" IsChecked="True" Checked="GridConfig_Checked" Margin="3" />
+                    <RadioButton x:Name="_rbOverGrid" Content="Over" Checked="GridConfig_Checked" Margin="3" />
+                </StackPanel>
             </StackPanel>
         </Border>
 

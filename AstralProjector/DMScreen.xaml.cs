@@ -167,5 +167,28 @@ namespace Astral.Projector
             FrameworkElement fe = (FrameworkElement)sender;
             _pvc.DisplayEffect(fe.Tag.ToString());
         }
+
+        private void GridConfig_Checked(object sender, RoutedEventArgs e)
+        {
+            if (_pvc == null) return;
+
+            _dmMapView.IsDrawGridOver = false;
+            _dmMapView.IsDrawGridUnder = false;
+
+            if (_rbNoGrid.IsChecked == true)
+            {
+                _pvc.SetGridMode(0);
+            }
+            if (_rbUnderGrid.IsChecked == true)
+            {
+                _pvc.SetGridMode(1);
+                _dmMapView.IsDrawGridUnder = true;
+            }
+            if (_rbOverGrid.IsChecked == true)
+            {
+                _pvc.SetGridMode(2);
+                _dmMapView.IsDrawGridOver = true;
+            }
+        }
     }
 }
