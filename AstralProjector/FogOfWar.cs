@@ -164,7 +164,10 @@ namespace Astral.Projector
             UpdateFogNow();
 
             // pixelX, pixelY is the pixel on the fog that was clicked
-            ChangeFog(pixelX / _fogImage.PixelWidth, pixelY / _fogImage.PixelHeight, clear);
+            if (_fogImage != null)
+            {
+                ChangeFog(pixelX / _fogImage.PixelWidth, pixelY / _fogImage.PixelHeight, clear);
+            }
         }
 
         public void ChangeFog(double x, double y, bool clear)

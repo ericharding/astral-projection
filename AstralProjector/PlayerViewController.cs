@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows;
 using Astral.Plane;
 using System.Windows.Threading;
+using System.Windows.Media.Animation;
 
 namespace Astral.Projector
 {
@@ -96,12 +97,8 @@ namespace Astral.Projector
 
         public void DisplayEffect(string effect)
         {
-            
-        }
-
-        public void DisplayImage(string path)
-        {
-            // show image over map
+            Storyboard sb = _pv.Resources[effect] as Storyboard;
+            _pv.BeginStoryboard(sb);
         }
 
         public void UpdateMapPosition(long x, long y)
@@ -138,5 +135,15 @@ namespace Astral.Projector
         //
         // 
         //
+
+        internal void ShowImage(string filename)
+        {
+            _pv.ShowImage(filename);
+        }
+
+        internal void HideImage()
+        {
+            _pv.HideImage();
+        }
     }
 }
