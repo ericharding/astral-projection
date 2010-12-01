@@ -14,7 +14,7 @@ namespace Astral.Plane
 
         event Action<long, long> MapPositionChanged;
         void SetMapPosition(long X, long Y);
-        
+
         Rect MapBounds { get; }
         Rect MapViewport { get; }
         int TileSize { get; set; }
@@ -23,7 +23,7 @@ namespace Astral.Plane
 
         double ActualWidth { get; }
         double ActualHeight { get; }
-		
-		BitArray LayerMap { get; }
+
+        BitArray LayerMap { get; }
     }
 }
