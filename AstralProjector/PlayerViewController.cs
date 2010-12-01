@@ -145,5 +145,23 @@ namespace Astral.Projector
         {
             _pv.HideImage();
         }
+
+        internal void SetGridMode(int gridMode)
+        {
+            _pv.MapView.IsDrawGridOver = false;
+            _pv.MapView.IsDrawGridUnder = false;
+
+            switch (gridMode)
+            {
+                case 1:
+                    _pv.MapView.IsDrawGridUnder = true;
+                    break;
+                case 2:
+                    _pv.MapView.IsDrawGridOver = true;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
