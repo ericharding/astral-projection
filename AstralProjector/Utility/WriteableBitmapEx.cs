@@ -63,28 +63,33 @@ namespace Astral.Projector
         public static void BlitFrom(this WriteableBitmap self, WriteableBitmap other)
         {
             // iterate over the new bitmap and for each pixel find the right pixel in the other image
-            self.Lock();
-            other.Lock();
-
-            double xRatio = (double)other.PixelWidth / (double)self.PixelWidth;
-            double yRatio = (double)other.PixelHeight / (double)self.PixelHeight;
-
-            for (int x = 0; x < self.PixelWidth; x++)
+            try
             {
-                for (int y = 0; y < self.PixelHeight; y++)
+                self.Lock();
+                other.Lock();
+
+                double xRatio = (double)other.PixelWidth / (double)self.PixelWidth;
+                double yRatio = (double)other.PixelHeight / (double)self.PixelHeight;
+
+                for (int x = 0; x < self.PixelWidth; x++)
                 {
-                    int sx = (int)(xRatio * x);
-                    int sy = (int)(yRatio * y);
+                    for (int y = 0; y < self.PixelHeight; y++)
+                    {
+                        int sx = (int)(xRatio * x);
+                        int sy = (int)(yRatio * y);
 
-                    uint color = other.GetPixel(sx, sy);
-                    self.SetPixel(x, y, color);
+                        uint color = other.GetPixel(sx, sy);
+                        self.SetPixel(x, y, color);
+                    }
                 }
+
+                self.AddDirtyRect(new Int32Rect(0, 0, self.PixelWidth, self.PixelHeight));
             }
-
-            self.AddDirtyRect(new Int32Rect(0, 0, self.PixelWidth, self.PixelHeight));
-
-            other.Unlock();
-            self.Unlock();
+            finally
+            {
+                other.Unlock();
+                self.Unlock();
+            }
         }
 
         private unsafe static uint GetPixel(this WriteableBitmap self, int x, int y)
