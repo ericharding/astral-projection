@@ -103,6 +103,19 @@ namespace Astral.Projector
             if (cb == null) return;
 
             bool isPlayer = cb.Content.ToString()[0] == 'P';
+            int layer = Grid.GetRow(cb);
+
+            if (isPlayer)
+            {
+                _pvc.SetLayerVisibility(layer, (bool)cb.IsChecked);
+            }
+            else
+            {
+                _map.LayerMap[layer] = (bool)cb.IsChecked;
+                
+                // hackhack
+                _dmMapView.InvalidateVisual();
+            }
 
         }
     }

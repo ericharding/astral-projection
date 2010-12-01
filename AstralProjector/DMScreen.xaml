@@ -31,7 +31,7 @@
         
         <!-- The MAP -->
         <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" Grid.RowSpan="2" MouseWheel="_dmMapView_MouseWheel" />
-        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" Grid.RowSpan="2" ClipToBounds="True" x:Name="_fog" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" Grid.RowSpan="2" ClipToBounds="True" x:Name="_fog" ShowMapBounds="True" />
 
         <!-- Bottom panel-->
         <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}" Visibility="Collapsed">
@@ -70,12 +70,6 @@
                     <TextBlock Text="Display Settings"  />
                 </Expander.Header>
             </Expander>
-
-            <Expander x:Name="_expandLayers">
-                <Expander.Header>
-                    <TextBlock Text="Layers"  />
-                </Expander.Header>
-            </Expander>
             
             <Expander x:Name="_expandD20SRD">
                 <Expander.Header>
@@ -111,6 +105,10 @@
                             <RowDefinition />
                             <RowDefinition />
                             <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -123,31 +121,18 @@
                         <CheckBox Content="Player 1"  Grid.Row="1" Grid.Column="1" Click="Layer_CheckBox_Click" />
                         <CheckBox Content="DM 2"  Grid.Row="2" Click="Layer_CheckBox_Click" />
                         <CheckBox Content="Player 2" Grid.Row="2" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 3"  Grid.Row="3" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 3" Grid.Row="3" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 4"  Grid.Row="4" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 4" Grid.Row="4" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 5"  Grid.Row="5" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 5" Grid.Row="5" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 6"  Grid.Row="6" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 6" Grid.Row="6" Grid.Column="1" Click="Layer_CheckBox_Click" />
                     </Grid>
                 </GroupBox>
             </StackPanel>
         </Border>
-
-        <!-- Layers -->
-        <Grid Grid.Row="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandLayers, Path=IsExpanded, Converter={StaticResource b2v}}" Grid.ColumnSpan="2" >
-            <WrapPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40" Grid.Row="1">
-                <WrapPanel.Resources>
-                    <Style TargetType="CheckBox">
-                        <Setter Property="Width" Value="10" />
-                        <Setter Property="Height" Value="10" />
-                    </Style>
-                </WrapPanel.Resources>
-                <TextBlock Text="Layers" />
-                <CheckBox IsChecked="True" />
-                <CheckBox />
-                <CheckBox />
-                <CheckBox />
-                <CheckBox />
-                <CheckBox />
-                <CheckBox />
-                <CheckBox />
-            </WrapPanel>
-        </Grid>
 
         <!-- D20 Srd -->
         <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandD20SRD, Path=IsExpanded, Converter={StaticResource b2v}}">

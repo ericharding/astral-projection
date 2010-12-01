@@ -54,6 +54,12 @@ namespace Astral.Projector
             }
         }
 
+        public void SetLayerVisibility(int layer, bool visibility)
+        {
+            _pv.MapView.LayerMap[layer] = visibility;
+            _pv.MapView.InvalidateVisual();
+        }
+
         public void LoadMap(string mapPath)
         {
             Map map = Map.LoadFromFile(mapPath, false);

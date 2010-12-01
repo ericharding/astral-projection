@@ -120,7 +120,9 @@ namespace Astral.Projector
                 _fogImage = new WriteableBitmap(_mapBounds.Width, _mapBounds.Height, 96, 96, PixelFormats.Pbgra32, null);
                 if (copy)
                 {
-                    oldBitmap.BlitTo(_fogImage);
+                    // TODO:
+                    //oldBitmap.BlitTo(_fogImage);
+                    _fogImage.Fill(this.FogColor);
                 }
                 else
                 {
