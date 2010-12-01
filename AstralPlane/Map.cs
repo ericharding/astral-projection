@@ -28,6 +28,7 @@ namespace Astral.Plane
         private const string REFERENCE_NODE = "Reference";
         private const string TILE_COLLECTION = "Tiles";
         internal const string TILE_NODE = "Tile";
+        internal const string MAP_NOTES = "Notes";
         #endregion
 
         #region Constructors
@@ -187,6 +188,12 @@ namespace Astral.Plane
             }
         }
 
+        public string Notes
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Count of layers used in this map. (Computed on demand)
         /// </summary>
@@ -275,6 +282,12 @@ namespace Astral.Plane
                 new XAttribute("MapVersion", MAP_VERSION),
                 new XAttribute("TileSizeX", this.TileSizeX),
                 new XAttribute("TileSizeY", this.TileSizeY)));
+
+            if (!string.IsNullOrEmpty(this.Notes))
+            {
+                XElement xNotes = new XElement(Map.MAP_NOTES, this.Notes);
+                doc.Root.Add(xNotes);
+            }
 
             // Serialize the references
             // If this is a standalone map it will contain all of the TileFactories for it's references
@@ -382,6 +395,12 @@ namespace Astral.Plane
 
             this.TileSizeX = doc.Root.Attribute("TileSizeX").Parse(Int32.Parse);
             this.TileSizeY = doc.Root.Attribute("TileSizeY").Parse(Int32.Parse);
+
+            XElement xNotes = doc.Root.Element(Map.MAP_NOTES);
+            if (xNotes != null)
+            {
+                this.Notes = xNotes.Value;
+            }
 
             // Load references (recursive)
             XElement references = doc.Root.Element(Map.REFERENCE_COLLECTION);
