@@ -258,9 +258,7 @@ namespace Astral.Plane
             return new TileFactory(m, id, "images/" + id, tags, borders, tileshoriz, tilesvert);
         }
         
-
         #endregion
-
     }
 
     [StructLayout(LayoutKind.Sequential)]

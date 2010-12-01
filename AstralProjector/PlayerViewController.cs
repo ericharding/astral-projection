@@ -88,10 +88,7 @@ namespace Astral.Projector
         // todo: handle different zoom levels
         public void UpdateFogAt(double x, double y, int size, bool clear)
         {
-            //if (x < 0 || x > 1) throw new ArgumentException("x must be between 0 and 1");
-            //if (y < 0 || y > 1) throw new ArgumentException("y must be between 0 and 1");
-
-            _pv.Fog.ChangeFog(x, y, size, clear);
+            _pv.Fog.ChangeFog(x, y, clear);
         }
 
         //

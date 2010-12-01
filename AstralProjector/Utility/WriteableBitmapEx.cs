@@ -60,11 +60,46 @@ namespace Astral.Projector
             }
         }
 
-        public static void BlitTo(this WriteableBitmap self, WriteableBitmap other)
+        public static void BlitFrom(this WriteableBitmap self, WriteableBitmap other)
         {
-            // todo
+            // iterate over the new bitmap and for each pixel find the right pixel in the other image
+            self.Lock();
+            other.Lock();
+
+            double xRatio = (double)other.PixelWidth / (double)self.PixelWidth;
+            double yRatio = (double)other.PixelHeight / (double)self.PixelHeight;
+
+            for (int x = 0; x < self.PixelWidth; x++)
+            {
+                for (int y = 0; y < self.PixelHeight; y++)
+                {
+                    int sx = (int)(xRatio * x);
+                    int sy = (int)(yRatio * y);
+
+                    uint color = other.GetPixel(sx, sy);
+                    self.SetPixel(x, y, color);
+                }
+            }
+
+            self.AddDirtyRect(new Int32Rect(0, 0, self.PixelWidth, self.PixelHeight));
+
+            other.Unlock();
+            self.Unlock();
         }
 
+        private unsafe static uint GetPixel(this WriteableBitmap self, int x, int y)
+        {
+            uint* pixels = (uint*)self.BackBuffer;
+            int byteoffset = (y * self.BackBufferStride) + (x * 4);
+            return pixels[byteoffset / 4];
+        }
+
+        private unsafe static void SetPixel(this WriteableBitmap self, int x, int y, uint color)
+        {
+            uint* pixels = (uint*)self.BackBuffer;
+            int byteoffset = (y * self.BackBufferStride) + (x * 4);
+            pixels[byteoffset / 4] = color;
+        }
 
         unsafe private static bool IsPremultipliedFormat(WriteableBitmap self)
         {

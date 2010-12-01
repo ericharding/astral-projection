@@ -1,21 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Astral.Plane;
-using Astral.Plane.Utility;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
+using System.Windows.Threading;
 
 namespace Astral.Projector
 {
@@ -24,6 +14,8 @@ namespace Astral.Projector
         IMapDisplay _map;
         WriteableBitmap _fogImage;
         Int32Rect _mapBounds;
+        bool _fogDirty = true;
+        bool _copyFog = false;
 
         static FogOfWar()
         {
@@ -100,7 +92,7 @@ namespace Astral.Projector
 
         void _map_TileSizeChanged(int obj)
         {
-            UpdateFogBitmap(true);
+            UpdateFogBitmap(true, false);
         }
 
         private void UpdateFogBitmap()
@@ -108,8 +100,18 @@ namespace Astral.Projector
             UpdateFogBitmap(false);
         }
 
-        private void UpdateFogBitmap(bool copy)
+        private void UpdateFogBitmap(bool copy, bool now = false)
         {
+            _fogDirty = true;
+            _copyFog = copy;
+            this.Dispatcher.In(TimeSpan.FromSeconds(0.2), UpdateFogNow);
+        }
+
+        private void UpdateFogNow()
+        {
+            if (!_fogDirty) return;
+            _fogDirty = false;
+
             var dims = _map.MapBounds;
             _mapBounds = new Int32Rect((int)dims.X, (int)dims.Y, (int)dims.Width, (int)dims.Height);
 
@@ -118,11 +120,9 @@ namespace Astral.Projector
                 WriteableBitmap oldBitmap = _fogImage;
 
                 _fogImage = new WriteableBitmap(_mapBounds.Width, _mapBounds.Height, 96, 96, PixelFormats.Pbgra32, null);
-                if (copy)
+                if (_copyFog && oldBitmap != null)
                 {
-                    // TODO:
-                    //oldBitmap.BlitTo(_fogImage);
-                    _fogImage.Fill(this.FogColor);
+                    _fogImage.BlitFrom(oldBitmap);
                 }
                 else
                 {
@@ -142,7 +142,7 @@ namespace Astral.Projector
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point position = e.GetPosition(this);
-                ChangeFog(position.X / this.ActualWidth, position.Y / this.ActualHeight, !Keyboard.IsKeyDown(Key.LeftShift));
+                ChangeFogInternal((int)position.X, (int)position.Y, !Keyboard.IsKeyDown(Key.LeftShift));
             }
         }
 
@@ -151,8 +151,20 @@ namespace Astral.Projector
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point position = e.GetPosition(this);
-                ChangeFog(position.X / this.ActualWidth, position.Y / this.ActualHeight, !Keyboard.IsKeyDown(Key.LeftShift));
+                ChangeFogInternal(position.X, position.Y, !Keyboard.IsKeyDown(Key.LeftShift));
             }
+        }
+
+        private void ChangeFogInternal(double x, double y, bool clear)
+        {
+            var viewPort = _map.MapViewport;
+            double pixelX = x - viewPort.X - _mapBounds.X;
+            double pixelY = y - viewPort.Y - _mapBounds.Y;
+
+            UpdateFogNow();
+
+            // pixelX, pixelY is the pixel on the fog that was clicked
+            ChangeFog(pixelX / _fogImage.PixelWidth, pixelY / _fogImage.PixelHeight, clear);
         }
 
         public void ChangeFog(double x, double y, bool clear)
@@ -162,14 +174,11 @@ namespace Astral.Projector
 
         public void ChangeFog(double x, double y, int size, bool clear)
         {
-            // Translate from percentage to pixel
-            int pixelX = (int)(this.ActualWidth * x);
-            int pixelY = (int)(this.ActualHeight * y);
+            UpdateFogNow();
 
-            // Offset pixel values by the viewport/map offset
-            var viewPort = _map.MapViewport;
-            pixelX = (int)(pixelX - viewPort.X - _mapBounds.X);
-            pixelY = (int)(pixelY - viewPort.Y - _mapBounds.Y);
+            // Translate from percentage to pixel
+            int pixelX = (int)(_fogImage.PixelWidth * x);
+            int pixelY = (int)(_fogImage.PixelHeight * y);
 
             Color color = clear ? Colors.Transparent : Colors.Black;
 
@@ -206,7 +215,7 @@ namespace Astral.Projector
             double fogendBottom = y + _fogImage.PixelHeight;
             dc.DrawRectangle(borderBrush, null, new Rect(0, fogendBottom, this.ActualWidth, Math.Max(0, this.ActualHeight - fogendBottom)));
 
-            // For debuggin
+            // For debugging
             if (ShowMapBounds)
             {
                 Pen p = new Pen(Brushes.Red, 1.0);
