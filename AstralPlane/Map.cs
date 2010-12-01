@@ -188,10 +188,11 @@ namespace Astral.Plane
             }
         }
 
+        private string _notes;
         public string Notes
         {
-            get;
-            set;
+            get { return _notes; }
+            set { _notes = value; _isDirty = true; }
         }
 
         /// <summary>

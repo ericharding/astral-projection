@@ -141,6 +141,9 @@ namespace TileMap
 				case Key.D0:
 					menuGoToOrigin_Click(null, null);
 					break;
+                case Key.NumPad0:
+                    mapPane.LayerMap[0] = !mapPane.LayerMap[0];
+                    break;
 			}
 		}
 
@@ -235,10 +238,13 @@ namespace TileMap
 			if ((bool) open.ShowDialog(this))
 			{
 				Map load = Map.LoadFromFile(open.FileName);
+                load.AddReference(_library);
 
 				// TODO: sanity check
 
 				mapPane.SetMap(load);
+
+                _mapNotes.Text = load.Notes;
 			}
 		}
 
@@ -276,5 +282,24 @@ namespace TileMap
 		{
 			e.Cancel = !SaveIfNeeded(false);
 		}
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (mapPane != null)
+            {
+                mapPane.MapNotes = _mapNotes.Text;
+            }
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = (CheckBox)sender;
+            int x = Int32.Parse(cb.Tag.ToString());
+            if (x < mapPane.LayerMap.Count)
+            {
+                mapPane.LayerMap[x] = (bool)cb.IsChecked;
+                mapPane.InvalidateVisual();
+            }
+        }
 	}
 }

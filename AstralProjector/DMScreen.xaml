@@ -30,16 +30,12 @@
         <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" Visibility="Collapsed" />
         
         <!-- The MAP -->
-        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" Grid.RowSpan="2" MouseWheel="_dmMapView_MouseWheel" />
-        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" Grid.RowSpan="2" ClipToBounds="True" x:Name="_fog" ShowMapBounds="True" />
+        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" MouseWheel="_dmMapView_MouseWheel" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" ClipToBounds="True" x:Name="_fog" ShowMapBounds="True" />
 
         <!-- Bottom panel-->
-        <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}" Visibility="Collapsed">
-            <ListBox Background="Transparent" >
-                <ListBoxItem>1. Treasure!</ListBoxItem>
-                <ListBoxItem>2. 5 Goblins sitting around a cookfire</ListBoxItem>
-                <ListBoxItem>3. Whent the players enter this area turn on layer 2</ListBoxItem>
-            </ListBox>
+        <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
+            <TextBox Background="Transparent" x:Name="_tbMapNotes" IsReadOnly="True" />
         </Grid>
 
         <!-- Expanders -->
@@ -92,12 +88,32 @@
         <!-- Display Settings -->
         <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandDisplaySettings, Path=IsExpanded, Converter={StaticResource b2v}}" Background="{StaticResource WhiteAlternativeGradient}" >
             <StackPanel x:Name="_settingsPanel" Margin="8">
-                <CheckBox Content="Show Map" IsChecked="{Binding Path=IsMapVisible, Mode=TwoWay}" />
-                <TextBlock Text="Zoom" />
-                <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="100" Value="{Binding Path=ZoomLevel, Mode=TwoWay}" />
+                <CheckBox Content="Show Map" IsChecked="{Binding Path=IsMapVisible, Mode=TwoWay}" Margin="5" />
+                <TextBlock Text="Zoom" Margin="5,5,5,0" />
+                <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="100" Value="{Binding Path=ZoomLevel, Mode=TwoWay}" Margin="5,0,5,5" />
                 <!--<TextBlock Text="Skew" />
                 <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />-->
-                <CheckBox Content="Fog of war" IsChecked="True" IsEnabled="False" ToolTip="eh?" />
+                <CheckBox Content="Fog of war" IsChecked="{Binding Path=ShowFogOfWar, Mode=TwoWay}" Margin="5" />
+                
+                <Button Content="Reset Fog" Margin="20,5,20,5" Click="ResetFog_Button_Click" />
+                
+                <TextBlock Text="Manual Adjust" Margin="5,5,5,0" />
+                <Grid Margin="5" Width="125">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Row="0" Grid.Column="1" Content="^" Click="ManualAdjust_Button_Click" Tag="up" />
+                    <Button Grid.Row="1" Grid.Column="0" Content="&lt;" Click="ManualAdjust_Button_Click" Tag="left" />
+                    <Button Grid.Row="1" Grid.Column="2" Content="&gt;" Click="ManualAdjust_Button_Click" Tag="right" />
+                    <Button Grid.Row="2" Grid.Column="1" Content="v" Click="ManualAdjust_Button_Click" Tag="down" />
+                </Grid>
                 
                 <GroupBox Header="Layers" Margin="0,5,0,0">
                     <Grid>
@@ -117,7 +133,7 @@
                         <!-- todo implement-->
                         <CheckBox Content="DM 0"  Grid.Row="0" Click="Layer_CheckBox_Click" IsChecked="True" />
                         <CheckBox Content="Player 0"  Grid.Row="0" Grid.Column="1" Click="Layer_CheckBox_Click" IsChecked="True" />
-                        <CheckBox Content="DM 1"  Grid.Row="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 1"  Grid.Row="1" Click="Layer_CheckBox_Click" IsChecked="True" />
                         <CheckBox Content="Player 1"  Grid.Row="1" Grid.Column="1" Click="Layer_CheckBox_Click" />
                         <CheckBox Content="DM 2"  Grid.Row="2" Click="Layer_CheckBox_Click" />
                         <CheckBox Content="Player 2" Grid.Row="2" Grid.Column="1" Click="Layer_CheckBox_Click" />

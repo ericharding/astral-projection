@@ -6,7 +6,7 @@
         WindowStyle="None" Title="PlayerView" Height="337" Width="402">
 
     <Grid>
-        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_mapView" IsEnabled="False" />
-        <p:FogOfWar MapDisplay="{Binding ElementName=_mapView}" Grid.Row="1" x:Name="_fog" Opacity="0.9" />
+        <tile:MapPane Background="#000" GridBrush="#5fff" Grid.Row="1" x:Name="_mapView" IsEnabled="False" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_mapView}" Grid.Row="1" x:Name="_fog" Opacity="1" />
     </Grid>
 </Window>

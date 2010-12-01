@@ -169,7 +169,8 @@ namespace Astral.Projector
 
         public void ChangeFog(double x, double y, bool clear)
         {
-            ChangeFog(x, y, _map.TileSize, clear);
+            int multiplier = Keyboard.IsKeyDown(Key.LeftCtrl) ? 5 : 1;
+            ChangeFog(x, y, _map.TileSize * multiplier, clear);
         }
 
         public void ChangeFog(double x, double y, int size, bool clear)
@@ -220,6 +221,14 @@ namespace Astral.Projector
             {
                 Pen p = new Pen(Brushes.Red, 1.0);
                 dc.DrawRectangle(null, p, new Rect(x, y, _mapBounds.Width, _mapBounds.Height));
+            }
+        }
+
+        internal void Reset()
+        {
+            if (_fogImage != null)
+            {
+                _fogImage.Fill(this.FogColor);
             }
         }
     }

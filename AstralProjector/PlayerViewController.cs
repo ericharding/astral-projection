@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using Astral.Plane;
+using System.Windows.Threading;
 
 namespace Astral.Projector
 {
@@ -12,6 +13,7 @@ namespace Astral.Projector
     {
         PlayerView _pv = new PlayerView();
         long _x, _y;
+        long _mx, _my;
 
         public PlayerViewController()
         {
@@ -50,8 +52,25 @@ namespace Astral.Projector
             set
             {
                 _pv.MapView.TileSize = value;
-                _pv.MapView.SetMapPosition(_x, _y);
+                _pv.MapView.SetMapPosition(_x + _mx, _y + _my);
             }
+        }
+
+        public bool ShowFogOfWar
+        {
+            get
+            {
+                return _pv.Fog.Visibility == Visibility.Visible;
+            }
+            set
+            {
+                _pv.Fog.Visibility = value ? Visibility.Visible : Visibility.Hidden;
+            }
+        }
+
+        public void ResetFog()
+        {
+            _pv.Fog.Reset();
         }
 
         public void SetLayerVisibility(int layer, bool visibility)
@@ -63,22 +82,47 @@ namespace Astral.Projector
         public void LoadMap(string mapPath)
         {
             Map map = Map.LoadFromFile(mapPath, false);
+            _mx = 0;
+            _my = 0;
+            _x = 0;
+            _y = 0;
+            
             _pv.MapView.SetMap(map);
             _pv.MapView.LayerMap.SetAll(false);
             _pv.MapView.LayerMap[0] = true;
+            Dispatcher.CurrentDispatcher.In(TimeSpan.FromSeconds(1), () => _pv.MapView.TileSize = 34);
         }
 
 
         public void DisplayEffect(string effect)
         {
-            // yea right
+            
+        }
+
+        public void DisplayImage(string path)
+        {
+            // show image over map
         }
 
         public void UpdateMapPosition(long x, long y)
         {
-            _pv.MapView.SetMapPosition(x, y);
             _x = x;
             _y = y;
+            _pv.MapView.SetMapPosition(_x + _mx, _y + _my);
+        }
+
+        public void ManualAdjust(bool horizontal, int offset)
+        {
+            if (horizontal)
+            {
+                _mx += offset * _pv.MapView.TileSize;
+            }
+            else
+            {
+                _my += offset * _pv.MapView.TileSize;
+            }
+
+            _pv.MapView.SetMapPosition(_x + _mx, _y + _my);
         }
 
         //
