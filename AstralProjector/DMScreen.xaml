@@ -27,7 +27,6 @@
             </MenuItem>
         </Menu>
         
-        <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" Visibility="Collapsed" />
         
         <!-- The MAP -->
         <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" MouseWheel="_dmMapView_MouseWheel" />
@@ -35,8 +34,10 @@
 
         <!-- Bottom panel-->
         <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
-            <TextBox Background="Transparent" x:Name="_tbMapNotes" IsReadOnly="True" />
+            <TextBox Background="Transparent" x:Name="_tbMapNotes" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
         </Grid>
+
+        <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" />
 
         <!-- Expanders -->
         <StackPanel Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" x:Name="_expanderCollection" Background="{StaticResource WhiteAlternativeGradient}">
@@ -154,10 +155,15 @@
         <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandD20SRD, Path=IsExpanded, Converter={StaticResource b2v}}">
             <WebBrowser Source="http://digitalsorcery.net/d20/" />
         </Grid>
-        
-        <Grid Grid.Row ="1" Grid.Column="0" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandEffects, Path=IsEnabled, Converter={StaticResource b2v}}">
-            <!-- todo -->
-        </Grid>
+
+        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandEffects, Path=IsExpanded, Converter={StaticResource b2v}}" Background="{StaticResource WhiteAlternativeGradient}" >
+            <StackPanel Margin="8">
+                <Button Content="Show Image ..." Margin="5" x:Name="_bShowImage" Click="_bShowImage_Click" />
+                <Button Content="Hide Image ..." Margin="5" x:Name="_bHideImage" Click="_bHideImage_Click" IsEnabled="False" />
+
+                <Button Content="Shake" Margin="5,10,5,5" x:Name="_bShake" Click="Effect_Click" Tag="Shake" />
+            </StackPanel>
+        </Border>
 
         <!-- Status Bar -->
         <Grid Grid.Row="3" Grid.ColumnSpan="3">

@@ -142,5 +142,30 @@ namespace Astral.Projector
 
             _pvc.ManualAdjust(horizontal, offset);
         }
+
+        private void _bShowImage_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "png|*.png|jpg|*.jpg|gif|*.gif";
+            ofd.CheckFileExists = true;
+            if (ofd.ShowDialog() == true)
+            {
+                string filename = ofd.FileName;
+                _pvc.ShowImage(filename);
+                _bHideImage.IsEnabled = true;
+            }
+        }
+
+        private void _bHideImage_Click(object sender, RoutedEventArgs e)
+        {
+            _bHideImage.IsEnabled = false;
+            _pvc.HideImage();
+        }
+
+        private void Effect_Click(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = (FrameworkElement)sender;
+            _pvc.DisplayEffect(fe.Tag.ToString());
+        }
     }
 }
