@@ -39,7 +39,7 @@ namespace Astral.Plane
             this._tilesVert = tilesVert;
         }
 
-        internal TileFactory(Map map, string id ,string imagePath, string tags, Borders borders, int tilesHoriz, int tilesVert)
+        internal TileFactory(Map map, string id, string imagePath, string tags, Borders borders, int tilesHoriz, int tilesVert)
             : this(null, tags, borders, tilesHoriz, tilesVert)
         {
             _tileID = new Lazy<string>(() => id);
@@ -116,18 +116,18 @@ namespace Astral.Plane
 
         public static bool operator ==(TileFactory left, TileFactory right)
         {
-			if ((object)left == null)
-				return (object)right == null;
+            if ((object)left == null)
+                return (object)right == null;
 
-			return left.Equals(right);
+            return left.Equals(right);
         }
 
         public static bool operator !=(TileFactory left, TileFactory right)
         {
-			if ((object)left == null)
-				return (object)right != null;
+            if ((object)left == null)
+                return (object)right != null;
 
-			return !left.Equals(right);
+            return !left.Equals(right);
         }
 
         #endregion
@@ -257,7 +257,7 @@ namespace Astral.Plane
 
             return new TileFactory(m, id, "images/" + id, tags, borders, tileshoriz, tilesvert);
         }
-        
+
         #endregion
     }
 
@@ -268,12 +268,14 @@ namespace Astral.Plane
         {
         }
 
-        public Borders(double uniformBorder) : this()
+        public Borders(double uniformBorder)
+            : this()
         {
             Left = Top = Right = Bottom = uniformBorder;
         }
 
-        public Borders(double left, double top, double right, double bottom) : this()
+        public Borders(double left, double top, double right, double bottom)
+            : this()
         {
             this.Left = left;
             this.Top = top;
@@ -340,7 +342,7 @@ namespace Astral.Plane
 
         public static bool operator ==(Borders left, Borders right)
         {
-            return (object.ReferenceEquals(left,null) && object.ReferenceEquals(right,null)) || (right != null && right.Equals(left));
+            return (object.ReferenceEquals(left, null) && object.ReferenceEquals(right, null)) || (right != null && right.Equals(left));
         }
 
         public static bool operator !=(Borders left, Borders right)
