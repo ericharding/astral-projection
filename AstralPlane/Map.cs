@@ -129,6 +129,9 @@ namespace Astral.Plane
             this._tileFactories.Remove(tf);
         }
 
+        // todo: Include a way for the application to resolve the unresolved factory
+        public event Action<string> UnresolvedTileFactory;
+
         public void AddTile(Tile tile)
         {
             if (this.FindTileFactory(tile.Factory) == null)
@@ -453,9 +456,20 @@ namespace Astral.Plane
                 {
                     string factoryID = xtile.Attribute("Type").Value;
                     var tileFactory = this.FindTileFactory(factoryID);
-                    Tile newTile = tileFactory.CreateTile();
-                    newTile.LoadFromXML(xtile);
-                    this.AddTile(newTile); // does a check for valid tile factory and does correct reference counting for tilefactory
+                    if (tileFactory == null)
+                    {
+                        // todo: The Unresolved tile factory event should be able to return a TileFactory so the load can continue
+                        if (this.UnresolvedTileFactory != null)
+                        {
+                            this.UnresolvedTileFactory(factoryID);
+                        }
+                    }
+                    else
+                    {
+                        Tile newTile = tileFactory.CreateTile();
+                        newTile.LoadFromXML(xtile);
+                        this.AddTile(newTile); // ensures tilefactory is valid and refcounted
+                    }
                 }
             }
         }
