@@ -33,6 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
@@ -57,6 +58,7 @@
     <Compile Include="Utility\AnonymousDisposable.cs" />
     <Compile Include="Utility\DispatcherHelper.cs" />
     <Compile Include="Utility\NativeMethods.cs" />
+    <Compile Include="Utility\Settings.cs" />
     <Compile Include="Utility\WeakReference.cs" />
     <Compile Include="Utility\XAttributeExtensions.cs" />
   </ItemGroup>
