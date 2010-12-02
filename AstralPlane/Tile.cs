@@ -35,7 +35,7 @@ namespace Astral.Plane
             this.Note = string.Empty;
         }
 
-        internal TileFactory Factory { get; set; }
+        internal TileFactory Factory { get; private set; }
 
         private Point _location;
         public Point Location { get { return _location; } set { _location = value; Dirty(); } }

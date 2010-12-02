@@ -118,10 +118,15 @@ namespace Astral.Plane
             _isDirty = true;
         }
 
+        /// <summary>
+        /// This is VERY dangerous.  Removing a tile factory invalidates all tiles which reference it.
+        /// This means that a saved map referencing this map could become invalid and throw at load time when it can't find a removed tile.
+        /// </summary>
         public void RemoveTileFactory(TileFactory tf)
         {
             _isDirty = true;
-            throw new NotImplementedException();
+            if (tf.RefCount > 0) throw new InvalidOperationException("Tile factory is referenced by a loaded map and cannot be removed at this time.");
+            this._tileFactories.Remove(tf);
         }
 
         public void AddTile(Tile tile)
@@ -133,12 +138,14 @@ namespace Astral.Plane
 
             // Ok, you may pass
             _tiles.Add(tile);
+            tile.Factory.RefCount++;
             _isDirty = true;
         }
 
         public void RemoveTile(Tile tile)
         {
             _tiles.Remove(tile);
+            tile.Factory.RefCount--;
             _isDirty = true;
         }
 
@@ -448,7 +455,7 @@ namespace Astral.Plane
                     var tileFactory = this.FindTileFactory(factoryID);
                     Tile newTile = tileFactory.CreateTile();
                     newTile.LoadFromXML(xtile);
-                    this.AddTile(newTile); // does a check for valid tile factory -- may not be necessary
+                    this.AddTile(newTile); // does a check for valid tile factory and does correct reference counting for tilefactory
                 }
             }
         }
