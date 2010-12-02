@@ -27,7 +27,8 @@ namespace TileMap
         private ObservableCollection<TileFactory> _filteredLibrary;
         private Map _library = new Map();
         private Settings _prefs = new Settings();
-        private readonly string _libraryFileName = AppDomain.CurrentDomain.BaseDirectory + "library.astral";
+        // private readonly string _libraryFileName = AppDomain.CurrentDomain.BaseDirectory + "library.astral";
+        private readonly string _libraryFileName = Environment.CurrentDirectory + "\\library.astral";
         private const string _fileFilter = "Astral Projection files (*.astral)|*.astral|All files (*.*)|*.*";
 
         public MainWindow()
@@ -64,6 +65,11 @@ namespace TileMap
                 {
                     TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
                     _library.AddTileFactory(tf);
+                    if (File.Exists(_libraryFileName))
+                    {
+                        File.Delete(_libraryFileName + ".bak");
+                        File.Move(_libraryFileName, _libraryFileName + ".bak");
+                    }
                     _library.Save(_libraryFileName);
                     UpdateFilteredLibrary(tbSearchLibrary.Text);
                 }
@@ -150,7 +156,25 @@ namespace TileMap
                     menuGoToOrigin_Click(null, null);
                     break;
                 case Key.NumPad0:
-                    mapPane.LayerMap[0] = !mapPane.LayerMap[0];
+                    this._layer.SelectedIndex = 0;
+                    break;
+                case Key.NumPad1:
+                    this._layer.SelectedIndex = 1;
+                    break;
+                case Key.NumPad2:
+                    this._layer.SelectedIndex = 2;
+                    break;
+                case Key.NumPad3:
+                    this._layer.SelectedIndex = 3;
+                    break;
+                case Key.NumPad4:
+                    this._layer.SelectedIndex = 4;
+                    break;
+                case Key.NumPad5:
+                    this._layer.SelectedIndex = 5;
+                    break;
+                case Key.NumPad6:
+                    this._layer.SelectedIndex = 6;
                     break;
             }
         }
