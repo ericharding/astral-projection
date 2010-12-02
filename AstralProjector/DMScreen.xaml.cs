@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Microsoft.Win32;
-using Astral.Plane;
 using System.Windows.Threading;
+using Astral.Plane;
+using Microsoft.Win32;
 
 namespace Astral.Projector
 {
@@ -146,7 +139,7 @@ namespace Astral.Projector
         private void _bShowImage_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "png|*.png|jpg|*.jpg|gif|*.gif";
+            ofd.Filter = "Images|*.PNG;*.JPG;*.JPEG;*.GIF|All Files|*.*";
             ofd.CheckFileExists = true;
             if (ofd.ShowDialog() == true)
             {
