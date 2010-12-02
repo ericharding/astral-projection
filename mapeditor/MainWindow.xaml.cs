@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using Astral.Plane;
+using Astral.Plane.Utility;
 
 namespace TileMap
 {
@@ -23,7 +24,9 @@ namespace TileMap
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ObservableCollection<TileFactory> _filteredLibrary;
         private Map _library = new Map();
+        private Settings _prefs = new Settings();
         private readonly string _libraryFileName = AppDomain.CurrentDomain.BaseDirectory + "library.astral";
         private const string _fileFilter = "Astral Projection files (*.astral)|*.astral|All files (*.*)|*.*";
 
@@ -37,9 +40,12 @@ namespace TileMap
             if (File.Exists(_libraryFileName))
                 _library = Map.LoadFromFile(_libraryFileName);
 
+            _prefs.Load();
+
             mapPane.SetLibrary(_library);
 
-            viewTiles.ItemsSource = _library.TileFactories;
+            _filteredLibrary = new ObservableCollection<TileFactory>(_library.TileFactories);
+            viewTiles.ItemsSource = _filteredLibrary;
         }
 
         private void bImport_Click(object sender, RoutedEventArgs e)
@@ -59,6 +65,7 @@ namespace TileMap
                     TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
                     _library.AddTileFactory(tf);
                     _library.Save(_libraryFileName);
+                    UpdateFilteredLibrary(tbSearchLibrary.Text);
                 }
             }
         }
@@ -68,6 +75,7 @@ namespace TileMap
             // TODO: confirm this action; delete instances of deleted tile from map?
 
             //_tiles.Remove((TileCluster)(((MenuItem)e.Source).DataContext));
+            //UpdateFilteredLibrary(tbSearchLibrary.Text);
             // TODO: Map needs a Remove()
         }
 
@@ -219,6 +227,26 @@ namespace TileMap
             this.Title = "Astral Map - " + (mapPane.FileName ?? "(no file)") + (mapPane.Dirty ? "*" : "");
         }
 
+        private void UpdateFilteredLibrary(string filter)
+        {
+            _filteredLibrary.Clear();
+
+            foreach (TileFactory tf in _library.TileFactories)
+            {
+                foreach (string tag in tf.Tags)
+                {
+                    if (tag.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        _filteredLibrary.Add(tf);
+
+                        goto TryNextFactory;
+                    }
+                }
+            TryNextFactory:
+                continue;
+            }
+        }
+
         private void menuNew_Click(object sender, RoutedEventArgs e)
         {
             if (!SaveIfNeeded(false))
@@ -300,6 +328,11 @@ namespace TileMap
                 mapPane.LayerMap[x] = (bool)cb.IsChecked;
                 mapPane.InvalidateVisual();
             }
+        }
+
+        private void tbSearchLibrary_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateFilteredLibrary(tbSearchLibrary.Text);
         }
     }
 }
