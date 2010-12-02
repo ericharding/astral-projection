@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Win32;
 using Astral.Plane;
 using Astral.Plane.Utility;
@@ -52,9 +51,11 @@ namespace TileMap
         private void bImport_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog open = new OpenFileDialog();
+            open.InitialDirectory = (string)_prefs["defaultDirImport"];
 
             if ((bool)open.ShowDialog(this))
             {
+                _prefs["defaultDirImport"] = Path.GetDirectoryName(open.FileName);
                 Uri file = new Uri(open.FileName);
                 BitmapImage img = new BitmapImage(file);
                 TileImportDialog import = new TileImportDialog(open.SafeFileName, img);
@@ -215,10 +216,12 @@ namespace TileMap
                 if (saveAs || string.IsNullOrEmpty(mapPane.FileName))
                 {
                     SaveFileDialog save = new SaveFileDialog();
+                    save.InitialDirectory = (string)_prefs["defaultDirSave"];
                     save.Filter = _fileFilter;
 
                     if ((bool)save.ShowDialog(this))
                     {
+                        _prefs["defaultDirSave"] = Path.GetDirectoryName(save.FileName);
                         mapPane.Save(save.FileName);
 
                         return true;
@@ -285,10 +288,12 @@ namespace TileMap
                 return;
 
             OpenFileDialog open = new OpenFileDialog();
+            open.InitialDirectory = (string)_prefs["defaultDirOpen"];
             open.Filter = _fileFilter;
 
             if ((bool)open.ShowDialog(this))
             {
+                _prefs["defaultDirOpen"] = Path.GetDirectoryName(open.FileName);
                 Map load = Map.LoadFromFile(open.FileName);
                 load.AddReference(_library);
 
@@ -313,11 +318,15 @@ namespace TileMap
         private void menuExport_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog save = new SaveFileDialog();
+            save.InitialDirectory = (string)_prefs["defaultDirExport"];
             save.Filter = _fileFilter;
             save.Title = "Export";
 
             if ((bool)save.ShowDialog(this))
+            {
+                _prefs["defaultDirExport"] = Path.GetDirectoryName(save.FileName);
                 mapPane.Export(save.FileName);
+            }
         }
 
         private void menuExit_Click(object sender, RoutedEventArgs e)
@@ -333,6 +342,11 @@ namespace TileMap
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = !SaveIfNeeded(false);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            _prefs.Save();
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
