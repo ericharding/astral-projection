@@ -34,7 +34,7 @@
 
         <!-- Bottom panel-->
         <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
-            <TextBox Background="Transparent" x:Name="_tbMapNotes" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+            <TextBox Background="Transparent" x:Name="_tbMapNotes" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" />
         </Grid>
 
         <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" />
