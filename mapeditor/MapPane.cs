@@ -25,7 +25,7 @@ namespace TileMap
         public bool IsDrawGridOver { get { return _drawGridOver; } set { _drawGridOver = value; this.InvalidateVisual(); } }
         public string FileName { get { return _mapFileName; } private set { _mapFileName = value; FileInfoUpdated(); } }
         public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
-        public string MapNotes { get { return _map.Notes; } set { _map.Notes = value; } }
+        public string MapNotes { get { return _map.Notes; } set { _map.Notes = value; _dirty = true; } }
         public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
         public Rect MapBounds { get { return ComputeMapSize(); } }
         public Rect MapViewport { get { return new Rect(_offsetX - _origin, _offsetY - _origin, this.ActualWidth, this.ActualHeight); } }
