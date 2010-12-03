@@ -44,7 +44,7 @@
                     <ScaleTransform ScaleX="1" ScaleY="1" />
                 </TransformGroup>
             </Border.RenderTransform>
-            <Image Source="\\digitalsorcery.net\eric\digitalsorcery\epic\map.png"  Stretch="None" x:Name="_imageViewer" />
+            <Image Stretch="None" x:Name="_imageViewer" />
         </Border>
     </Grid>
 </Window>
