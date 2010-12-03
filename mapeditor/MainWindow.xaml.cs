@@ -66,24 +66,40 @@ namespace TileMap
                 {
                     TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
                     _library.AddTileFactory(tf);
-                    if (File.Exists(_libraryFileName))
-                    {
-                        File.Delete(_libraryFileName + ".bak");
-                        File.Move(_libraryFileName, _libraryFileName + ".bak");
-                    }
-                    _library.Save(_libraryFileName);
-                    UpdateFilteredLibrary(tbSearchLibrary.Text);
+                    SaveLibrary();
                 }
             }
+        }
+
+        private void SaveLibrary()
+        {
+            if (File.Exists(_libraryFileName))
+            {
+                File.Delete(_libraryFileName + ".bak");
+                File.Move(_libraryFileName, _libraryFileName + ".bak");
+            }
+            _library.Save(_libraryFileName);
+            UpdateFilteredLibrary(tbSearchLibrary.Text);
         }
 
         private void MenuItemDeleteImportedTile_Click(object sender, RoutedEventArgs e)
         {
             // TODO: confirm this action; delete instances of deleted tile from map?
 
-            //_tiles.Remove((TileCluster)(((MenuItem)e.Source).DataContext));
-            //UpdateFilteredLibrary(tbSearchLibrary.Text);
-            // TODO: Map needs a Remove()
+            TileFactory factory = viewTiles.SelectedItem as TileFactory;
+            try
+            {
+                if (factory != null)
+                {
+                    _library.RemoveTileFactory(factory);
+                    _filteredLibrary.Remove(factory);
+                }
+                SaveLibrary();
+            }
+            catch (InvalidOperationException io)
+            {
+                MessageBox.Show(io.Message);
+            }
         }
 
         private void viewTiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -130,6 +146,8 @@ namespace TileMap
 
                 return;
             }
+
+            if (_mapNotes.IsFocused) return;
 
             switch (e.Key)
             {

@@ -42,22 +42,22 @@
         <Rectangle Grid.Column="2" Grid.Row="5" Height="2" Grid.ColumnSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
         <Rectangle Grid.Column="5" Grid.Row="2" Width="2" Grid.RowSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
         <WindowsFormsHost Grid.Column="3" Grid.Row="0" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderTop" Value="0" ValueChanged="NumericUpDown_ValueChanged"/>
+            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderTop" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
         <WindowsFormsHost Grid.Column="0" Grid.Row="3" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderLeft" Value="0" ValueChanged="NumericUpDown_ValueChanged"/>
+            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderLeft" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
         <WindowsFormsHost Grid.Column="3" Grid.Row="6" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderBottom" Value="0" ValueChanged="NumericUpDown_ValueChanged"/>
+            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderBottom" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
         <WindowsFormsHost Grid.Column="6" Grid.Row="3" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderRight" Value="0" ValueChanged="NumericUpDown_ValueChanged"/>
+            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderRight" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
         <WindowsFormsHost Grid.Column="3" Grid.Row="5" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbTileHoriz" Minimum="1" Value="1" ValueChanged="NumericUpDown_ValueChanged"/>
+            <wf:NumericUpDown Height="23" Width="30" x:Name="tbTileHoriz" Minimum="1" Value="1" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
         <WindowsFormsHost Grid.Column="5" Grid.Row="3" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbTileVert" Minimum="1" Value="1" ValueChanged="NumericUpDown_ValueChanged"/>
+            <wf:NumericUpDown Height="23" Width="30" x:Name="tbTileVert" Minimum="1" Value="1" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
         <TextBlock Grid.Column="1" Grid.Row="3" FontSize="14" VerticalAlignment="Center" Name="tbPixelsVert" Text="999px" TextAlignment="Right" RenderTransformOrigin="0.5,0.5">
             <TextBlock.RenderTransform>
