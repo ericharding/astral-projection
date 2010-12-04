@@ -141,6 +141,7 @@ namespace Astral.Plane
 
             // Ok, you may pass
             _tiles.Add(tile);
+            tile.Map = this;
             tile.Factory.RefCount++;
             _isDirty = true;
         }
