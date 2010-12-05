@@ -36,6 +36,7 @@ namespace Astral.Plane
         }
 
         internal TileFactory Factory { get; private set; }
+        internal Map Map { get; set; }
 
         private Point _location;
         public Point Location { get { return _location; } set { _location = value; Dirty(); } }
@@ -86,10 +87,9 @@ namespace Astral.Plane
 
         private void Dirty()
         {
-            var map = this.Factory.Map;
-            if (map != null)
+            if (this.Map != null)
             {
-                map.IsDirty = true;
+                this.Map.IsDirty = true;
             }
         }
 
