@@ -1,0 +1,50 @@
+﻿<Window x:Class="Astral.Projector.PlayerView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="clr-namespace:Astral.Projector"
+        xmlns:tile="clr-namespace:TileMap;assembly=AstralMap" Name="this" Background="Black"
+        WindowStyle="None" Title="PlayerView" Height="502" Width="762">
+    <Window.Resources>
+        <Storyboard x:Key="ImageIn">
+            <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].X" From="{Binding ElementName=this, Path=ActualWidth}" To="0" Duration="0:0:2" />
+            <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].Angle" From="359" To="0" Duration="0:0:2" />
+            <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].ScaleX" From="0" To="1" Duration="0:0:2" />
+            <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].ScaleY" From="0" To="1" Duration="0:0:2" />
+        </Storyboard>
+        <Storyboard x:Key="ImageOut">
+            <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].X" To="{Binding ElementName=this, Path=ActualWidth}" Duration="0:0:1" />
+            <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].Angle" From="0" To="359" Duration="0:0:2" />
+            <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].ScaleX" From="1" To="0" Duration="0:0:2" />
+            <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].ScaleY" From="1" To="0" Duration="0:0:2" />
+        </Storyboard>
+
+        <Storyboard x:Key="Shake">
+            <DoubleAnimation Storyboard.TargetName="_outterGrid" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="0" From="30" Duration="0:0:5">
+                <DoubleAnimation.EasingFunction>
+                    <ElasticEase Oscillations="30" Springiness="5" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        
+        
+    </Window.Resources>
+    <Grid x:Name="_outterGrid">
+        <Grid.RenderTransform>
+            <TranslateTransform X="0" />
+        </Grid.RenderTransform>
+
+        <tile:MapPane Background="#000" GridBrush="#5fff" Grid.Row="1" x:Name="_mapView" IsEnabled="False" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_mapView}" Grid.Row="1" x:Name="_fog" Opacity="1" />
+
+        <Border BorderBrush="White" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="_imageAnimator">
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform />
+                    <TranslateTransform X="10000" />
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </TransformGroup>
+            </Border.RenderTransform>
+            <Image Stretch="None" x:Name="_imageViewer" />
+        </Border>
+    </Grid>
+</Window>
