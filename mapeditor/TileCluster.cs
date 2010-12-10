@@ -19,7 +19,7 @@ namespace TileMap
         public TileRotation Rotation { get { return _tile.Rotation; } set { _tile.Rotation = value; } }
         public TileMirror Mirror { get { return _tile.Mirror; } set { _tile.Mirror = value; } }
         public int Layer { get { return _tile.Layer; } internal set { _tile.Layer = value; } }
-        internal Tile Tile { get { return _tile; } }
+        internal Tile Tile { get { return _tile; } set { _tile = value; UpdateDrawSize(); UpdateBounds(); } }
 
         private Rect _bounds;
         private Size _drawSize, _tileSize;
@@ -135,7 +135,7 @@ namespace TileMap
             UpdateBounds();
         }
 
-        public void Draw(DrawingContext dc, Vector offset)
+        public void Draw(DrawingContext dc, Vector offset, bool highlight = false)
         {
             int mirrorX = 1, mirrorY = 1;
 
@@ -151,6 +151,12 @@ namespace TileMap
             dc.PushTransform(new ScaleTransform(mirrorX, mirrorY, where.X + _drawSize.Width / 2, where.Y + _drawSize.Height / 2));
             dc.PushTransform(new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center));
             dc.DrawImage(_tile.Image, new Rect(where, _drawSize));
+            if (highlight)
+            {
+                dc.PushOpacity(0.5);
+                dc.DrawRectangle(Brushes.Goldenrod, null, new Rect(where, _drawSize));
+                dc.Pop();
+            }
             dc.Pop();
             dc.Pop();
         }

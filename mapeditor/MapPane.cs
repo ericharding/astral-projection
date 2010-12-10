@@ -18,7 +18,7 @@ namespace TileMap
         public int TileHeight { get { return _tileHeight; } set { ResizeTiles(_tileWidth, value); } }
         public int TileSize { get { return Math.Max(_tileWidth, _tileHeight); } set { ResizeTiles(value, value); } }
         public event Action<int> TileSizeChanged;
-        public TileFactory TileToPlace { set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); } }
+        public TileFactory TileToPlace { get { return _tileToPlace; } set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); this.InvalidateVisual(); } }
         public int ActivePlacementLayer { get; set; }
         public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
         public bool IsDrawGridUnder { get { return _drawGridUnder; } set { _drawGridUnder = value; this.InvalidateVisual(); } }
@@ -42,7 +42,7 @@ namespace TileMap
         private int _tileWidth = 50, _tileHeight = 50;
         private string _mapFileName;
         private TileFactory _tileToPlace;
-        private TileCluster _tileToPlacePreview;
+        private TileCluster _tileToPlacePreview, _highlightedTile = null;
         private QuadTree<TileCluster> _tiles;
         private Map _map, _library;
         private BitArray _layerMap;
@@ -112,6 +112,18 @@ namespace TileMap
                 this.InvalidateVisual();
             }
 
+            if (_hoverTile && _tileToPlace == null && !_scrolling)
+            {
+                TileCluster tile = FindTopmostVisibleTileAt(_mouseHover);
+
+                if (_highlightedTile != tile)
+                {
+                    _highlightedTile = tile;
+
+                    this.InvalidateVisual();
+                }
+            }
+
             if (_hoverTile && _tileToPlacePreview != null)
                 this.InvalidateVisual();
         }
@@ -164,6 +176,23 @@ namespace TileMap
             if (_layerMap.Count < layer + 1)
             {
                 _layerMap = new BitArray(layer + 1, true);
+            }
+        }
+
+        public void PickUpTile()
+        {
+            if (_highlightedTile != null)
+            {
+                TileToPlace = _highlightedTile.Tile.Factory;
+                _tileToPlacePreview.Tile = _highlightedTile.Tile;
+
+                _tiles.Remove(_highlightedTile);
+                _map.RemoveTile(_highlightedTile.Tile);
+
+                _highlightedTile = null;
+                this.Dirty = true;
+
+                this.InvalidateVisual();
             }
         }
 
@@ -371,6 +400,20 @@ namespace TileMap
             return RealToCanvas(from);
         }
 
+        // TODO: BUG: this will be wrong for rotated/flipped tiles until they have correct bounds
+        private TileCluster FindTopmostVisibleTileAt(Point where)
+        {
+            where = CanvasToReal(where);
+            List<TileCluster> tiles = _tiles.Query(new Rect(where, new Size(0, 0)));
+
+            tiles.RemoveAll(tc => !_layerMap[tc.Layer]);
+
+            if (tiles.Count == 0)
+                return null;
+
+            return tiles[tiles.Count - 1];
+        }
+
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);
@@ -388,7 +431,7 @@ namespace TileMap
                 {
                     Vector offset = new Vector(_origin - _offsetX, _origin - _offsetY);
 
-                    tc.Draw(dc, offset);
+                    tc.Draw(dc, offset, tc == _highlightedTile);
                 }
             }
 
