@@ -147,12 +147,13 @@ namespace TileMap
                 return;
             }
 
-            if (_mapNotes.IsFocused) return;
+            if (_mapNotes.IsFocused || tbSearchLibrary.IsFocused) return;
 
             switch (e.Key)
             {
                 case Key.Escape:
                     viewTiles.SelectedItem = null;
+                    viewTiles_SelectionChanged(null, null);
                     mapPane.InvalidateVisual();
                     break;
                 case Key.LeftShift:
@@ -173,6 +174,10 @@ namespace TileMap
                     break;
                 case Key.D0:
                     menuGoToOrigin_Click(null, null);
+                    break;
+                case Key.Y:
+                    mapPane.PickUpTile();
+                    UpdateFilteredLibrary(tbSearchLibrary.Text);
                     break;
                 case Key.NumPad0:
                     this._layer.SelectedIndex = 0;
@@ -274,6 +279,8 @@ namespace TileMap
 
         private void UpdateFilteredLibrary(string filter)
         {
+            viewTiles.SelectionChanged -= viewTiles_SelectionChanged;
+
             _filteredLibrary.Clear();
 
             foreach (TileFactory tf in _library.TileFactories)
@@ -290,6 +297,11 @@ namespace TileMap
             TryNextFactory:
                 continue;
             }
+
+            if (_filteredLibrary.Contains(mapPane.TileToPlace))
+                viewTiles.SelectedItem = mapPane.TileToPlace;
+
+            viewTiles.SelectionChanged += new SelectionChangedEventHandler(viewTiles_SelectionChanged);
         }
 
         private void menuNew_Click(object sender, RoutedEventArgs e)
