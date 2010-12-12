@@ -402,5 +402,14 @@ namespace TileMap
         {
             UpdateFilteredLibrary(tbSearchLibrary.Text);
         }
+
+        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                viewTiles.Focus();
+                e.Handled = true;
+            }
+        }
     }
 }
