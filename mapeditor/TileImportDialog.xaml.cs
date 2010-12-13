@@ -25,6 +25,7 @@ namespace TileMap
         public double BorderRight { get { return (int)tbBorderRight.Value; } }
         public double BorderBottom { get { return (int)tbBorderBottom.Value; } }
         public double BorderLeft { get { return (int)tbBorderLeft.Value; } }
+        public bool ArbitraryScale { get { return cbArbitrary.IsChecked == true; } }
 
         private bool _waitForIt = true;
 
@@ -55,6 +56,18 @@ namespace TileMap
             overlayTile.InvalidateVisual();
         }
 
+        private void ToggleScaleControls(bool show)
+        {
+            UIElement[] hide = { nudHostBorderBottom, nudHostBorderLeft, nudHostBorderRight, nudHostBorderTop, rectBottom, rectRight, overlayTile };
+            UIElement[] collapse = { nudHostTileHoriz, nudHostTileVert };
+
+            foreach (UIElement h in hide)
+                h.Visibility = show ? Visibility.Visible : Visibility.Hidden;
+
+            foreach (UIElement c in collapse)
+                c.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         private void NumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             if (!_waitForIt)
@@ -70,6 +83,11 @@ namespace TileMap
         private void bImport_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
+        }
+
+        private void cbArbitrary_Checked(object sender, RoutedEventArgs e)
+        {
+            ToggleScaleControls(cbArbitrary.IsChecked != true);
         }
     }
 
