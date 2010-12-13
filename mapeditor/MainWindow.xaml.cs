@@ -55,18 +55,28 @@ namespace TileMap
 
             if ((bool)open.ShowDialog(this))
             {
-                _prefs["defaultDirImport"] = Path.GetDirectoryName(open.FileName);
-                Uri file = new Uri(open.FileName);
-                BitmapImage img = new BitmapImage(file);
-                TileImportDialog import = new TileImportDialog(open.SafeFileName, img);
-                import.Owner = this;
-                bool? result = import.ShowDialog();
-
-                if ((bool)result)
+                try
                 {
-                    TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
-                    _library.AddTileFactory(tf);
-                    SaveLibrary();
+                    _prefs["defaultDirImport"] = Path.GetDirectoryName(open.FileName);
+                    Uri file = new Uri(open.FileName);
+                    BitmapImage img = new BitmapImage(file);
+                    TileImportDialog import = new TileImportDialog(open.SafeFileName, img);
+                    import.Owner = this;
+                    bool? result = import.ShowDialog();
+
+                    if ((bool)result)
+                    {
+                        // TODO: this may be an arbitrarily-scaled tile
+                        TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
+                        _library.AddTileFactory(tf);
+                        SaveLibrary();
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show(this, "That doesn't seem to be a valid image file", "Invalid Image File", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
                 }
             }
         }

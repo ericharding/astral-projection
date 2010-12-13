@@ -39,24 +39,25 @@
             </Grid>
         </Viewbox>
         <tilemap:OverlayGrid x:Name="overlayTile" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="5" Width="{Binding ElementName=viewBoxTile, Path=ActualWidth}" Height="{Binding ElementName=viewBoxTile, Path=ActualHeight}"/>
-        <Rectangle Grid.Column="2" Grid.Row="5" Height="2" Grid.ColumnSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
-        <Rectangle Grid.Column="5" Grid.Row="2" Width="2" Grid.RowSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
-        <WindowsFormsHost Grid.Column="3" Grid.Row="0" Margin="5">
+        <Rectangle x:Name="rectBottom" Grid.Column="2" Grid.Row="5" Height="2" Grid.ColumnSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
+        <Rectangle x:Name="rectRight" Grid.Column="5" Grid.Row="2" Width="2" Grid.RowSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
+        <CheckBox x:Name="cbArbitrary" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Center" Focusable="False" Content="Arbitrary Scale" Checked="cbArbitrary_Checked" Unchecked="cbArbitrary_Checked" Visibility="Hidden"/>
+        <WindowsFormsHost x:Name="nudHostBorderTop" Grid.Column="3" Grid.Row="0" Margin="5">
             <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderTop" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
-        <WindowsFormsHost Grid.Column="0" Grid.Row="3" Margin="5">
+        <WindowsFormsHost x:Name="nudHostBorderLeft" Grid.Column="0" Grid.Row="3" Margin="5">
             <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderLeft" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
-        <WindowsFormsHost Grid.Column="3" Grid.Row="6" Margin="5">
+        <WindowsFormsHost x:Name="nudHostBorderBottom" Grid.Column="3" Grid.Row="6" Margin="5">
             <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderBottom" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
-        <WindowsFormsHost Grid.Column="6" Grid.Row="3" Margin="5">
+        <WindowsFormsHost x:Name="nudHostBorderRight" Grid.Column="6" Grid.Row="3" Margin="5">
             <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderRight" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
-        <WindowsFormsHost Grid.Column="3" Grid.Row="5" Margin="5">
+        <WindowsFormsHost x:Name="nudHostTileHoriz" Grid.Column="3" Grid.Row="5" Margin="5">
             <wf:NumericUpDown Height="23" Width="30" x:Name="tbTileHoriz" Minimum="1" Value="1" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
-        <WindowsFormsHost Grid.Column="5" Grid.Row="3" Margin="5">
+        <WindowsFormsHost x:Name="nudHostTileVert" Grid.Column="5" Grid.Row="3" Margin="5">
             <wf:NumericUpDown Height="23" Width="30" x:Name="tbTileVert" Minimum="1" Value="1" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
         </WindowsFormsHost>
         <TextBlock Grid.Column="1" Grid.Row="3" FontSize="14" VerticalAlignment="Center" Name="tbPixelsVert" Text="999px" TextAlignment="Right" RenderTransformOrigin="0.5,0.5">
@@ -65,7 +66,7 @@
             </TextBlock.RenderTransform>
         </TextBlock>
         <TextBlock Grid.Column="3" Grid.Row="1" FontSize="14" VerticalAlignment="Bottom" Name="tbPixelsHoriz" Text="999px" TextAlignment="Center"/>
-        <TextBox Grid.ColumnSpan="7" Grid.Row="7" HorizontalAlignment="Center" Height="23" Width="160" Margin="0,10,0,5" Name="tbTileName"/>
+        <TextBox Grid.ColumnSpan="7" Grid.Row="7" HorizontalAlignment="Center" Height="23" Width="250" Margin="0,10,0,5" Name="tbTileName"/>
         <StackPanel Grid.Column="0" Grid.ColumnSpan="7" Grid.Row="8" HorizontalAlignment="Center" Orientation="Horizontal">
             <Button Content="Import" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="7" Height="23" Margin="5" Name="bImport" Width="75" IsDefault="True" Click="bImport_Click"/>
             <Button Content="Cancel" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="7" Height="23" Margin="5" Name="bCancel" Width="75" IsCancel="True"/>

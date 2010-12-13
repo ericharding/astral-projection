@@ -367,12 +367,12 @@ namespace TileMap
                 }
             }
 
-
             double width = maxX - minX;
             double height = maxY - minY;
+
             if (width >= 0 && height >= 0)
             {
-                return new Rect(minX, minY, maxX - minX, maxY - minY);
+                return new Rect(minX, minY, width, height);
             }
 
             return default(Rect);
