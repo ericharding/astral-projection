@@ -429,9 +429,10 @@ namespace TileMap
             {
                 if (_layerMap[tc.Layer])
                 {
-                    Vector offset = new Vector(_origin - _offsetX, _origin - _offsetY);
+                    Point where = tc.Position;
+                    where.Offset(_offsetX - _origin, _offsetY - _origin);
 
-                    tc.Draw(dc, offset, tc == _highlightedTile);
+                    tc.Draw(dc, where, 1.0, tc == _highlightedTile);
                 }
             }
 
@@ -444,7 +445,9 @@ namespace TileMap
             {
                 if (_tileToPlacePreview != null)
                 {
-                    _tileToPlacePreview.Draw(dc, _snapToGrid ? FindNearestGridIntersect(_mouseHover) : _mouseHover, 0.5);
+                    Point where = _snapToGrid ? FindNearestGridIntersect(_mouseHover) : _mouseHover;
+
+                    _tileToPlacePreview.Draw(dc, where, 0.5);
                 }
             }
         }
