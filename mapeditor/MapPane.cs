@@ -400,7 +400,6 @@ namespace TileMap
             return RealToCanvas(from);
         }
 
-        // TODO: BUG: this will be wrong for rotated/flipped tiles until they have correct bounds
         private TileCluster FindTopmostVisibleTileAt(Point where)
         {
             where = CanvasToReal(where);

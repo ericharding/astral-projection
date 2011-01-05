@@ -74,6 +74,14 @@ namespace TileMap
             }
         }
 
+        private Size GetCorrectedSize()
+        {
+            if ((int)_tile.Rotation == 90 || (int)_tile.Rotation == 270)
+                return new Size(_drawSize.Height, _drawSize.Width);
+            else
+                return _drawSize;
+        }
+
         private void UpdateDrawSize()
         {
             Size newSize = new Size();
@@ -98,9 +106,8 @@ namespace TileMap
 
         private void UpdateBounds()
         {
-            // TODO: take rotate/mirror into account here
             Point realPos = new Point(_tile.Location.X - _borderOffset.X, _tile.Location.Y - _borderOffset.Y);
-            _bounds = new Rect(realPos, _drawSize);
+            _bounds = new Rect(realPos, GetCorrectedSize());
 
             if (BoundsChanged != null)
                 BoundsChanged(this, new EventArgs());
