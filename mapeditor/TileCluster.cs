@@ -16,8 +16,8 @@ namespace TileMap
         public Rect Bounds { get { return _bounds; } }
         private Size TileSize { set { _tileSize = value; UpdateDrawSize(); UpdateBounds(); } }
         public Point Position { get { return _tile.Location; } set { _tile.Location = value; UpdateBounds(); } }
-        public TileRotation Rotation { get { return _tile.Rotation; } set { _tile.Rotation = value; } }
-        public TileMirror Mirror { get { return _tile.Mirror; } set { _tile.Mirror = value; } }
+        public TileRotation Rotation { get { return _tile.Rotation; } set { _tile.Rotation = value; UpdateDrawSize(); UpdateBounds(); } }
+        public TileMirror Mirror { get { return _tile.Mirror; } set { _tile.Mirror = value; UpdateDrawSize(); UpdateBounds(); } }
         public int Layer { get { return _tile.Layer; } internal set { _tile.Layer = value; } }
         internal Tile Tile { get { return _tile; } set { _tile = value; UpdateDrawSize(); UpdateBounds(); } }
 
@@ -135,33 +135,7 @@ namespace TileMap
             UpdateBounds();
         }
 
-        public void Draw(DrawingContext dc, Vector offset, bool highlight = false)
-        {
-            int mirrorX = 1, mirrorY = 1;
-
-            if ((_tile.Mirror & TileMirror.Horizontal) == TileMirror.Horizontal)
-                mirrorX = -1;
-
-            if ((_tile.Mirror & TileMirror.Vertical) == TileMirror.Vertical)
-                mirrorY = -1;
-
-            Point where = new Point(_bounds.X - offset.X, _bounds.Y - offset.Y);
-
-            double center = Math.Min(_drawSize.Width / 2, _drawSize.Height / 2);
-            dc.PushTransform(new ScaleTransform(mirrorX, mirrorY, where.X + _drawSize.Width / 2, where.Y + _drawSize.Height / 2));
-            dc.PushTransform(new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center));
-            dc.DrawImage(_tile.Image, new Rect(where, _drawSize));
-            if (highlight)
-            {
-                dc.PushOpacity(0.5);
-                dc.DrawRectangle(Brushes.Goldenrod, null, new Rect(where, _drawSize));
-                dc.Pop();
-            }
-            dc.Pop();
-            dc.Pop();
-        }
-
-        public void Draw(DrawingContext dc, Point where, double opacity)
+        public void Draw(DrawingContext dc, Point where, double opacity = 1.0, bool highlight = false)
         {
             int mirrorX = 1, mirrorY = 1;
 
@@ -173,12 +147,34 @@ namespace TileMap
 
             where.Offset(-_borderOffset.X, -_borderOffset.Y);
 
+            Rect tileRect = new Rect(where, _drawSize);
+
+            RectangleGeometry rg = new RectangleGeometry(tileRect);
+
             double center = Math.Min(_drawSize.Width / 2, _drawSize.Height / 2);
-            dc.PushTransform(new ScaleTransform(mirrorX, mirrorY, where.X + _drawSize.Width / 2, where.Y + _drawSize.Height / 2));
-            dc.PushTransform(new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center));
+
+            ScaleTransform scaleXform = new ScaleTransform(mirrorX, mirrorY, where.X + center, where.Y + center);
+            RotateTransform rotXform = new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center);
+            TransformGroup xform = new TransformGroup();
+            xform.Children.Add(rotXform);
+            xform.Children.Add(scaleXform);
+            rg.Transform = xform;
+
+            Rect wrong = rg.Rect;
+            Rect right = rg.Bounds;
+            TranslateTransform transXform = new TranslateTransform(wrong.X - right.X, wrong.Y - right.Y);
+
+            xform.Children.Add(transXform);
+
+            dc.PushTransform(xform);
             dc.PushOpacity(opacity);
-            dc.DrawImage(_tile.Image, new Rect(where, _drawSize));
-            dc.Pop();
+            dc.DrawImage(_tile.Image, tileRect);
+            if (highlight)
+            {
+                dc.PushOpacity(0.5);
+                dc.DrawRectangle(Brushes.Goldenrod, null, tileRect);
+                dc.Pop();
+            }
             dc.Pop();
             dc.Pop();
         }
