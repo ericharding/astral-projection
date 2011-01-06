@@ -18,6 +18,7 @@ namespace Astral.Plane
         private string _imagePath;
         private string _tags;
         private Borders _borders;
+        private bool _arbitraryScale;
         private int _tilesHoriz;
         private int _tilesVert;
         private Lazy<string> _tileID;
@@ -26,7 +27,7 @@ namespace Astral.Plane
 
         internal int RefCount { get; set; }
 
-        public TileFactory(BitmapSource image, string tags, Borders borders, int tilesHoriz, int tilesVert)
+        public TileFactory(BitmapSource image, string tags, Borders borders, int tilesHoriz, int tilesVert, bool arbitraryScale)
         {
             if (tilesHoriz <= 0 || tilesVert <= 0)
             {
@@ -39,10 +40,11 @@ namespace Astral.Plane
             this._borders = borders;
             this._tilesHoriz = tilesHoriz;
             this._tilesVert = tilesVert;
+            this._arbitraryScale = arbitraryScale;
         }
 
-        internal TileFactory(Map map, string id, string imagePath, string tags, Borders borders, int tilesHoriz, int tilesVert)
-            : this(null, tags, borders, tilesHoriz, tilesVert)
+        internal TileFactory(Map map, string id, string imagePath, string tags, Borders borders, int tilesHoriz, int tilesVert, bool arbitraryScale)
+            : this(null, tags, borders, tilesHoriz, tilesVert, arbitraryScale)
         {
             _tileID = new Lazy<string>(() => id);
             _map = map;
@@ -163,6 +165,11 @@ namespace Astral.Plane
             get { return _tilesVert; }
         }
 
+        public bool ArbitraryScale
+        {
+            get { return _arbitraryScale; }
+        }
+
         #region Internal
 
         internal Stream GetImageStream()
@@ -241,7 +248,8 @@ namespace Astral.Plane
                 new XAttribute("TileID", this.TileID),
                 new XAttribute("Tags", this._tags),
                 new XAttribute("Borders", _borders),
-                new XAttribute("Tiles", string.Format("{0},{1}", _tilesHoriz, _tilesVert)));
+                new XAttribute("Tiles", string.Format("{0},{1}", _tilesHoriz, _tilesVert)),
+                new XAttribute("ArbitraryScale", this._arbitraryScale));
         }
 
         internal static TileFactory FromXML(Map m, XElement node)
@@ -249,6 +257,7 @@ namespace Astral.Plane
             string id, tags;
             Borders borders;
             int tileshoriz, tilesvert;
+            bool arbitraryScale;
 
             id = node.Attribute("TileID").Value;
             tags = node.Attribute("Tags").Value;
@@ -256,8 +265,9 @@ namespace Astral.Plane
             var tileValues = node.Attribute("Tiles").Parse(s => s.Split(',').Select(t => Int32.Parse(t))).ToArray();
             tileshoriz = tileValues[0];
             tilesvert = tileValues[1];
+            arbitraryScale = node.Attribute("ArbitraryScale").Parse(bool.Parse);
 
-            return new TileFactory(m, id, "images/" + id, tags, borders, tileshoriz, tilesvert);
+            return new TileFactory(m, id, "images/" + id, tags, borders, tileshoriz, tilesvert, arbitraryScale);
         }
 
         #endregion

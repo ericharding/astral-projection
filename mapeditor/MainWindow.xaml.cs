@@ -67,7 +67,7 @@ namespace TileMap
                     if ((bool)result)
                     {
                         // TODO: this may be an arbitrarily-scaled tile
-                        TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert);
+                        TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert, import.ArbitraryScale);
                         _library.AddTileFactory(tf);
                         SaveLibrary();
                     }
