@@ -69,7 +69,7 @@ namespace Astral.Plane
                 new XAttribute("Type", this.Factory.TileID),
                 new XAttribute("Location", this.Location.ToString()),
                 new XAttribute("Layer", this.Layer),
-                new XAttribute("Rotation", this.Rotation),
+                new XAttribute("Rotation", (int)this.Rotation),
                 new XAttribute("Mirror", this.Mirror),
                 new XAttribute("Note", this.Note));
         }
@@ -80,7 +80,16 @@ namespace Astral.Plane
 
             this.Location = element.Attribute("Location").Parse(Point.Parse);
             this.Layer = (int)element.Attribute("Layer").Parse(UInt32.Parse);
-            this.Rotation = element.Attribute("Rotation").Parse(s => (TileRotation)Enum.Parse(typeof(TileRotation), s));
+            this.Rotation = element.Attribute("Rotation").Parse(s =>
+                {
+                    int rotation;
+                    if (Int32.TryParse(s, out rotation))
+                    {
+                        return (TileRotation)rotation;
+                    }
+                    // Old map compatability
+                    return (TileRotation)Enum.Parse(typeof(TileRotation), s);
+                });
             this.Mirror = element.Attribute("Mirror").Parse(s => (TileMirror)Enum.Parse(typeof(TileMirror), s));
             this.Note = element.Attribute("Note").Parse(s => s);
         }
