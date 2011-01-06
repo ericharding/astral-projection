@@ -16,9 +16,10 @@ namespace TileMap
         public Rect Bounds { get { return _bounds; } }
         private Size TileSize { set { _tileSize = value; UpdateDrawSize(); UpdateBounds(); } }
         public Point Position { get { return _tile.Location; } set { _tile.Location = value; UpdateBounds(); } }
-        public TileRotation Rotation { get { return _tile.Rotation; } set { _tile.Rotation = value; UpdateDrawSize(); UpdateBounds(); } }
+        public int Rotation { get { return _tile.Rotation; } set { _tile.Rotation = value; UpdateDrawSize(); UpdateBounds(); } }
         public TileMirror Mirror { get { return _tile.Mirror; } set { _tile.Mirror = value; UpdateDrawSize(); UpdateBounds(); } }
         public int Layer { get { return _tile.Layer; } internal set { _tile.Layer = value; } }
+        public bool ArbitraryScale { get { return _tile.ArbitraryScale; } }
         internal Tile Tile { get { return _tile; } set { _tile = value; UpdateDrawSize(); UpdateBounds(); } }
 
         private Rect _bounds;
@@ -60,7 +61,7 @@ namespace TileMap
                         side += 2;
                 }
 
-                side += ((int)_tile.Rotation / 90);
+                side += (_tile.Rotation / 90);
                 side %= 4;
             }
 
@@ -76,7 +77,7 @@ namespace TileMap
 
         private Size GetCorrectedSize()
         {
-            if ((int)_tile.Rotation == 90 || (int)_tile.Rotation == 270)
+            if (_tile.Rotation == 90 || _tile.Rotation == 270)
                 return new Size(_drawSize.Height, _drawSize.Width);
             else
                 return _drawSize;
@@ -118,14 +119,14 @@ namespace TileMap
             int newRot;
 
             if (clockwise)
-                newRot = ((int)_tile.Rotation + 90) % 360;
+                newRot = (_tile.Rotation + 90) % 360;
             else
             {
-                newRot = (int)_tile.Rotation - 90;
+                newRot = _tile.Rotation - 90;
                 newRot = newRot < 0 ? 270 : newRot;
             }
 
-            _tile.Rotation = (TileRotation)newRot;
+            _tile.Rotation = newRot;
 
             UpdateDrawSize();
             UpdateBounds();
@@ -161,7 +162,7 @@ namespace TileMap
             double center = Math.Min(_drawSize.Width / 2, _drawSize.Height / 2);
 
             ScaleTransform scaleXform = new ScaleTransform(mirrorX, mirrorY, where.X + center, where.Y + center);
-            RotateTransform rotXform = new RotateTransform((int)this._tile.Rotation, where.X + center, where.Y + center);
+            RotateTransform rotXform = new RotateTransform(_tile.Rotation, where.X + center, where.Y + center);
             TransformGroup xform = new TransformGroup();
             xform.Children.Add(rotXform);
             xform.Children.Add(scaleXform);

@@ -10,14 +10,6 @@ using System.Windows.Media.Imaging;
 
 namespace Astral.Plane
 {
-    public enum TileRotation
-    {
-        Zero = 0,
-        CW90 = 90,
-        CW180 = 180,
-        CW270 = 270
-    }
-
     [Flags]
     public enum TileMirror
     {
@@ -33,6 +25,7 @@ namespace Astral.Plane
             if (source == null) throw new ArgumentNullException("source");
             this.Factory = source;
             this.Note = string.Empty;
+            this.Scale = 1.0;
         }
 
         public TileFactory Factory { get; private set; }
@@ -51,17 +44,20 @@ namespace Astral.Plane
                 Dirty();
             }
         }
-        private TileRotation _rotation;
-        public TileRotation Rotation { get { return _rotation; } set { _rotation = value; Dirty(); } }
+        private int _rotation;
+        public int Rotation { get { return _rotation; } set { _rotation = value; Dirty(); } }
         private TileMirror _mirror;
         public TileMirror Mirror { get { return _mirror; } set { _mirror = value; Dirty(); } }
         private string _note;
         public string Note { get { return _note; } set { _note = value; Dirty(); } }
+        private double _scale;
+        public double Scale { get { return _scale; } set { _scale = value; Dirty(); } }
 
         public BitmapSource Image { get { return this.Factory.Image; } }
         public Borders Borders { get { return this.Factory.Borders; } }
         public int TilesHorizontal { get { return this.Factory.TilesHorizontal; } }
         public int TilesVertical { get { return this.Factory.TilesVertical; } }
+        public bool ArbitraryScale { get { return this.Factory.ArbitraryScale; } }
 
         internal XNode ToXML()
         {
@@ -71,7 +67,8 @@ namespace Astral.Plane
                 new XAttribute("Layer", this.Layer),
                 new XAttribute("Rotation", (int)this.Rotation),
                 new XAttribute("Mirror", this.Mirror),
-                new XAttribute("Note", this.Note));
+                new XAttribute("Note", this.Note),
+                new XAttribute("Scale", this.Scale));
         }
 
         internal void LoadFromXML(XElement element)
@@ -80,18 +77,10 @@ namespace Astral.Plane
 
             this.Location = element.Attribute("Location").Parse(Point.Parse);
             this.Layer = (int)element.Attribute("Layer").Parse(UInt32.Parse);
-            this.Rotation = element.Attribute("Rotation").Parse(s =>
-                {
-                    int rotation;
-                    if (Int32.TryParse(s, out rotation))
-                    {
-                        return (TileRotation)rotation;
-                    }
-                    // Old map compatability
-                    return (TileRotation)Enum.Parse(typeof(TileRotation), s);
-                });
+            this.Rotation = element.Attribute("Rotation").Parse(Int32.Parse);
             this.Mirror = element.Attribute("Mirror").Parse(s => (TileMirror)Enum.Parse(typeof(TileMirror), s));
             this.Note = element.Attribute("Note").Parse(s => s);
+            this.Scale = element.Attribute("Scale").Parse(Double.Parse);
         }
 
         private void Dirty()

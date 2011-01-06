@@ -19,7 +19,7 @@ namespace Astral.Plane
     public class Map
     {
         #region Strings
-        private const int MAP_VERSION = 1;
+        private const int MAP_VERSION = 2;
 
         private const string MANIFEST_NAME = "AstralManifest.xml";
         private const string TILEFACTORY_COLLECTION = "TileTypes";
