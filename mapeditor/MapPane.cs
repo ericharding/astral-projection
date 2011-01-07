@@ -23,6 +23,7 @@ namespace TileMap
         public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
         public bool IsDrawGridUnder { get { return _drawGridUnder; } set { _drawGridUnder = value; this.InvalidateVisual(); } }
         public bool IsDrawGridOver { get { return _drawGridOver; } set { _drawGridOver = value; this.InvalidateVisual(); } }
+        public bool IsProjectorMode { get { return _projectorMode; } set { _projectorMode = value; this.InvalidateVisual(); } }
         public string FileName { get { return _mapFileName; } private set { _mapFileName = value; FileInfoUpdated(); } }
         public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
         public string MapNotes { get { return _map.Notes; } set { _map.Notes = value; _dirty = true; } }
@@ -36,7 +37,7 @@ namespace TileMap
 
         private const long _origin = 0x7FFFFFFF;
         private Pen _gridPen = new Pen(Brushes.Black, 1);
-        private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true, _drawGridUnder = true, _drawGridOver = false, _dirty = false;
+        private bool _scrolling = false, _hoverTile = false, _leftClick = false, _snapToGrid = true, _drawGridUnder = true, _drawGridOver = false, _dirty = false, _projectorMode = false;
         private Point _mousePos, _mouseHover;
         private long _offsetX = _origin, _offsetY = _origin;
         private int _tileWidth = 50, _tileHeight = 50;
@@ -112,7 +113,7 @@ namespace TileMap
                 this.InvalidateVisual();
             }
 
-            if (_hoverTile && _tileToPlace == null && !_scrolling)
+            if (!_projectorMode && _hoverTile && _tileToPlace == null && !_scrolling)
             {
                 TileCluster tile = FindTopmostVisibleTileAt(_mouseHover);
 
@@ -181,7 +182,7 @@ namespace TileMap
 
         public void PickUpTile()
         {
-            if (_highlightedTile != null)
+            if (!_projectorMode && _highlightedTile != null)
             {
                 TileToPlace = _highlightedTile.Tile.Factory;
                 _tileToPlacePreview.Tile = _highlightedTile.Tile;
@@ -431,7 +432,7 @@ namespace TileMap
                     Point where = tc.Position;
                     where.Offset(_offsetX - _origin, _offsetY - _origin);
 
-                    tc.Draw(dc, where, 1.0, tc == _highlightedTile);
+                    tc.Draw(dc, where, 1.0, !_projectorMode && tc == _highlightedTile);
                 }
             }
 
