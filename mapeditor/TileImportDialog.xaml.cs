@@ -19,12 +19,12 @@ namespace TileMap
     public partial class TileImportDialog : Window
     {
         public string TileName { get { return tbTileName.Text; } }
-        public int TilesHoriz { get { return (int)tbTileHoriz.Value; } }
-        public int TilesVert { get { return (int)tbTileVert.Value; } }
-        public double BorderTop { get { return (int)tbBorderTop.Value; } }
-        public double BorderRight { get { return (int)tbBorderRight.Value; } }
-        public double BorderBottom { get { return (int)tbBorderBottom.Value; } }
-        public double BorderLeft { get { return (int)tbBorderLeft.Value; } }
+        public int TilesHoriz { get { return ArbitraryScale ? 1 : (int)tbTileHoriz.Value; } }
+        public int TilesVert { get { return ArbitraryScale ? 1 : (int)tbTileVert.Value; } }
+        public double BorderTop { get { return ArbitraryScale ? 0 : (int)tbBorderTop.Value; } }
+        public double BorderRight { get { return ArbitraryScale ? 0 : (int)tbBorderRight.Value; } }
+        public double BorderBottom { get { return ArbitraryScale ? 0 : (int)tbBorderBottom.Value; } }
+        public double BorderLeft { get { return ArbitraryScale ? 0 : (int)tbBorderLeft.Value; } }
         public bool ArbitraryScale { get { return cbArbitrary.IsChecked == true; } }
 
         private bool _waitForIt = true;

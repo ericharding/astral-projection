@@ -73,7 +73,7 @@ namespace TileMap
 
                 if (_tileToPlace != null)
                 {
-                    PlaceTile(_tileToPlace, _snapToGrid ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true, this.ActivePlacementLayer);
+                    PlaceTile(_tileToPlace, (_snapToGrid && !_tileToPlace.ArbitraryScale) ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true, this.ActivePlacementLayer);
                 }
             }
         }
@@ -162,6 +162,7 @@ namespace TileMap
             tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
             tile.Rotation = _tileToPlacePreview.Rotation;
             tile.Mirror = _tileToPlacePreview.Mirror;
+            tile.Scale = _tileToPlace.ArbitraryScale ? _tileToPlacePreview.Scale : 1.0;
             tile.Layer = layer;
             _tiles.Insert(tile);
 
@@ -211,6 +212,15 @@ namespace TileMap
             if (_tileToPlacePreview != null)
             {
                 _tileToPlacePreview.MirrorTile(horizontal);
+                this.InvalidateVisual();
+            }
+        }
+
+        public void ResizePreview(bool larger)
+        {
+            if (_tileToPlacePreview != null)
+            {
+                _tileToPlacePreview.ResizeTile(larger);
                 this.InvalidateVisual();
             }
         }
@@ -445,7 +455,7 @@ namespace TileMap
             {
                 if (_tileToPlacePreview != null)
                 {
-                    Point where = _snapToGrid ? FindNearestGridIntersect(_mouseHover) : _mouseHover;
+                    Point where = (_snapToGrid && !_tileToPlacePreview.ArbitraryScale) ? FindNearestGridIntersect(_mouseHover) : _mouseHover;
 
                     _tileToPlacePreview.Draw(dc, where, 0.5);
                 }

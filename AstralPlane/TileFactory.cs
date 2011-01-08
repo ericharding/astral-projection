@@ -67,6 +67,15 @@ namespace Astral.Plane
             }
         }
 
+        public string DisplayName
+        {
+            get
+            {
+                string dim = _arbitraryScale ? "(*)" : string.Format("({0},{1})", _tilesHoriz, _tilesVert);
+                return string.Format("{0} {1}", Tags[0], dim);
+            }
+        }
+
         public BitmapSource Image
         {
             get

@@ -52,11 +52,7 @@
                                     </StackPanel.ContextMenu>
                                     <TextBlock>
                                         <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0} ({1},{2})">
-                                                <Binding Path="Tags[0]" />
-                                                <Binding Path="TilesHorizontal" />
-                                                <Binding Path="TilesVertical" />
-                                            </MultiBinding>
+                                            <Binding Path="DisplayName"/>
                                         </TextBlock.Text>
                                     </TextBlock>
                                     <!-- hackhack: remove tooltip later -->
