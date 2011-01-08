@@ -66,7 +66,6 @@ namespace TileMap
 
                     if ((bool)result)
                     {
-                        // TODO: this may be an arbitrarily-scaled tile
                         TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert, import.ArbitraryScale);
                         _library.AddTileFactory(tf);
                         SaveLibrary();
@@ -181,6 +180,14 @@ namespace TileMap
                     break;
                 case Key.V:
                     mapPane.MirrorPreview(false);
+                    break;
+                case Key.OemMinus:
+                case Key.Subtract:
+                    mapPane.ResizePreview(false);
+                    break;
+                case Key.OemPlus:
+                case Key.Add:
+                    mapPane.ResizePreview(true);
                     break;
                 case Key.D0:
                     menuGoToOrigin_Click(null, null);
