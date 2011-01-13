@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows;
+using System.Diagnostics;
 
 namespace Astral.Projector
 {
@@ -48,7 +49,7 @@ namespace Astral.Projector
                         int piX = safeRect.X + x;
                         int piY = safeRect.Y + y;
                         int byteOffset = (piY * self.BackBufferStride) + (piX * 4); // Assuming 32bpp
-                        pixels[byteOffset / 4] = colorFunction(x, y, pixels[byteOffset/4]);
+                        pixels[byteOffset / 4] = colorFunction(x, y, pixels[byteOffset / 4]);
                     }
                 }
 
@@ -131,25 +132,92 @@ namespace Astral.Projector
             return ret;
         }
 
-        public static unsafe void SetPixel(this WriteableBitmap self, int x, int y, Color color)
+        public static void CircleAlpha(this WriteableBitmap self, int x0, int y0, int radius, bool transparent)
         {
-            uint col = GetColorBytes(ref color, IsPremultipliedFormat(self));
-            int target = (x * self.BackBufferStride) + (y * 4);
-            ((uint*)self.BackBuffer)[target] = col;
+            self.ApplyCircleFunction(x0, y0, radius, (x, y, color) =>
+            {
+                // a^2+b^2=c^2
+                int dx = x0-x;
+                int dy = y0-y;
+                double distance = Math.Sqrt(dx * dx + dy * dy) / radius;
+
+                uint alpha = transparent ? (uint)0 : 255;
+                if (transparent && distance > 0.8)
+                {
+                    double oldAlpha = color >> 24;
+                    alpha = (uint)Math.Min(oldAlpha, 5 * 0xff * (distance - 0.8));
+                }
+
+                uint ret = (color & 0x00FFFFFF) | (alpha << 24);
+                return ret;
+            });
         }
 
-        public static unsafe void DrawCircle(this WriteableBitmap self, int x, int y, double radius, Color color)
+        internal static unsafe void ApplyHorizontalLineFunction(this WriteableBitmap self, int x0, int x1, int y, Func<int, int, uint, uint> operation)
         {
-            // todo: approximate circle better
-            self.Fill(new Int32Rect((int)(x - radius), (int)(y - radius), (int)(radius * 2), (int)(radius * 2)), color);
+            if (y < 0 || y >= self.PixelHeight) return;
 
-            //self.ApplyFunction(new Int32Rect((int)(x - radius), (int)(y - radius), (int)(radius * 2), (int)(radius * 2)), (p) => 
-            //{
-            //    uint alpha = p >> 24;
-            //    alpha /= 2;
-            //    alpha = alpha << 24;
-            //    return (p & 0x00FFFFFF) | alpha;
-            //});
+            uint* pixels = (uint*)self.BackBuffer;
+            int byteoffsetBase = (y * self.BackBufferStride);
+            if (x1 < x0) { int temp = x0; x1=x0; x0=temp; }
+            int max = Math.Min(x1, self.PixelWidth);
+            for (int x = Math.Max(x0, 0); x < max; x++)
+            {
+                uint pixelColor = pixels[byteoffsetBase / 4 + x];
+                pixels[byteoffsetBase / 4 + x] = operation(x, y, pixelColor);
+            }
+        }
+
+        public static void ApplyCircleFunction(this WriteableBitmap self, int x0, int y0, int radius, Func<int, int, uint, uint> colorFunction)
+        {
+            self.Lock();
+
+            int f = 1 - radius;
+            int ddF_x = 1;
+            int ddF_y = -2 * radius;
+            int x = 0;
+            int y = radius;
+
+            // Fill pixels in horizontal scan lines (instead of vertical for better locality)
+
+            // center line
+            self.ApplyHorizontalLineFunction(x0 - radius, x0 + radius, y0, colorFunction);
+
+            while (x <= y)
+            {
+                if (f >= 0)
+                {
+                    y--;
+                    ddF_y += 2;
+                    f += ddF_y;
+                }
+                x++;
+                ddF_x += 2;
+                f += ddF_x;
+
+                self.ApplyHorizontalLineFunction(x0 - x, x0 + x, y0 + y, colorFunction);
+                
+                self.ApplyHorizontalLineFunction(x0 - x, x0 + x, y0 - y, colorFunction);
+
+                self.ApplyHorizontalLineFunction(x0 - y, x0 + y, y0 + x, colorFunction);
+
+                self.ApplyHorizontalLineFunction(x0 - y, x0 + y, y0 - x, colorFunction);
+            }
+
+
+            int dirtyX = Bound(x0 - radius, self.PixelWidth);
+            int dirtyY = Bound(y0 - radius, self.PixelHeight);
+            self.AddDirtyRect(new Int32Rect( 
+                dirtyX, dirtyY, 
+                Bound(radius * 2 + 1, self.PixelWidth - dirtyX),
+                Bound(radius * 2 + 1, self.PixelHeight - dirtyY)));
+            self.Unlock();
+        }
+
+        // If you don't inline this I'm going to hityou c#
+        private static int Bound(int value, int max)
+        {
+            return Math.Max(0, Math.Min(max, value));
         }
     }
 }

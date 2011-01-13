@@ -184,9 +184,7 @@ namespace Astral.Projector
             int pixelX = (int)(_fogImage.PixelWidth * x);
             int pixelY = (int)(_fogImage.PixelHeight * y);
 
-            Color color = clear ? Colors.Transparent : Colors.Black;
-
-            _fogImage.DrawCircle(pixelX, pixelY, size / 2, color);
+            _fogImage.CircleAlpha(pixelX, pixelY, size / 2, clear);
 
             if (this.FogChanged != null)
             {

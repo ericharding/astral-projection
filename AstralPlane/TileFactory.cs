@@ -27,7 +27,7 @@ namespace Astral.Plane
 
         internal int RefCount { get; set; }
 
-        public TileFactory(BitmapSource image, string tags, Borders borders, int tilesHoriz, int tilesVert, bool arbitraryScale)
+        public TileFactory(BitmapSource image, string tags, Borders borders, int tilesHoriz, int tilesVert, bool arbitraryScale=false)
         {
             if (tilesHoriz <= 0 || tilesVert <= 0)
             {
