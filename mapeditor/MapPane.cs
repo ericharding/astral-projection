@@ -417,11 +417,26 @@ namespace TileMap
             List<TileCluster> tiles = _tiles.Query(new Rect(where, new Size(0, 0)));
 
             tiles.RemoveAll(tc => !_layerMap[tc.Layer]);
+            tiles.RemoveAll(tc => !IsPointInRectangle(RealToCanvas(where), tc.RenderCorners[0], tc.RenderCorners[1], tc.RenderCorners[2]));
 
             if (tiles.Count == 0)
                 return null;
 
             return tiles[tiles.Count - 1];
+        }
+
+        private bool IsPointInRectangle(Point p, Point topLeft, Point topRight, Point bottomLeft)
+        {
+            Vector v0 = Point.Subtract(p, topLeft);
+            Vector v1 = Point.Subtract(topRight, topLeft);
+            Vector v2 = Point.Subtract(bottomLeft, topLeft);
+
+            double A = Vector.Multiply(v0, v1);
+            double B = Vector.Multiply(v1, v1);
+            double C = Vector.Multiply(v0, v2);
+            double D = Vector.Multiply(v2, v2);
+
+            return (0 <= A && A <= B && 0 <= C && C <= D);
         }
 
         protected override void OnRender(DrawingContext dc)
