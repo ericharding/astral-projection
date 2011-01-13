@@ -29,7 +29,7 @@
         
         
         <!-- The MAP -->
-        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" MouseWheel="_dmMapView_MouseWheel" />
+        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" MouseWheel="_dmMapView_MouseWheel" IsProjectorMode="True" />
         <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" ClipToBounds="True" x:Name="_fog" ShowMapBounds="True" />
 
         <!-- Bottom panel-->
