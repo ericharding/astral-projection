@@ -22,6 +22,7 @@ namespace TileMap
         public bool ArbitraryScale { get { return _tile.ArbitraryScale; } }
         public double Scale { get { return _tile.Scale; } set { _tile.Scale = value; UpdateDrawSize(); UpdateBounds(); } }
         internal Tile Tile { get { return _tile; } set { _tile = value; UpdateDrawSize(); UpdateBounds(); } }
+        internal Point[] RenderCorners { get; private set; }
 
         private Rect _bounds;
         private Size _drawSize, _tileSize;
@@ -233,6 +234,10 @@ namespace TileMap
 
             if (!_tile.ArbitraryScale)
                 xform.Children.Add(transXform);
+
+            Point[] corners = { rg.Rect.TopLeft, rg.Rect.TopRight, rg.Rect.BottomLeft, rg.Rect.BottomRight };
+            xform.Value.Transform(corners);
+            RenderCorners = corners;
 
             dc.PushTransform(xform);
             dc.PushOpacity(opacity);
