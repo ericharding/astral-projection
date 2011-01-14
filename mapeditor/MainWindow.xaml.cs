@@ -53,6 +53,11 @@ namespace TileMap
             OpenFileDialog open = new OpenFileDialog();
             open.InitialDirectory = (string)_prefs["defaultDirImport"];
 
+            if (!HasReadAccess(open.InitialDirectory))
+            {
+                open.InitialDirectory = null;
+            }
+            
             if ((bool)open.ShowDialog(this))
             {
                 try
@@ -77,6 +82,18 @@ namespace TileMap
 
                     return;
                 }
+            }
+        }
+
+        private bool HasReadAccess(string path)
+        {
+            try
+            {
+                return Directory.Exists(path) && Directory.GetFiles(path) != null;
+            }
+            catch
+            {
+                return false;
             }
         }
 

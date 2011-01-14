@@ -558,8 +558,8 @@ namespace Astral.Plane
 
             return new AnonymousDisposable(() =>
                 {
-                    Monitor.Exit(_fileLock);
                     zipContainer.Dispose();
+                    Monitor.Exit(_fileLock);
                 });
         }
     }
