@@ -190,7 +190,21 @@ namespace TileMap
 
                 _tiles.Remove(_highlightedTile);
                 _map.RemoveTile(_highlightedTile.Tile);
+/*
+                Point pos = RealToCanvas(_highlightedTile.Position);
+                if ((pos.X - _tileWidth) < 0)
+                    SetMapPosition(_offsetX + (long)(_tileWidth - pos.X), _offsetY);
+                if ((pos.Y - _tileHeight) < 0)
+                    SetMapPosition(_offsetX, _offsetY + (long)(_tileHeight - pos.Y));
+                if ((pos.X + _tileWidth) > this.RenderSize.Width)
+                    SetMapPosition(_offsetX - (long)(pos.X - this.RenderSize.Width) - _tileWidth, _offsetY);
+                if ((pos.Y + _tileHeight) > this.RenderSize.Height)
+                    SetMapPosition(_offsetX, _offsetY - (long)(pos.Y - this.RenderSize.Height) - _tileHeight);
 
+                pos = this.PointToScreen(RealToCanvas(_highlightedTile.Position));
+
+                System.Windows.Forms.Cursor.Position = new System.Drawing.Point((int)pos.X, (int)pos.Y);
+*/
                 _highlightedTile = null;
                 this.Dirty = true;
 
@@ -405,8 +419,8 @@ namespace TileMap
         {
             from = CanvasToReal(from);
 
-            from.X = Math.Floor(from.X / _tileWidth) * _tileWidth;
-            from.Y = Math.Floor(from.Y / _tileHeight) * _tileHeight;
+            from.X = Math.Floor((from.X + 1) / _tileWidth) * _tileWidth;
+            from.Y = Math.Floor((from.Y + 1) / _tileHeight) * _tileHeight;
 
             return RealToCanvas(from);
         }
