@@ -19,6 +19,7 @@
                 </MenuItem>
                 <MenuItem Header="_View">
                     <MenuItem Header="Go To _Origin" InputGestureText="Zero" Name="menuGoToOrigin" Click="menuGoToOrigin_Click"/>
+                    <MenuItem Header="_Copy To Clipboard" Name="menuCopyToClipboard" Click="menuCopyToClipboard_Click"/>
                 </MenuItem>
             </Menu>
             <Grid>
