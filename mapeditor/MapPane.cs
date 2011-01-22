@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using CSharpQuadTree;
 using Astral.Plane;
 using System.Collections;
@@ -403,6 +404,33 @@ namespace TileMap
             return default(Rect);
         }
 
+        public BitmapSource GetEntireMapAsBitmap()
+        {
+            Rect bounds = this.MapBounds;
+
+            if (bounds == default(Rect))
+                return null;
+
+            DrawingVisual dv = new DrawingVisual();
+            DrawingContext dc = dv.RenderOpen();
+
+            int w = (int)Math.Ceiling(bounds.Width);
+            int h = (int)Math.Ceiling(bounds.Height);
+
+            dc.DrawRectangle(this.Background, null, new Rect(0, 0, w, h));
+
+            DrawTiles(dc, new Vector(-bounds.Left, -bounds.Top), _tiles.Query(bounds), false);
+
+            dc.Close();
+
+            RenderTargetBitmap bmp = new RenderTargetBitmap(w, h, 96, 96, PixelFormats.Default);
+            bmp.Render(dv);
+
+            this.InvalidateVisual();
+
+            return bmp;
+        }
+
         private Point CanvasToReal(Point canvasPoint)
         {
             canvasPoint.Offset(_origin - _offsetX, _origin - _offsetY);
@@ -453,6 +481,20 @@ namespace TileMap
             return (0 <= A && A <= B && 0 <= C && C <= D);
         }
 
+        private void DrawTiles(DrawingContext dc, Vector offset, List<TileCluster> tiles, bool allowHighlight)
+        {
+            foreach (TileCluster tc in tiles)
+            {
+                if (_layerMap[tc.Layer])
+                {
+                    Point where = tc.Position;
+                    where.Offset(offset.X, offset.Y);
+
+                    tc.Draw(dc, where, 1.0, allowHighlight && tc == _highlightedTile);
+                }
+            }
+        }
+
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);
@@ -464,16 +506,7 @@ namespace TileMap
                 DrawGrid(dc, w, h);
             }
 
-            foreach (TileCluster tc in _tiles.Query(new Rect(_origin - _offsetX, _origin - _offsetY, w, h)))
-            {
-                if (_layerMap[tc.Layer])
-                {
-                    Point where = tc.Position;
-                    where.Offset(_offsetX - _origin, _offsetY - _origin);
-
-                    tc.Draw(dc, where, 1.0, !_projectorMode && tc == _highlightedTile);
-                }
-            }
+            DrawTiles(dc, new Vector(_offsetX - _origin, _offsetY - _origin), _tiles.Query(new Rect(_origin - _offsetX, _origin - _offsetY, w, h)), !_projectorMode);
 
             if (_drawGridOver)
             {

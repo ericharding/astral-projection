@@ -445,5 +445,13 @@ namespace TileMap
                 e.Handled = true;
             }
         }
+
+        private void menuCopyToClipboard_Click(object sender, RoutedEventArgs e)
+        {
+            BitmapSource bmp = mapPane.GetEntireMapAsBitmap();
+
+            if (bmp != null)
+                Clipboard.SetImage(bmp);
+        }
     }
 }
