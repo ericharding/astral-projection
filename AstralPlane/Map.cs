@@ -397,7 +397,7 @@ namespace Astral.Plane
         {
             Uri baseUri = new Uri(basePath);
             Uri pathUri = new Uri(path);
-            Uri relativePath = pathUri.MakeRelativeUri(baseUri);
+            Uri relativePath = baseUri.MakeRelativeUri(pathUri);
 
             return relativePath.ToString();
         }
