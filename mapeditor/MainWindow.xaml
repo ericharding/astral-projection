@@ -13,6 +13,8 @@
                     <MenuItem Header="_Save" InputGestureText="Ctrl+S" Name="menuSave" Click="menuSave_Click"/>
                     <MenuItem Header="Save _As..." InputGestureText="Ctrl+Shift+S" Name="menuSaveAs" Click="menuSaveAs_Click"/>
                     <Separator/>
+                    <MenuItem Header="_Import Tile..." InputGestureText="Ctrl+I" Name="menuImportTile" Click="bImport_Click"/>
+                    <Separator/>
                     <MenuItem Header="_Export..." InputGestureText="Ctrl+Shift+E" Name="menuExport" Click="menuExport_Click"/>
                     <Separator/>
                     <MenuItem Header="E_xit" Name="menuExit" Click="menuExit_Click"/>
@@ -38,7 +40,7 @@
                 <Grid Grid.RowSpan="3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="140"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
@@ -62,8 +64,9 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <TextBox x:Name="tbSearchLibrary" FontSize="14" Grid.Row="1" TextChanged="tbSearchLibrary_TextChanged" PreviewKeyDown="TextBox_PreviewKeyDown" />
-                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                    <ListView Name="viewSearchTags" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="True" SelectionMode="Multiple" Grid.Row="1" SelectionChanged="viewSearchTags_SelectionChanged"/>
+                    <TextBox x:Name="tbSearchLibrary" FontSize="14" Grid.Row="2" TextChanged="tbSearchLibrary_TextChanged" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                    <StackPanel Orientation="Horizontal" Grid.Row="3">
                         <TextBlock Text="Layer:" Margin="5,0,25,0" VerticalAlignment="Center" />
                         <ComboBox x:Name="_layer" SelectedIndex="{Binding Mode=TwoWay, ElementName=mapPane, Path=ActivePlacementLayer}">
                             <ComboBox.ItemsSource>
@@ -86,7 +89,6 @@
                             <CheckBox Tag="5" Click="CheckBox_Click" IsChecked="True" />
                         </UniformGrid>
                     </StackPanel>
-                    <Button Content="_Import" Height="23" HorizontalAlignment="Stretch" Name="bImport" Click="bImport_Click" Grid.Row="3"/>
                 </Grid>
                 <GridSplitter Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="3" Focusable="False"/>
                 <tilemap:MapPane x:Name="mapPane" Grid.Column="2" Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
