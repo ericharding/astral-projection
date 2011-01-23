@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -39,6 +40,8 @@ namespace TileMap
 
             if (File.Exists(_libraryFileName))
                 _library = Map.LoadFromFile(_libraryFileName);
+
+            PopulateTagList(viewSearchTags, _library);
 
             _prefs.Load();
 
@@ -105,7 +108,8 @@ namespace TileMap
                 File.Move(_libraryFileName, _libraryFileName + ".bak");
             }
             _library.Save(_libraryFileName);
-            UpdateFilteredLibrary(tbSearchLibrary.Text);
+            PopulateTagList(viewSearchTags, _library);
+            UpdateFilteredLibrary();
         }
 
         private void MenuItemDeleteImportedTile_Click(object sender, RoutedEventArgs e)
@@ -168,6 +172,9 @@ namespace TileMap
                     case Key.S:
                         menuSave_Click(null, null);
                         break;
+                    case Key.I:
+                        bImport_Click(null, null);
+                        break;
                 }
 
                 return;
@@ -211,7 +218,7 @@ namespace TileMap
                     break;
                 case Key.Y:
                     mapPane.PickUpTile();
-                    UpdateFilteredLibrary(tbSearchLibrary.Text);
+                    UpdateFilteredLibrary();
                     break;
                 case Key.NumPad0:
                     this._layer.SelectedIndex = 0;
@@ -311,23 +318,38 @@ namespace TileMap
             this.Title = "Astral Map - " + (mapPane.FileName ?? "(no file)") + (mapPane.Dirty ? "*" : "");
         }
 
-        private void UpdateFilteredLibrary(string filter)
+        private void UpdateFilteredLibrary()
         {
             viewTiles.SelectionChanged -= viewTiles_SelectionChanged;
 
             _filteredLibrary.Clear();
 
+            IList items = (IList)viewSearchTags.SelectedItems;
+            List<string> filters = new List<KeyValuePair<string, int>>(items.Cast<KeyValuePair<string, int>>()).ConvertAll<string>(x => x.Key);
+            filters.AddRange(tbSearchLibrary.Text.Split(' ', ';', ','));
+            filters.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+
             foreach (TileFactory tf in _library.TileFactories)
             {
-                foreach (string tag in tf.Tags)
+                foreach (string filter in filters)
                 {
-                    if (tag.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        _filteredLibrary.Add(tf);
+                    bool match = false;
 
-                        goto TryNextFactory;
+                    foreach (string tag in tf.Tags)
+                    {
+                        if (tag.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            match = true;
+                            break;
+                        }
                     }
+
+                    if (!match)
+                        goto TryNextFactory;
                 }
+
+                _filteredLibrary.Add(tf);
+
             TryNextFactory:
                 continue;
             }
@@ -336,6 +358,24 @@ namespace TileMap
                 viewTiles.SelectedItem = mapPane.TileToPlace;
 
             viewTiles.SelectionChanged += new SelectionChangedEventHandler(viewTiles_SelectionChanged);
+        }
+
+        private void PopulateTagList(ListView view, Map map)
+        {
+            Dictionary<string, int> tags = new Dictionary<string, int>();
+
+            foreach (TileFactory tf in map.TileFactories)
+            {
+                foreach (string tag in tf.Tags)
+                {
+                    int count;
+
+                    tags.TryGetValue(tag, out count);
+                    tags[tag] = count + 1;
+                }
+            }
+
+            view.ItemsSource = tags.OrderByDescending(x => x.Value);
         }
 
         private void menuNew_Click(object sender, RoutedEventArgs e)
@@ -434,7 +474,12 @@ namespace TileMap
 
         private void tbSearchLibrary_TextChanged(object sender, TextChangedEventArgs e)
         {
-            UpdateFilteredLibrary(tbSearchLibrary.Text);
+            UpdateFilteredLibrary();
+        }
+
+        private void viewSearchTags_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateFilteredLibrary();
         }
 
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
