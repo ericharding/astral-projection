@@ -27,6 +27,7 @@ namespace TileMap
         private ObservableCollection<TileFactory> _filteredLibrary;
         private Map _library = new Map();
         private Settings _prefs = new Settings();
+        private bool _waitForIt = true;
         // private readonly string _libraryFileName = AppDomain.CurrentDomain.BaseDirectory + "library.astral";
         private readonly string _libraryFileName = Environment.CurrentDirectory + "\\library.astral";
         private const string _fileFilter = "Astral Projection files (*.astral)|*.astral|All files (*.*)|*.*";
@@ -174,6 +175,22 @@ namespace TileMap
                         break;
                     case Key.I:
                         bImport_Click(null, null);
+                        break;
+                }
+
+                return;
+            }
+
+            if (Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+                switch (e.SystemKey)
+                {
+                    case Key.D:
+                        if (tbSearchLibrary.IsFocused)
+                            viewSearchTags.Focus();
+                        else
+                            tbSearchLibrary.Focus();
+                        e.Handled = true;
                         break;
                 }
 
@@ -331,6 +348,11 @@ namespace TileMap
 
             foreach (TileFactory tf in _library.TileFactories)
             {
+                if (cbShowFloorTiles.IsChecked != true && !tf.ArbitraryScale)
+                    continue;
+                if (cbShowArbitTiles.IsChecked != true && tf.ArbitraryScale)
+                    continue;
+
                 foreach (string filter in filters)
                 {
                     bool match = false;
@@ -497,6 +519,18 @@ namespace TileMap
 
             if (bmp != null)
                 Clipboard.SetImage(bmp);
+        }
+
+        private void cbShowTiles_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!_waitForIt)
+                UpdateFilteredLibrary();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            _waitForIt = false;
+            UpdateFilteredLibrary();
         }
     }
 }
