@@ -62,6 +62,9 @@ namespace Astral.Plane
 
         public static Map LoadFromFile(string filename, bool allowCache)
         {
+            if (Path.IsPathRooted(filename))
+                Environment.CurrentDirectory = Path.GetDirectoryName(filename);
+
             string fullpath = Path.GetFullPath(filename);
             WeakReference<Map> mapRef = null;
 
@@ -282,13 +285,13 @@ namespace Astral.Plane
         private void SafeSave(bool standalone, bool prune, string filename)
         {
             string tempFile = Path.GetTempFileName();
-            ActuallySave(standalone, prune, tempFile);
+            ActuallySave(standalone, prune, tempFile, filename);
             TryDelete(filename);
             File.Move(tempFile, filename);
         }
 
         // All the save overloads end up here.
-        private void ActuallySave(bool standalone, bool prune, string filename)
+        private void ActuallySave(bool standalone, bool prune, string filename, string realfilename)
         {
             XDocument doc = new XDocument(new XElement("AstralMap",
                 new XAttribute("MapVersion", MAP_VERSION),
@@ -312,7 +315,7 @@ namespace Astral.Plane
                 {
                     if (string.IsNullOrEmpty(m._fileName)) throw new InvalidOperationException("Cannot save a map with unsaved references");
                     m.Save(); // For consistency
-                    xRreferences.Add(new XElement(Map.REFERENCE_NODE, new XAttribute("Source", m._fileName)));
+                    xRreferences.Add(new XElement(Map.REFERENCE_NODE, new XAttribute("Source", MakeRelative(m._fileName, realfilename))));
                 }
             }
 
@@ -388,6 +391,15 @@ namespace Astral.Plane
                     }
                 }
             }
+        }
+
+        private string MakeRelative(string path, string basePath)
+        {
+            Uri baseUri = new Uri(basePath);
+            Uri pathUri = new Uri(path);
+            Uri relativePath = baseUri.MakeRelativeUri(pathUri);
+
+            return relativePath.ToString();
         }
 
         private void Load(IContainer file)
