@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tilemap="clr-namespace:TileMap"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        Title="Astral Map" Height="768" Width="1024" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseWheel="Window_MouseWheel" Closing="Window_Closing" Closed="Window_Closed">
+        Title="Astral Map" Height="768" Width="1024" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseWheel="Window_MouseWheel" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded">
     <Grid>
         <DockPanel HorizontalAlignment="Stretch" Name="dockPanel1" VerticalAlignment="Stretch">
             <Menu Name="menu1" VerticalAlignment="Top" DockPanel.Dock="Top">
@@ -40,6 +40,7 @@
                 <Grid Grid.RowSpan="3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="140"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -64,9 +65,19 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <ListView Name="viewSearchTags" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="True" SelectionMode="Multiple" Grid.Row="1" SelectionChanged="viewSearchTags_SelectionChanged"/>
-                    <TextBox x:Name="tbSearchLibrary" FontSize="14" Grid.Row="2" TextChanged="tbSearchLibrary_TextChanged" PreviewKeyDown="TextBox_PreviewKeyDown" />
-                    <StackPanel Orientation="Horizontal" Grid.Row="3">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
+                        <CheckBox x:Name="cbShowFloorTiles" FontSize="12" Margin="0,2.5,5,2.5" Content="Tiles" IsChecked="True" Checked="cbShowTiles_Checked" Unchecked="cbShowTiles_Checked"/>
+                        <CheckBox x:Name="cbShowArbitTiles" FontSize="12" Margin="5,2.5,0,2.5" Content="Props" IsChecked="True" Checked="cbShowTiles_Checked" Unchecked="cbShowTiles_Checked"/>
+                    </StackPanel>
+                    <ListView Name="viewSearchTags" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="True" SelectionMode="Multiple" Grid.Row="2" SelectionChanged="viewSearchTags_SelectionChanged">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Key}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <TextBox x:Name="tbSearchLibrary" FontSize="14" Grid.Row="3" TextChanged="tbSearchLibrary_TextChanged" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                    <StackPanel Orientation="Horizontal" Grid.Row="4">
                         <TextBlock Text="Layer:" Margin="5,0,25,0" VerticalAlignment="Center" />
                         <ComboBox x:Name="_layer" SelectedIndex="{Binding Mode=TwoWay, ElementName=mapPane, Path=ActivePlacementLayer}">
                             <ComboBox.ItemsSource>
