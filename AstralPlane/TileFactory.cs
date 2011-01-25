@@ -16,7 +16,7 @@ namespace Astral.Plane
     public class TileFactory : IComparable<TileFactory>, IComparable
     {
         private string _imagePath;
-        private string _tags;
+        private List<string> _tags;
         private Borders _borders;
         private bool _arbitraryScale;
         private int _tilesHoriz;
@@ -26,6 +26,7 @@ namespace Astral.Plane
         private Map _map;
 
         internal int RefCount { get; set; }
+        private const char TAGSPLIT = ';';
 
         public TileFactory(BitmapSource image, string tags, Borders borders, int tilesHoriz, int tilesVert, bool arbitraryScale=false)
         {
@@ -36,7 +37,7 @@ namespace Astral.Plane
 
             this._tileID = new Lazy<string>(ComputeTileHash);
             this._bitmapSource = image;
-            this._tags = tags;
+            this._tags = new List<string>(tags.Split(TileFactory.TAGSPLIT));
             this._borders = borders;
             this._tilesHoriz = tilesHoriz;
             this._tilesVert = tilesVert;
@@ -59,11 +60,11 @@ namespace Astral.Plane
             }
         }
 
-        public string[] Tags
+        public IList<string> Tags
         {
             get
             {
-                return _tags.Split(';');
+                return _tags;
             }
         }
 
@@ -255,7 +256,7 @@ namespace Astral.Plane
         {
             return new XElement(Map.TILEFACTORY_NODE,
                 new XAttribute("TileID", this.TileID),
-                new XAttribute("Tags", this._tags),
+                new XAttribute("Tags", string.Join(TileFactory.TAGSPLIT.ToString(),this._tags)),
                 new XAttribute("Borders", _borders),
                 new XAttribute("Tiles", string.Format("{0},{1}", _tilesHoriz, _tilesVert)),
                 new XAttribute("ArbitraryScale", this._arbitraryScale));
