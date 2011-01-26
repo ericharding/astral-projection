@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Astral.Plane;
 
 namespace TileMap
 {
@@ -18,7 +19,7 @@ namespace TileMap
     /// </summary>
     public partial class TileImportDialog : Window
     {
-        public string TileName { get { return tbTileName.Text; } }
+        public string TileTags { get { return GetTags(); } }
         public int TilesHoriz { get { return ArbitraryScale ? 1 : (int)tbTileHoriz.Value; } }
         public int TilesVert { get { return ArbitraryScale ? 1 : (int)tbTileVert.Value; } }
         public double BorderTop { get { return ArbitraryScale ? 0 : (int)tbBorderTop.Value; } }
@@ -29,7 +30,7 @@ namespace TileMap
 
         private bool _waitForIt = true;
 
-        public TileImportDialog(string name, BitmapImage image)
+        public TileImportDialog(string[] tags, BitmapSource image, Map map)
         {
             InitializeComponent();
 
@@ -37,12 +38,31 @@ namespace TileMap
             imageTile.Width = image.PixelWidth;
             imageTile.Height = image.PixelHeight;
 
-            tbTileName.Text = name.Split('.')[0];
+            tbTileName.Text = string.Join(Environment.NewLine, tags);
 
             tbPixelsHoriz.Text = string.Format("{0}px", image.PixelWidth);
             tbPixelsVert.Text = string.Format("{0}px", image.PixelHeight);
 
             overlayTile.ImageSize = new Size(image.PixelWidth, image.PixelHeight);
+
+            MainWindow.PopulateTagList(viewSearchTags, map);
+        }
+
+        public TileImportDialog(TileFactory tf, Map map):
+            this(tf.Tags.ToArray<string>(), tf.Image, map)
+        {
+            UIElement[] disable =  { nudHostBorderBottom, nudHostBorderLeft, nudHostBorderRight, nudHostBorderTop, nudHostTileHoriz, nudHostTileVert, cbArbitrary };
+
+            foreach (UIElement d in disable)
+                d.IsEnabled = false;
+
+            tbBorderTop.Value = (int)tf.Borders.Top;
+            tbBorderRight.Value = (int)tf.Borders.Right;
+            tbBorderBottom.Value = (int)tf.Borders.Bottom;
+            tbBorderLeft.Value = (int)tf.Borders.Left;
+            tbTileHoriz.Value = (int)tf.TilesHorizontal;
+            tbTileVert.Value = (int)tf.TilesVertical;
+            cbArbitrary.IsChecked = tf.ArbitraryScale;
         }
 
         private void Update()
@@ -54,6 +74,16 @@ namespace TileMap
             overlayTile.BorderBottom = BorderBottom;
             overlayTile.BorderLeft = BorderLeft;
             overlayTile.InvalidateVisual();
+        }
+
+        private string GetTags()
+        {
+            List<String> tags = new List<string>(tbTileName.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
+
+            foreach (KeyValuePair<string, int> kvp in viewSearchTags.SelectedItems)
+                tags.Add(kvp.Key);
+
+            return string.Join(Environment.NewLine, tags);
         }
 
         private void ToggleScaleControls(bool show)

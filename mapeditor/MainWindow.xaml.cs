@@ -61,7 +61,7 @@ namespace TileMap
             {
                 open.InitialDirectory = null;
             }
-            
+
             if ((bool)open.ShowDialog(this))
             {
                 try
@@ -69,13 +69,13 @@ namespace TileMap
                     _prefs["defaultDirImport"] = Path.GetDirectoryName(open.FileName);
                     Uri file = new Uri(open.FileName);
                     BitmapImage img = new BitmapImage(file);
-                    TileImportDialog import = new TileImportDialog(open.SafeFileName, img);
+                    TileImportDialog import = new TileImportDialog(new string[] { open.SafeFileName }, img, _library);
                     import.Owner = this;
                     bool? result = import.ShowDialog();
 
                     if ((bool)result)
                     {
-                        TileFactory tf = new TileFactory(img, import.TileName, new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert, import.ArbitraryScale);
+                        TileFactory tf = new TileFactory(img, import.TileTags.Replace(Environment.NewLine, ";"), new Borders(import.BorderLeft, import.BorderTop, import.BorderRight, import.BorderBottom), import.TilesHoriz, import.TilesVert, import.ArbitraryScale);
                         _library.AddTileFactory(tf);
                         SaveLibrary();
                     }
@@ -130,6 +130,26 @@ namespace TileMap
             catch (InvalidOperationException io)
             {
                 MessageBox.Show(io.Message);
+            }
+        }
+
+        private void MenuItemEditImportedTileTags_Click(object sender, RoutedEventArgs e)
+        {
+            TileFactory factory = viewTiles.SelectedItem as TileFactory;
+
+            if (factory != null)
+            {
+                TileImportDialog import = new TileImportDialog(factory, _library);
+                import.Owner = this;
+                bool? result = import.ShowDialog();
+
+                if ((bool)result)
+                {
+                    factory.Tags.Clear();
+                    foreach (string s in import.TileTags.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+                        factory.Tags.Add(s);
+                    SaveLibrary();
+                }
             }
         }
 
@@ -382,7 +402,7 @@ namespace TileMap
             viewTiles.SelectionChanged += new SelectionChangedEventHandler(viewTiles_SelectionChanged);
         }
 
-        private void PopulateTagList(ListView view, Map map)
+        internal static void PopulateTagList(ListView view, Map map)
         {
             Dictionary<string, int> tags = new Dictionary<string, int>();
 

@@ -52,6 +52,7 @@
                                     <StackPanel.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Delete" Click="MenuItemDeleteImportedTile_Click"/>
+                                            <MenuItem Header="Edit Tags..." Click="MenuItemEditImportedTileTags_Click"/>
                                         </ContextMenu>
                                     </StackPanel.ContextMenu>
                                     <TextBlock>
