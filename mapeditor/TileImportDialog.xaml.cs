@@ -46,6 +46,8 @@ namespace TileMap
             overlayTile.ImageSize = new Size(image.PixelWidth, image.PixelHeight);
 
             MainWindow.PopulateTagList(viewSearchTags, map);
+
+            bImport.Content = "Import";
         }
 
         public TileImportDialog(TileFactory tf, Map map):
@@ -63,6 +65,8 @@ namespace TileMap
             tbTileHoriz.Value = (int)tf.TilesHorizontal;
             tbTileVert.Value = (int)tf.TilesVertical;
             cbArbitrary.IsChecked = tf.ArbitraryScale;
+
+            bImport.Content = "Save";
         }
 
         private void Update()
@@ -82,6 +86,8 @@ namespace TileMap
 
             foreach (KeyValuePair<string, int> kvp in viewSearchTags.SelectedItems)
                 tags.Add(kvp.Key);
+
+            tags = tags.Distinct<string>().ToList<string>();
 
             return string.Join(Environment.NewLine, tags);
         }
@@ -118,6 +124,22 @@ namespace TileMap
         private void cbArbitrary_Checked(object sender, RoutedEventArgs e)
         {
             ToggleScaleControls(cbArbitrary.IsChecked != true);
+        }
+
+        private void tbTileName_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                int i = tbTileName.Text.LastIndexOf(Environment.NewLine);
+
+                if (tbTileName.CaretIndex > i)
+                {
+                    tbTileName.AppendText(Environment.NewLine);
+                    tbTileName.CaretIndex = tbTileName.Text.Length;
+
+                    e.Handled = true;
+                }
+            }
         }
     }
 

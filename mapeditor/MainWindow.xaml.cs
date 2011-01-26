@@ -69,7 +69,7 @@ namespace TileMap
                     _prefs["defaultDirImport"] = Path.GetDirectoryName(open.FileName);
                     Uri file = new Uri(open.FileName);
                     BitmapImage img = new BitmapImage(file);
-                    TileImportDialog import = new TileImportDialog(new string[] { open.SafeFileName }, img, _library);
+                    TileImportDialog import = new TileImportDialog(new string[] { open.SafeFileName.Split('.')[0] }, img, _library);
                     import.Owner = this;
                     bool? result = import.ShowDialog();
 
