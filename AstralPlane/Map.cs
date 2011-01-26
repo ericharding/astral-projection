@@ -55,6 +55,8 @@ namespace Astral.Plane
         /// 
         public static Map LoadFromFile(string filename)
         {
+            Log.log("LoadFromFile {0}", filename);
+
             Map ret = LoadFromFile(filename, true);
             ret.RevertToLastSave();
             return ret;
@@ -287,6 +289,7 @@ namespace Astral.Plane
             string tempFile = Path.GetTempFileName();
             ActuallySave(standalone, prune, tempFile, filename);
             TryDelete(filename);
+            Log.log("move {0}  =>  {1}", tempFile, filename);
             File.Move(tempFile, filename);
         }
 
@@ -500,6 +503,7 @@ namespace Astral.Plane
 
         private static void TryDelete(string path)
         {
+            Log.log("Delete {0}", path);
             try
             {
                 if (Directory.Exists(path))
@@ -511,7 +515,7 @@ namespace Astral.Plane
                     File.Delete(path);
                 }
             }
-            catch { }
+            catch { Log.log("    delete {0} failed.", path); }
         }
 
         #endregion
@@ -562,6 +566,7 @@ namespace Astral.Plane
         // it until the returned object is disposed!
         internal IDisposable LoadStream(string imagePath, out Stream imageStream)
         {
+            Log.log("Load stream {0}", imagePath);
             if (string.IsNullOrEmpty(this._fileName)) /*Impossible!*/ throw new InvalidOperationException("State invalid.  You cannot delay load an image from a Map which has never been saved.");
 
             Monitor.Enter(_fileLock);

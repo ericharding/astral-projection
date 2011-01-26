@@ -11,12 +11,14 @@ namespace Astral.Plane.Container
 {
     class ZipFileContainer : IContainer
     {
+        string _packageName;
         ZipPackage _package;
 
         public ZipFileContainer(string packageName)
         {
+            Log.log("Open Zip {0}", packageName);
             _package = (ZipPackage)Package.Open(packageName);
-            
+            _packageName = packageName;
         }
 
         public bool ContainsFile(string filename)
@@ -46,6 +48,7 @@ namespace Astral.Plane.Container
         public void Dispose()
         {
             _package.Close();
+            Log.log("Close Zip: {0}", _packageName);
         }
 
         private string GuessMimeType(string fileName)
