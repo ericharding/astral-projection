@@ -377,7 +377,7 @@ namespace Astral.Plane
             lock (_fileLock)
             {
                 TryDelete(filename);
-                using (IContainer saveContainer = new ZipFileContainer(filename))
+                using (IContainer saveContainer = new ZipFileContainer(filename, true))
                 {
                     XmlWriter writer = XmlWriter.Create(saveContainer.GetFileStream(MANIFEST_NAME), new XmlWriterSettings() { Indent = true });
                     doc.Save(writer);
@@ -386,6 +386,7 @@ namespace Astral.Plane
                     // Save images to a sub directory
                     foreach (TileFactory t in usedTiles)
                     {
+                        Log.log("saving: {0}", t.TileID);
                         Stream saveStream = saveContainer.GetFileStream("images/" + t.TileID);
                         Stream imageStream = t.GetImageStream();
                         CopyStream(imageStream, saveStream);
@@ -503,7 +504,6 @@ namespace Astral.Plane
 
         private static void TryDelete(string path)
         {
-            Log.log("Delete {0}", path);
             try
             {
                 if (Directory.Exists(path))
@@ -513,6 +513,7 @@ namespace Astral.Plane
                 else if (File.Exists(path))
                 {
                     File.Delete(path);
+                    Log.log("Delete {0}", path);
                 }
             }
             catch { Log.log("    delete {0} failed.", path); }

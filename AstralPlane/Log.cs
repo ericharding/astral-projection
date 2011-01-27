@@ -17,19 +17,18 @@ namespace Astral.Plane
             return writer;
         });
 
+        static StringBuilder _stringLog = new StringBuilder();
+
         static Log()
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            
         }
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (_writer.IsValueCreated)
-            {
-                _writer.Value.Flush();
-                _writer.Value.Close();
-            }
+            _writer.Value.WriteLine(_stringLog.ToString());
+            _writer.Value.Flush();
+            _writer.Value.Close();
         }
 
         public static void log(string format, params object[] args)
@@ -40,7 +39,7 @@ namespace Astral.Plane
 
             string logLine = string.Format("{0:0000} {1} {2}", thread, time.ToString("hh:mm:ss.ffff"), logmsg);
 
-            _writer.Value.WriteLine(logLine);
+            _stringLog.AppendLine(logLine);
         }
 
     }

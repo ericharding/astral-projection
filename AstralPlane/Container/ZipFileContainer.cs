@@ -14,10 +14,11 @@ namespace Astral.Plane.Container
         string _packageName;
         ZipPackage _package;
 
-        public ZipFileContainer(string packageName)
+        public ZipFileContainer(string packageName, bool create=false)
         {
             Log.log("Open Zip {0}", packageName);
-            _package = (ZipPackage)Package.Open(packageName);
+            FileMode mode = create ? FileMode.OpenOrCreate : FileMode.Open;
+            _package = (ZipPackage)Package.Open(packageName, mode);
             _packageName = packageName;
         }
 
