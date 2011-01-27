@@ -106,7 +106,7 @@ namespace TileMap
             if (File.Exists(_libraryFileName))
             {
                 File.Delete(_libraryFileName + ".bak");
-                File.Move(_libraryFileName, _libraryFileName + ".bak");
+                File.Copy(_libraryFileName, _libraryFileName + ".bak");
             }
             _library.Save(_libraryFileName);
             PopulateTagList(viewSearchTags, _library);
