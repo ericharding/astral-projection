@@ -57,6 +57,7 @@
     <Compile Include="Tile.cs" />
     <Compile Include="TileFactory.cs" />
     <Compile Include="Utility\AnonymousDisposable.cs" />
+    <Compile Include="Utility\ChangeNotificationWrapper.cs" />
     <Compile Include="Utility\DispatcherHelper.cs" />
     <Compile Include="Utility\NativeMethods.cs" />
     <Compile Include="Utility\Settings.cs" />
