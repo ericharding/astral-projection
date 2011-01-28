@@ -46,6 +46,9 @@ namespace Astral.Projector
                     ex.Expanded += new RoutedEventHandler(expander_Expanded);
                 }
             }
+
+            ResourceDictionary effects = (ResourceDictionary)Application.LoadComponent(new Uri("Effects/Effects.xaml", UriKind.Relative));
+            _lbEffects.ItemsSource = effects.Keys;
         }
 
         void _fog_FogChanged(double x, double y, int size, bool clear)
@@ -180,6 +183,21 @@ namespace Astral.Projector
                 _pvc.SetGridMode(2);
                 _dmMapView.IsDrawGridOver = true;
             }
+        }
+
+        private void _lbEffects_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string effect = (string)_lbEffects.SelectedItem;
+            if (!string.IsNullOrEmpty(effect))
+            {
+                _pvc.DisplayEffect(effect);
+            }
+        }
+
+        private void _bClearEffects_Click(object sender, RoutedEventArgs e)
+        {
+            _lbEffects.SelectedItem = null;
+            _pvc.ClearEffects();
         }
     }
 }

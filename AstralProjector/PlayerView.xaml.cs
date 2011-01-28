@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using TileMap;
+using System.Windows.Controls;
 
 
 namespace Astral.Projector
@@ -37,6 +38,7 @@ namespace Astral.Projector
 
         public MapPane MapView { get { return _mapView; } }
         public FogOfWar Fog { get { return _fog; } }
+        public UIElementCollection Effects { get { return _effectContainer.Children; } }
 
     }
 }

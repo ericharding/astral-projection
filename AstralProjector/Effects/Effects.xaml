@@ -1,0 +1,5 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Rectangle x:Key="Blue" Fill="Blue" Opacity="0.25" />
+    <Frame x:Key="Clouds" Source="/Effects/Clouds.xaml" />
+</ResourceDictionary>
