@@ -112,11 +112,7 @@ namespace Astral.Projector
             else
             {
                 _map.LayerMap[layer] = (bool)cb.IsChecked;
-                
-                // hackhack
-                _dmMapView.InvalidateVisual();
             }
-
         }
 
         private void ResetFog_Button_Click(object sender, RoutedEventArgs e)

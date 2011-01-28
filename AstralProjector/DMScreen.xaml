@@ -146,6 +146,10 @@
                         <CheckBox Content="Player 5" Grid.Row="5" Grid.Column="1" Click="Layer_CheckBox_Click" />
                         <CheckBox Content="DM 6"  Grid.Row="6" Click="Layer_CheckBox_Click" />
                         <CheckBox Content="Player 6" Grid.Row="6" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 7"  Grid.Row="7" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 7" Grid.Row="7" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 8"  Grid.Row="8" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 8" Grid.Row="8" Grid.Column="1" Click="Layer_CheckBox_Click" />
                     </Grid>
                 </GroupBox>
                 
