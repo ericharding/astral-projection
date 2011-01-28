@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tilemap="clr-namespace:TileMap"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        Title="Astral Map" Height="768" Width="1024" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseWheel="Window_MouseWheel" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded">
+        Title="Astral Map" Height="768" Width="1024" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseWheel="Window_MouseWheel" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded" Background="#FFD4D0C8">
     <Grid>
         <DockPanel HorizontalAlignment="Stretch" Name="dockPanel1" VerticalAlignment="Stretch">
             <Menu Name="menu1" VerticalAlignment="Top" DockPanel.Dock="Top">
@@ -36,7 +36,16 @@
                     <RowDefinition Height="200"/>
                 </Grid.RowDefinitions>
                 <GridSplitter VerticalAlignment="Center" HorizontalAlignment="Stretch" Focusable="False" Grid.Row="1" Height="5" Grid.Column="2"/>
-                <TextBox Text="Adventure Text..." Grid.Row="2" Grid.Column="2" TextChanged="TextBox_TextChanged" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                <Grid Grid.Row="2" Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="250"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="Adventure Text..." Grid.Column="0" TextChanged="TextBox_TextChanged" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                    <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Focusable="False" Grid.Column="1" Width="5"/>
+                    <tilemap:Minimap x:Name="miniMap" Grid.Column="2" Background="White"/>
+                </Grid>
                 <Grid Grid.RowSpan="3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>

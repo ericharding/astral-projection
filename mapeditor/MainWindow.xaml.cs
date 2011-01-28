@@ -48,6 +48,8 @@ namespace TileMap
 
             mapPane.SetLibrary(_library);
 
+            miniMap.Map = mapPane;
+
             _filteredLibrary = new ObservableCollection<TileFactory>(_library.TileFactories);
             viewTiles.ItemsSource = _filteredLibrary;
         }
