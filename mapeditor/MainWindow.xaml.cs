@@ -507,11 +507,8 @@ namespace TileMap
         {
             CheckBox cb = (CheckBox)sender;
             int x = Int32.Parse(cb.Tag.ToString());
-            if (x < mapPane.LayerMap.Count)
-            {
-                mapPane.LayerMap[x] = (bool)cb.IsChecked;
-                mapPane.InvalidateVisual();
-            }
+            mapPane.LayerMap[x] = (bool)cb.IsChecked;
+            mapPane.InvalidateVisual();
         }
 
         private void tbSearchLibrary_TextChanged(object sender, TextChangedEventArgs e)

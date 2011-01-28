@@ -89,7 +89,10 @@ namespace Astral.Projector
             _y = 0;
             
             _pv.MapView.SetMap(map);
-            _pv.MapView.LayerMap.SetAll(false);
+            for (int x = 0; x < map.Layers; x++)
+            {
+                _pv.MapView.LayerMap[x] = false;
+            }
             _pv.MapView.LayerMap[0] = true;
             Dispatcher.CurrentDispatcher.In(TimeSpan.FromSeconds(1), () => _pv.MapView.TileSize = 34);
         }
