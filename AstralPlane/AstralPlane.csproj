@@ -59,6 +59,7 @@
     <Compile Include="Utility\AnonymousDisposable.cs" />
     <Compile Include="Utility\ChangeNotificationWrapper.cs" />
     <Compile Include="Utility\DispatcherHelper.cs" />
+    <Compile Include="Utility\IIndexable.cs" />
     <Compile Include="Utility\NativeMethods.cs" />
     <Compile Include="Utility\Settings.cs" />
     <Compile Include="Utility\WeakReference.cs" />

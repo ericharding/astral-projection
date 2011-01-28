@@ -73,10 +73,12 @@ namespace Astral.Projector
             {
                 Map map = Map.LoadFromFile(ofd.FileName);
                 _map.SetMap(map);
-                _map.LayerMap.SetAll(false);
                 _map.LayerMap[0] = true;
-                if (_map.LayerMap.Count > 1)
-                    _map.LayerMap[1] = true;
+                _map.LayerMap[1] = true;
+                for (int x = 2; x < map.Layers; x++)
+                {
+                    _map.LayerMap[x] = false;
+                }
                 _tbMapNotes.Text = map.Notes;
 
                 _pvc.LoadMap(ofd.FileName);

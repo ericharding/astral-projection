@@ -32,7 +32,7 @@ namespace TileMap
         public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
         public Rect MapBounds { get { return ComputeMapSize(); } }
         public Rect MapViewport { get { return new Rect(_offsetX - _origin, _offsetY - _origin, this.ActualWidth, this.ActualHeight); } }
-        public ChangeNotificationWrapper<BitArray, int, bool> LayerMap { get { return _layerMapNotifier; } }
+        public IIndexable<int, bool> LayerMap { get { return _layerMapNotifier; } }
         public event Action<long, long> MapPositionChanged;
         public event Action OnFileInfoUpdated;
         public event Action MapChanged;

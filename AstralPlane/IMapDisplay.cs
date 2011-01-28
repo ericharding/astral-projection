@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Collections;
+using Astral.Plane.Utility;
 
 namespace Astral.Plane
 {
@@ -24,6 +25,6 @@ namespace Astral.Plane
         double ActualWidth { get; }
         double ActualHeight { get; }
 
-        BitArray LayerMap { get; }
+        IIndexable<int, bool> LayerMap { get; }
     }
 }

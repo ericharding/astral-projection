@@ -6,7 +6,7 @@ using System.Collections;
 namespace Astral.Plane.Utility
 {
     // Not sure why I didn't think of this before.
-    public class ChangeNotificationWrapper<WrapType, IndexType, ReturnType>
+    public class ChangeNotificationWrapper<WrapType, IndexType, ReturnType> : IIndexable<IndexType, ReturnType>
     {
         static Func<WrapType, IndexType, ReturnType> _get;
         static Action<WrapType, IndexType, ReturnType> _set;
