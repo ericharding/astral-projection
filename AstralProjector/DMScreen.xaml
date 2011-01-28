@@ -173,6 +173,9 @@
                 <Button Content="Hide Image ..." Margin="5" x:Name="_bHideImage" Click="_bHideImage_Click" IsEnabled="False" />
 
                 <Button Content="Shake" Margin="5,10,5,5" x:Name="_bShake" Click="Effect_Click" Tag="Shake" />
+                
+                <ListBox x:Name="_lbEffects" Margin="5" MinHeight="128" SelectionChanged="_lbEffects_SelectionChanged" />
+                <Button x:Name="_bClearEffects" Margin="5" Content="Clear Effects" Click="_bClearEffects_Click" />
             </StackPanel>
         </Border>
 

@@ -6,6 +6,7 @@ using System.Windows;
 using Astral.Plane;
 using System.Windows.Threading;
 using System.Windows.Media.Animation;
+using System.Windows.Controls;
 
 namespace Astral.Projector
 {
@@ -15,6 +16,7 @@ namespace Astral.Projector
         PlayerView _pv = new PlayerView();
         long _x, _y;
         long _mx, _my;
+        Lazy<ResourceDictionary> _effects = new Lazy<ResourceDictionary>(() => (ResourceDictionary)Application.LoadComponent(new Uri("/Effects/Effects.xaml", UriKind.Relative)));
 
         public PlayerViewController()
         {
@@ -100,8 +102,24 @@ namespace Astral.Projector
 
         public void DisplayEffect(string effect)
         {
-            Storyboard sb = _pv.Resources[effect] as Storyboard;
-            _pv.BeginStoryboard(sb);
+            if (string.IsNullOrEmpty(effect)) return;
+
+            if (_effects.Value.Contains(effect))
+            {
+                FrameworkElement panel = _effects.Value[effect] as FrameworkElement;
+                ClearEffects();
+                _pv.Effects.Add(panel);
+            }
+            else if (_pv.Resources.Contains(effect))
+            {
+                Storyboard sb = _pv.Resources[effect] as Storyboard;
+                _pv.BeginStoryboard(sb);
+            }
+        }
+
+        public void ClearEffects()
+        {
+            _pv.Effects.Clear();
         }
 
         public void UpdateMapPosition(long x, long y)

@@ -218,7 +218,7 @@ namespace Astral.Plane
         {
             get
             {
-                return (int)_tiles.Max(t => t.Layer);
+                return _tiles.Count == 0 ? 1 : (int)_tiles.Max(t => t.Layer);
             }
         }
 
