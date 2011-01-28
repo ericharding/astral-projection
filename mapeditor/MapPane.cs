@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using CSharpQuadTree;
 using Astral.Plane;
 using System.Collections;
+using Astral.Plane.Utility;
 
 namespace TileMap
 {
@@ -31,7 +32,7 @@ namespace TileMap
         public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
         public Rect MapBounds { get { return ComputeMapSize(); } }
         public Rect MapViewport { get { return new Rect(_offsetX - _origin, _offsetY - _origin, this.ActualWidth, this.ActualHeight); } }
-        public BitArray LayerMap { get { return _layerMap; } }
+        public ChangeNotificationWrapper<BitArray, int, bool> LayerMap { get { return _layerMapNotifier; } }
         public event Action<long, long> MapPositionChanged;
         public event Action OnFileInfoUpdated;
         public event Action MapChanged;
@@ -48,6 +49,7 @@ namespace TileMap
         private QuadTree<TileCluster> _tiles;
         private Map _map, _library;
         private BitArray _layerMap;
+        private ChangeNotificationWrapper<BitArray, int, bool> _layerMapNotifier;
 
         public MapPane()
         {
@@ -157,8 +159,6 @@ namespace TileMap
             if (_library == null)
                 throw new InvalidOperationException("Use SetLibrary() before PlaceTile()");
 
-            ExpandLayerMap(layer);
-
             TileCluster tile = new TileCluster(tf, new Size(_tileWidth, _tileHeight));
             tile.Position = relativeToCanvas ? CanvasToReal(where) : where;
             tile.Rotation = _tileToPlacePreview.Rotation;
@@ -172,14 +172,6 @@ namespace TileMap
             this.Dirty = true;
 
             this.InvalidateVisual();
-        }
-
-        private void ExpandLayerMap(int layer)
-        {
-            if (_layerMap.Count < layer + 1)
-            {
-                _layerMap = new BitArray(layer + 1, true);
-            }
         }
 
         public void PickUpTile()
@@ -282,7 +274,7 @@ namespace TileMap
             GC.Collect();
             _tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
             _map = new Map(_tileWidth, _tileHeight);
-            _layerMap = new BitArray(1, true);
+            ResetLayerMap();
 
             this.SetLibrary(_library);
 
@@ -298,6 +290,12 @@ namespace TileMap
             MapUpdated();
 
             this.InvalidateVisual();
+        }
+
+        private void ResetLayerMap(int count=8)
+        {
+            _layerMap = new BitArray(Math.Max(count, 8), true);
+            _layerMapNotifier = new ChangeNotificationWrapper<BitArray, int, bool>(_layerMap);
         }
 
         public void Save()
@@ -324,7 +322,7 @@ namespace TileMap
             _map = map;
             this.FileName = map.FileName;
 
-            ExpandLayerMap(_map.Layers);
+            ResetLayerMap(_map.Layers);
             _offsetX = _offsetY = _origin;
             _tileWidth = _map.TileSizeX;
             _tileHeight = _map.TileSizeY;
