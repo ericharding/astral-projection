@@ -32,7 +32,7 @@
             <Style TargetType="Rectangle">
                 <Setter Property="Opacity" Value="0.5" />
             </Style>
-        </Canvas.Resources>
+        </Canvas.Resources>       
         <Rectangle x:Name="cloud1" Width="170" Height="100" Fill="White" RadiusX="20" RadiusY="20" Canvas.Top="260" Canvas.Left="{Binding ElementName=self, Path=ActualWidth}" />
         <Rectangle x:Name="cloud2" Width="170" Height="100" Fill="White" RadiusX="20" RadiusY="20" Canvas.Top="60"  Canvas.Left="{Binding ElementName=self, Path=ActualWidth}" />
         <Rectangle x:Name="cloud3" Width="170" Height="100" Fill="White" RadiusX="20" RadiusY="20" Canvas.Top="480" Canvas.Left="{Binding ElementName=self, Path=ActualWidth}" />
