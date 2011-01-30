@@ -1,0 +1,195 @@
+﻿<Window x:Class="Astral.Projector.DMScreen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="clr-namespace:Astral.Projector"
+        xmlns:tile="clr-namespace:TileMap;assembly=AstralMap"
+        Title="DMScreen" Height="562" Width="789">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="b2v" />
+    </Window.Resources>
+    <Grid Background="{StaticResource Dev10Background}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        
+        <Menu Grid.Row="0" Grid.ColumnSpan="4">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Click="MenuOpen_Click" />
+            </MenuItem>
+        </Menu>
+        
+        
+        <!-- The MAP -->
+        <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" MouseWheel="_dmMapView_MouseWheel" IsProjectorMode="True" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" ClipToBounds="True" x:Name="_fog" ShowMapBounds="True" />
+
+        <!-- Bottom panel-->
+        <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
+            <TextBox Background="Transparent" x:Name="_tbMapNotes" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" />
+        </Grid>
+
+        <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" />
+
+        <!-- Expanders -->
+        <StackPanel Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" x:Name="_expanderCollection" Background="{StaticResource WhiteAlternativeGradient}">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="LayoutTransform">
+                        <Setter.Value>
+                            <RotateTransform Angle="90" />
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
+                <Style TargetType="Expander">
+                    <Setter Property="ExpandDirection" Value="Left" />
+                </Style>
+            </StackPanel.Resources>
+
+            <Expander Margin="2" x:Name="_expandCombatMode">
+                <Expander.Header>
+                    <TextBlock Text="Combat Mode" />
+                </Expander.Header>
+            </Expander>
+
+            <!-- Display Settings -->
+            <Expander x:Name="_expandDisplaySettings">
+                <Expander.Header>
+                    <TextBlock Text="Display Settings"  />
+                </Expander.Header>
+            </Expander>
+            
+            <Expander x:Name="_expandD20SRD">
+                <Expander.Header>
+                    <TextBlock Text="D20SRD" />
+                </Expander.Header>
+            </Expander>
+            
+            <Expander x:Name="_expandEffects">
+                <Expander.Header>
+                    <TextBlock Text="Effects" />
+                </Expander.Header>
+            </Expander>
+        </StackPanel>
+
+        <!-- Combat Initiative tracker -->
+        <Grid Visibility="{Binding ElementName=_expandCombatMode, Path=IsExpanded, Converter={StaticResource b2v}}" Grid.Column="1" Grid.RowSpan="2" Grid.Row="1">
+            <p:InitiativeTracker Width="300" />
+        </Grid>
+
+        <!-- Display Settings -->
+        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandDisplaySettings, Path=IsExpanded, Converter={StaticResource b2v}}" Background="{StaticResource WhiteAlternativeGradient}" >
+            <StackPanel x:Name="_settingsPanel" Margin="8">
+                <CheckBox Content="Show Map" IsChecked="{Binding Path=IsMapVisible, Mode=TwoWay}" Margin="5" />
+                <TextBlock Text="Zoom" Margin="5,5,5,0" />
+                <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="100" Value="{Binding Path=ZoomLevel, Mode=TwoWay}" Margin="5,0,5,5" />
+                <!--<TextBlock Text="Skew" />
+                <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />-->
+                <CheckBox Content="Fog of war" IsChecked="{Binding Path=ShowFogOfWar, Mode=TwoWay}" Margin="5" />
+                
+                <Button Content="Reset Fog" Margin="20,5,20,5" Click="ResetFog_Button_Click" />
+                
+                <TextBlock Text="Manual Adjust" Margin="5,5,5,0" />
+                <Grid Margin="5" Width="125">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Row="0" Grid.Column="1" Content="^" Click="ManualAdjust_Button_Click" Tag="up" />
+                    <Button Grid.Row="1" Grid.Column="0" Content="&lt;" Click="ManualAdjust_Button_Click" Tag="left" />
+                    <Button Grid.Row="1" Grid.Column="2" Content="&gt;" Click="ManualAdjust_Button_Click" Tag="right" />
+                    <Button Grid.Row="2" Grid.Column="1" Content="v" Click="ManualAdjust_Button_Click" Tag="down" />
+                </Grid>
+                
+                <GroupBox Header="Layers" Margin="0,5,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <!-- todo implement-->
+                        <CheckBox Content="DM 0"  Grid.Row="0" Click="Layer_CheckBox_Click" IsChecked="True" />
+                        <CheckBox Content="Player 0"  Grid.Row="0" Grid.Column="1" Click="Layer_CheckBox_Click" IsChecked="True" />
+                        <CheckBox Content="DM 1"  Grid.Row="1" Click="Layer_CheckBox_Click" IsChecked="True" />
+                        <CheckBox Content="Player 1"  Grid.Row="1" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 2"  Grid.Row="2" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 2" Grid.Row="2" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 3"  Grid.Row="3" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 3" Grid.Row="3" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 4"  Grid.Row="4" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 4" Grid.Row="4" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 5"  Grid.Row="5" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 5" Grid.Row="5" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 6"  Grid.Row="6" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 6" Grid.Row="6" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 7"  Grid.Row="7" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 7" Grid.Row="7" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="DM 8"  Grid.Row="8" Click="Layer_CheckBox_Click" />
+                        <CheckBox Content="Player 8" Grid.Row="8" Grid.Column="1" Click="Layer_CheckBox_Click" />
+                    </Grid>
+                </GroupBox>
+                
+                <TextBlock Text="Draw Grid:" />
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="_rbNoGrid" Content="No Grid" Checked="GridConfig_Checked" Margin="3" />
+                    <RadioButton x:Name="_rbUnderGrid" Content="Under" IsChecked="True" Checked="GridConfig_Checked" Margin="3" />
+                    <RadioButton x:Name="_rbOverGrid" Content="Over" Checked="GridConfig_Checked" Margin="3" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- D20 Srd -->
+        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandD20SRD, Path=IsExpanded, Converter={StaticResource b2v}}">
+            <WebBrowser Source="http://digitalsorcery.net/d20/" />
+        </Grid>
+
+        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandEffects, Path=IsExpanded, Converter={StaticResource b2v}}" Background="{StaticResource WhiteAlternativeGradient}" >
+            <StackPanel Margin="8">
+                <Button Content="Show Image ..." Margin="5" x:Name="_bShowImage" Click="_bShowImage_Click" />
+                <Button Content="Hide Image ..." Margin="5" x:Name="_bHideImage" Click="_bHideImage_Click" IsEnabled="False" />
+
+                <Button Content="Shake" Margin="5,10,5,5" x:Name="_bShake" Click="Effect_Click" Tag="Shake" />
+                
+                <ListBox x:Name="_lbEffects" Margin="5" MinHeight="128" SelectionChanged="_lbEffects_SelectionChanged" />
+                <Button x:Name="_bClearEffects" Margin="5" Content="Clear Effects" Click="_bClearEffects_Click" />
+            </StackPanel>
+        </Border>
+
+        <!-- Status Bar -->
+        <Grid Grid.Row="3" Grid.ColumnSpan="3">
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="White" />
+                </Style>
+            </Grid.Resources>
+            <Rectangle Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Fill="White" />
+            <TextBlock>Status...</TextBlock>
+        </Grid>
+    </Grid>
+</Window>
