@@ -6,6 +6,8 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Astral.Plane;
 using Microsoft.Win32;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Astral.Projector
 {
@@ -82,12 +84,45 @@ namespace Astral.Projector
                 {
                     _map.LayerMap[x] = false;
                 }
-                _tbMapNotes.Text = map.Notes;
+                _fdMapNotes.Document = MakeFlowDocument(map.Notes);
 
                 _pvc.LoadMap(ofd.FileName);
 
                 Dispatcher.In(TimeSpan.FromSeconds(0.2), () => _dmMapView.IsEnabled = true);
             }
+        }
+
+        private System.Windows.Documents.FlowDocument MakeFlowDocument(string notes)
+        {
+            FlowDocument doc = new FlowDocument();
+            doc.FontSize = 12;
+            doc.ColumnWidth = 900;
+
+            if (string.IsNullOrEmpty(notes))
+                return doc;
+
+            Paragraph p = new Paragraph();
+            p.TextAlignment = TextAlignment.Left;
+
+            foreach (string s in notes.Trim().Split('\n'))
+            {
+                p.Inlines.Add(s);
+                bool isEmpty = string.IsNullOrEmpty(s);
+
+                if (isEmpty || Char.IsNumber(s[0]))
+                {
+                    if (p.Inlines.Count != 0)
+                    {
+                        p.BreakPageBefore = !isEmpty;
+                        doc.Blocks.Add(p);
+                        p = new Paragraph();
+                    }
+                }
+            }
+
+            doc.Blocks.Add(p);
+
+            return doc;
         }
 
         private void _dmMapView_MouseWheel(object sender, MouseWheelEventArgs e)
