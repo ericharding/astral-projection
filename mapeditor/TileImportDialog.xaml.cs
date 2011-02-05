@@ -53,7 +53,7 @@ namespace TileMap
         public TileImportDialog(TileFactory tf, Map map):
             this(tf.Tags.ToArray<string>(), tf.Image, map)
         {
-            UIElement[] disable =  { nudHostBorderBottom, nudHostBorderLeft, nudHostBorderRight, nudHostBorderTop, nudHostTileHoriz, nudHostTileVert, cbArbitrary };
+            UIElement[] disable = { tbBorderTop, tbBorderLeft, tbBorderBottom, tbBorderRight, tbTileHoriz, tbTileVert, cbArbitrary };
 
             foreach (UIElement d in disable)
                 d.IsEnabled = false;
@@ -94,8 +94,8 @@ namespace TileMap
 
         private void ToggleScaleControls(bool show)
         {
-            UIElement[] hide = { nudHostBorderBottom, nudHostBorderLeft, nudHostBorderRight, nudHostBorderTop, rectBottom, rectRight, overlayTile };
-            UIElement[] collapse = { nudHostTileHoriz, nudHostTileVert };
+            UIElement[] hide = { tbBorderTop, tbBorderLeft, tbBorderBottom, tbBorderRight, rectBottom, rectRight, overlayTile };
+            UIElement[] collapse = { tbTileHoriz, tbTileVert };
 
             foreach (UIElement h in hide)
                 h.Visibility = show ? Visibility.Visible : Visibility.Hidden;
@@ -104,7 +104,7 @@ namespace TileMap
                 c.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void NumericUpDown_ValueChanged(object sender, EventArgs e)
+        private void NumericUpDown_ValueChanged(object sender, int value)
         {
             if (!_waitForIt)
                 Update();

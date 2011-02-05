@@ -48,6 +48,9 @@
     <Compile Include="Container\FilesystemContainer.cs" />
     <Compile Include="Container\IContainer.cs" />
     <Compile Include="Container\ZipFileContainer.cs" />
+    <Compile Include="Controls\NumericUpDownEx.xaml.cs">
+      <DependentUpon>NumericUpDownEx.xaml</DependentUpon>
+    </Compile>
     <Compile Include="IMapDisplay.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="QuadTree\IQuadObject.cs" />
@@ -67,6 +70,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\NumericUpDownEx.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
