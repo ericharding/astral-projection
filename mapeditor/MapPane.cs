@@ -36,6 +36,7 @@ namespace TileMap
         public event Action<long, long> MapPositionChanged;
         public event Action OnFileInfoUpdated;
         public event Action MapChanged;
+        public event Action BitmapChanged;
 
         private const long _origin = 0x7FFFFFFF;
         private Pen _gridPen = new Pen(Brushes.Black, 1);
@@ -66,6 +67,14 @@ namespace TileMap
             this.MouseLeftButtonUp += new MouseButtonEventHandler(MapPane_MouseLeftButtonUp);
 
             this.Clear();
+
+            _layerMapNotifier.OnSet += _layerMapNotifier_OnSet;
+        }
+
+        private void _layerMapNotifier_OnSet(int arg1, bool arg2)
+        {
+            _layerMap[arg1] = arg2;
+            BitmapUpdated();
         }
 
         private void MapPane_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -97,6 +106,7 @@ namespace TileMap
             _scrolling = false;
             _hoverTile = false;
             _leftClick = false;
+            _highlightedTile = null;
             this.InvalidateVisual();
         }
 
@@ -171,6 +181,8 @@ namespace TileMap
 
             this.Dirty = true;
 
+            BitmapUpdated();
+
             this.InvalidateVisual();
         }
 
@@ -200,6 +212,8 @@ namespace TileMap
 */
                 _highlightedTile = null;
                 this.Dirty = true;
+
+                BitmapUpdated();
 
                 this.InvalidateVisual();
             }
@@ -259,6 +273,8 @@ namespace TileMap
 
             this.Dirty = true;
 
+            BitmapUpdated();
+
             this.InvalidateVisual();
 
             if (this.TileSizeChanged != null)
@@ -288,6 +304,7 @@ namespace TileMap
             this.Dirty = false;
 
             MapUpdated();
+            BitmapUpdated();
 
             this.InvalidateVisual();
         }
@@ -339,6 +356,7 @@ namespace TileMap
             this.Dirty = false;
 
             MapUpdated();
+            BitmapUpdated();
 
             this.InvalidateVisual();
         }
@@ -372,6 +390,12 @@ namespace TileMap
         {
             if (MapChanged != null)
                 MapChanged();
+        }
+
+        private void BitmapUpdated()
+        {
+            if (BitmapChanged != null)
+                BitmapChanged();
         }
 
         private Rect ComputeMapSize()
