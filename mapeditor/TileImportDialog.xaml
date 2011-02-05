@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tilemap="clr-namespace:TileMap"
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:plane="clr-namespace:Astral.Plane.Controls;assembly=AstralPlane"
         FocusManager.FocusedElement="{Binding ElementName=tbTileName}"
         Title="Import" Height="600" Width="600" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ResizeMode="CanResizeWithGrip" Background="LightGray" Loaded="Window_Loaded">
     <Grid>
@@ -26,6 +27,14 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
+        <Grid.Resources>
+            <Style TargetType="plane:NumericUpDownEx">
+                <Setter Property="Height" Value="23" />
+                <Setter Property="MinWidth" Value="30" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="Minimum" Value="0" />
+            </Style>
+        </Grid.Resources>
         <Rectangle Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="1" Grid.RowSpan="5" HorizontalAlignment="Stretch" Stroke="Black" VerticalAlignment="Stretch">
             <Rectangle.Fill>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -43,24 +52,14 @@
         <Rectangle x:Name="rectBottom" Grid.Column="2" Grid.Row="5" Height="2" Grid.ColumnSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
         <Rectangle x:Name="rectRight" Grid.Column="5" Grid.Row="2" Width="2" Grid.RowSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
         <CheckBox x:Name="cbArbitrary" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Center" Focusable="False" Content="Arbitrary Scale" Checked="cbArbitrary_Checked" Unchecked="cbArbitrary_Checked"/>
-        <WindowsFormsHost x:Name="nudHostBorderTop" Grid.Column="3" Grid.Row="0" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderTop" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
-        </WindowsFormsHost>
-        <WindowsFormsHost x:Name="nudHostBorderLeft" Grid.Column="0" Grid.Row="3" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderLeft" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
-        </WindowsFormsHost>
-        <WindowsFormsHost x:Name="nudHostBorderBottom" Grid.Column="3" Grid.Row="6" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderBottom" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
-        </WindowsFormsHost>
-        <WindowsFormsHost x:Name="nudHostBorderRight" Grid.Column="6" Grid.Row="3" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbBorderRight" Value="0" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
-        </WindowsFormsHost>
-        <WindowsFormsHost x:Name="nudHostTileHoriz" Grid.Column="3" Grid.Row="5" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbTileHoriz" Minimum="1" Value="1" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
-        </WindowsFormsHost>
-        <WindowsFormsHost x:Name="nudHostTileVert" Grid.Column="5" Grid.Row="3" Margin="5">
-            <wf:NumericUpDown Height="23" Width="30" x:Name="tbTileVert" Minimum="1" Value="1" Maximum="1000" ValueChanged="NumericUpDown_ValueChanged"/>
-        </WindowsFormsHost>
+        
+        <plane:NumericUpDownEx x:Name="tbBorderTop" Grid.Column="3" Grid.Row="0" Value="0" ValueChanged="NumericUpDown_ValueChanged" />
+        <plane:NumericUpDownEx x:Name="tbBorderLeft" Grid.Column="0" Grid.Row="3" Value="0" ValueChanged="NumericUpDown_ValueChanged" />
+        <plane:NumericUpDownEx x:Name="tbBorderBottom" Grid.Column="3" Grid.Row="6" Value="0" ValueChanged="NumericUpDown_ValueChanged" />
+        <plane:NumericUpDownEx x:Name="tbBorderRight" Grid.Column="6" Grid.Row="3" Value="0" ValueChanged="NumericUpDown_ValueChanged" />
+        <plane:NumericUpDownEx x:Name="tbTileHoriz" Grid.Column="3" Grid.Row="5" Value="1" Minimum="1" ValueChanged="NumericUpDown_ValueChanged" />
+        <plane:NumericUpDownEx x:Name="tbTileVert" Grid.Column="5" Grid.Row="3" Value="1" Minimum="1" ValueChanged="NumericUpDown_ValueChanged" />
+        
         <TextBlock Grid.Column="1" Grid.Row="3" FontSize="14" VerticalAlignment="Center" Name="tbPixelsVert" Text="999px" TextAlignment="Right" RenderTransformOrigin="0.5,0.5">
             <TextBlock.RenderTransform>
                 <RotateTransform Angle="270"/>
