@@ -74,7 +74,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <TextBox Width="150" Margin="5" Name="tbTileName" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PreviewKeyDown="tbTileName_PreviewKeyDown"/>
+            <TextBox Width="150" Margin="5" Name="tbTileName" AcceptsReturn="True" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
         </StackPanel>
         <StackPanel Grid.Column="0" Grid.ColumnSpan="7" Grid.Row="8" HorizontalAlignment="Center" Orientation="Horizontal">
             <Button Content="Import" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="7" Height="23" Margin="5" Name="bImport" Width="75" IsDefault="True" Click="bImport_Click"/>

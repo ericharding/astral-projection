@@ -125,25 +125,9 @@ namespace TileMap
         {
             ToggleScaleControls(cbArbitrary.IsChecked != true);
         }
-
-        private void tbTileName_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Down)
-            {
-                int i = tbTileName.Text.LastIndexOf(Environment.NewLine);
-
-                if (tbTileName.CaretIndex > i)
-                {
-                    tbTileName.AppendText(Environment.NewLine);
-                    tbTileName.CaretIndex = tbTileName.Text.Length;
-
-                    e.Handled = true;
-                }
-            }
-        }
     }
 
-    public class OverlayGrid : Control
+    internal class OverlayGrid : Control
     {
         public int TilesHoriz { get; set; }
         public int TilesVert { get; set; }
