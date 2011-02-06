@@ -67,6 +67,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\TeamToImageConverter.cs" />
+    <Compile Include="Effects\ImageDrifter.cs" />
     <Compile Include="PlayerViewController.cs" />
     <Compile Include="Utility\WriteableBitmapEx.cs" />
   </ItemGroup>
@@ -171,6 +172,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\skull.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\SolidNoise.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

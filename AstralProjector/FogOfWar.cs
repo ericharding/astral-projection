@@ -22,12 +22,6 @@ namespace Astral.Projector
             DefaultStyleKeyProperty.OverrideMetadata(typeof(FogOfWar), new FrameworkPropertyMetadata(typeof(FogOfWar)));
         }
 
-
-        public FogOfWar()
-        {
-            Console.WriteLine("testing?");
-        }
-
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();

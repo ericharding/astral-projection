@@ -119,6 +119,13 @@ namespace Astral.Projector
 
         public void ClearEffects()
         {
+            foreach (var effect in _pv.Effects)
+            {
+                if (effect is IDisposable)
+                {
+                    ((IDisposable)effect).Dispose();
+                }
+            }
             _pv.Effects.Clear();
         }
 
