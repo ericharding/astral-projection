@@ -17,6 +17,7 @@ namespace Astral.Plane.Controls
         public NumericUpDownEx()
         {
             ScaleFactor = 4;
+            Maximum = int.MaxValue;
             InitializeComponent();
         }
 
@@ -39,11 +40,12 @@ namespace Astral.Plane.Controls
 
         private void SetValue()
         {
-            this.Value = Math.Max(this.Minimum, _lastDelta + _startValue);
+            this.Value = Math.Min(Math.Max(this.Minimum, _lastDelta + _startValue), this.Maximum);
         }
 
         public int ScaleFactor { get; set; }
         public int Minimum { get; set; }
+        public int Maximum { get; set; }
 
         public int Value
         {
@@ -64,6 +66,8 @@ namespace Astral.Plane.Controls
 
         private static object CoerceValue(DependencyObject target, object value)
         {
+            if (target == null || value == null) return value;
+
             int val = (int)value;
             NumericUpDownEx nud = (NumericUpDownEx)target;
             return Math.Max(nud.Minimum, val);

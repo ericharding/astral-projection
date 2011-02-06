@@ -1,5 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Rectangle x:Key="Blue" Fill="Blue" Opacity="0.25" />
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:effects="clr-namespace:Astral.Projector.Effects"
+                    >
     <Frame x:Key="Clouds" Source="/Effects/Clouds.xaml" />
+    
+    <effects:ImageDrifter x:Key="DarkClouds" ImageSource="/Images/SolidNoise.png" />
+    <effects:ImageDrifter x:Key="YellowFlag" ImageSource="/Images/Flag_Yellow.png" DeltaX="2" DeltaY="0" />
 </ResourceDictionary>

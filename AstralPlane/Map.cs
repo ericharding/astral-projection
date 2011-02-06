@@ -403,7 +403,14 @@ namespace Astral.Plane
             Uri pathUri = new Uri(path);
             Uri relativePath = baseUri.MakeRelativeUri(pathUri);
 
-            return relativePath.ToString();
+            if (relativePath.IsAbsoluteUri)
+            {
+                return relativePath.LocalPath;
+            }
+            else
+            {
+                return relativePath.ToString();
+            }
         }
 
         private void Load(IContainer file)
