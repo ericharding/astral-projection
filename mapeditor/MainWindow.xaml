@@ -89,7 +89,6 @@
                     <TextBox x:Name="tbSearchLibrary" FontSize="14" Grid.Row="3" TextChanged="tbSearchLibrary_TextChanged" PreviewKeyDown="TextBox_PreviewKeyDown" />
                     <StackPanel Orientation="Horizontal" Grid.Row="4">
                         <TextBlock Text="Layer:" Margin="5,0,25,0" VerticalAlignment="Center" />
-                        
                         <ComboBox x:Name="_layer" SelectedIndex="{Binding Mode=TwoWay, ElementName=mapPane, Path=ActivePlacementLayer}">
                             <ComboBox.ItemsSource>
                                 <x:Array Type="sys:Int32">
