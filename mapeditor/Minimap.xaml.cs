@@ -37,16 +37,21 @@ namespace TileMap
         }
 
         private MapPane _map;
+        private VisualBrush _brush;
 
         public Minimap()
         {
             InitializeComponent();
+
+            _brush = new VisualBrush();
+            _brush.Stretch = Stretch.Uniform;
+            canvasMap.Background = _brush;
         }
 
         private void Update()
         {
             if (_map != null)
-                imgMap.Source = _map.GetEntireMapAsBitmap();
+                _brush.Visual = _map.GetEntireMapAsVisual();
         }
     }
 }

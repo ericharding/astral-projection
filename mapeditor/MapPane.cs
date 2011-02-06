@@ -426,12 +426,22 @@ namespace TileMap
             return default(Rect);
         }
 
-        public BitmapSource GetEntireMapAsBitmap()
+        public Visual GetEntireMapAsVisual()
+        {
+            int w, h;
+
+            return GetEntireMapAsVisual(out w, out h);
+        }
+
+        public Visual GetEntireMapAsVisual(out int width, out int height)
         {
             Rect bounds = this.MapBounds;
 
             if (bounds == default(Rect))
+            {
+                width = height = 0;
                 return null;
+            }
 
             DrawingVisual dv = new DrawingVisual();
             DrawingContext dc = dv.RenderOpen();
@@ -445,10 +455,25 @@ namespace TileMap
 
             dc.Close();
 
-            RenderTargetBitmap bmp = new RenderTargetBitmap(w, h, 96, 96, PixelFormats.Default);
-            bmp.Render(dv);
-
             this.InvalidateVisual();
+
+            width = w;
+            height = h;
+
+            return dv;
+        }
+
+        public BitmapSource GetEntireMapAsBitmap()
+        {
+            int w, h;
+
+            Visual v = GetEntireMapAsVisual(out w, out h);
+
+            if (v == null)
+                return null;
+
+            RenderTargetBitmap bmp = new RenderTargetBitmap(w, h, 96, 96, PixelFormats.Default);
+            bmp.Render(v);
 
             return bmp;
         }
