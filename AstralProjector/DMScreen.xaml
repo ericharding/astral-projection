@@ -30,7 +30,12 @@
         
         <!-- The MAP -->
         <tile:MapPane Background="#0fff" Grid.Row="1" x:Name="_dmMapView" MouseWheel="_dmMapView_MouseWheel" IsProjectorMode="True" />
-        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" ClipToBounds="True" x:Name="_fog" ShowMapBounds="True" />
+        <p:FogOfWar MapDisplay="{Binding ElementName=_dmMapView}" Grid.Row="1" Opacity="0.6" ClipToBounds="True" x:Name="_fog" />
+        <Rectangle x:Name="_playerMapBounds" Stroke="Red" StrokeThickness="1" Width="10" Height="10" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden">
+            <Rectangle.RenderTransform>
+                <TranslateTransform x:Name="_playerMapOffset" X="-5" Y="0" />
+            </Rectangle.RenderTransform>
+        </Rectangle>
 
         <!-- Bottom panel-->
         <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
@@ -92,7 +97,7 @@
             <StackPanel x:Name="_settingsPanel" Margin="8">
                 <CheckBox Content="Show Map" IsChecked="{Binding Path=IsMapVisible, Mode=TwoWay}" Margin="5" />
                 <TextBlock Text="Zoom" Margin="5,5,5,0" />
-                <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="100" Value="{Binding Path=ZoomLevel, Mode=TwoWay}" Margin="5,0,5,5" />
+                <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="100" Value="{Binding Path=ZoomLevel, Mode=TwoWay}" Margin="5,0,5,5" SmallChange="5" LargeChange="10" />
                 <!--<TextBlock Text="Skew" />
                 <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="100" />-->
                 <CheckBox Content="Fog of war" IsChecked="{Binding Path=ShowFogOfWar, Mode=TwoWay}" Margin="5" />

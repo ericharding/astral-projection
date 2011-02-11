@@ -25,12 +25,28 @@ namespace Astral.Projector
 
             this.Loaded += new RoutedEventHandler(DMScreen_Loaded);
             _map = (IMapDisplay)_dmMapView;
-            
         }
 
         void _map_MapPositionChanged(long x, long y)
         {
-            _pvc.UpdateMapPosition(x, y);
+            _pvc.UpdateMapPosition(_map.PixelsToTiles(x, y));
+            UpdatePlayerMapBounds();
+        }
+
+        private void UpdatePlayerMapBounds()
+        {
+            Rect playerMapBounds = _pvc.PlayerMapBounds;
+            Point start = _map.TilesToPixels(playerMapBounds.X, playerMapBounds.Y);
+
+            _playerMapBounds.Width = playerMapBounds.Width * _map.TileSize;
+            _playerMapBounds.Height = playerMapBounds.Height * _map.TileSize;
+
+            Rect localViewport = _map.MapViewport;
+            double xdelt = localViewport.X - start.X;
+            double ydelt = localViewport.Y - start.Y;
+
+            _playerMapOffset.X = xdelt;
+            _playerMapOffset.Y = ydelt;
         }
 
         void DMScreen_Loaded(object sender, RoutedEventArgs e)
@@ -39,7 +55,7 @@ namespace Astral.Projector
             _settingsPanel.DataContext = _pvc;
 
             _map.MapPositionChanged += _map_MapPositionChanged;
-            _fog.FogChanged += new Action<double, double, int, bool>(_fog_FogChanged);
+            _fog.FogChanged += _fog_FogChanged;
 
             foreach (var ex in _expanderCollection.Children.OfType<Expander>())
             {
@@ -89,6 +105,8 @@ namespace Astral.Projector
                 _pvc.LoadMap(ofd.FileName);
 
                 Dispatcher.In(TimeSpan.FromSeconds(0.2), () => _dmMapView.IsEnabled = true);
+                UpdatePlayerMapBounds();
+                _playerMapBounds.Visibility = System.Windows.Visibility.Visible;
             }
         }
 
@@ -166,10 +184,11 @@ namespace Astral.Projector
             string tag = fe.Tag.ToString();
             bool horizontal = tag == "left" || tag == "right";
             int offset = 1;
-            if (tag == "left" || tag == "up")
+            if (tag == "right" || tag == "down")
                 offset *= -1;
 
             _pvc.ManualAdjust(horizontal, offset);
+            UpdatePlayerMapBounds();
         }
 
         private void _bShowImage_Click(object sender, RoutedEventArgs e)

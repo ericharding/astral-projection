@@ -363,11 +363,8 @@ namespace TileMap
 
         public void SetMapPosition(long X, long Y)
         {
-            if (X < 0 || Y < 0)
-                X = Y = _origin;
-
-            _offsetX = X;
-            _offsetY = Y;
+            _offsetX = X + _origin;
+            _offsetY = Y + _origin;
 
             MapPositionUpdated();
 
@@ -377,7 +374,7 @@ namespace TileMap
         private void MapPositionUpdated()
         {
             if (MapPositionChanged != null)
-                MapPositionChanged(_offsetX, _offsetY);
+                MapPositionChanged(_offsetX-_origin, _offsetY-_origin);
         }
 
         private void FileInfoUpdated()
@@ -584,6 +581,16 @@ namespace TileMap
                 double y = (i + (_offsetY - _origin) % _tileHeight);
                 dc.DrawLine(_gridPen, new Point(0, y), new Point(w, y));
             }
+        }
+
+        public Point PixelsToTiles(double px, double py)
+        {
+            return new Point(px / _tileWidth, py / _tileHeight);
+        }
+
+        public Point TilesToPixels(double tx, double ty)
+        {
+            return new Point(tx * _tileWidth, ty * _tileHeight);
         }
     }
 }

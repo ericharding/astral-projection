@@ -23,6 +23,15 @@ namespace Astral.Projector
             // Position the player view
         }
 
+        public Rect PlayerMapBounds
+        {
+            get
+            {
+                Rect viewport = _pv.MapView.MapViewport;
+                return new Rect(_pv.MapView.PixelsToTiles(viewport.X, viewport.Y), new Size(viewport.Width / _pv.MapView.TileSize, viewport.Height / _pv.MapView.TileSize));
+            }
+        }
+
         public bool IsMapVisible
         {
             get
@@ -129,10 +138,11 @@ namespace Astral.Projector
             _pv.Effects.Clear();
         }
 
-        public void UpdateMapPosition(long x, long y)
+        public void UpdateMapPosition(Point location)
         {
-            _x = x;
-            _y = y;
+            Point pixels = _pv.MapView.TilesToPixels(location.X, location.Y);
+            _x = (int)pixels.X;
+            _y = (int)pixels.Y;
             _pv.MapView.SetMapPosition(_x + _mx, _y + _my);
         }
 
