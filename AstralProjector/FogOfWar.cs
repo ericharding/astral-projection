@@ -54,10 +54,6 @@ namespace Astral.Projector
         public static readonly DependencyProperty FogColorProperty =
             DependencyProperty.Register("FogColor", typeof(Color), typeof(FogOfWar), new UIPropertyMetadata(Colors.Black));
 
-
-        public bool ShowMapBounds { get; set; }
-        
-
         public void SetMapDisplay(IMapDisplay newMap)
         {
             FrameworkElement feOld = _map as FrameworkElement;
@@ -98,7 +94,7 @@ namespace Astral.Projector
         {
             _fogDirty = true;
             _copyFog = copy;
-            this.Dispatcher.In(TimeSpan.FromSeconds(0.2), UpdateFogNow);
+            this.Dispatcher.In(TimeSpan.FromSeconds(0.5), UpdateFogNow);
         }
 
         private void UpdateFogNow()
@@ -210,13 +206,6 @@ namespace Astral.Projector
             dc.DrawRectangle(borderBrush, null, new Rect(fogEndRight, 0, Math.Max(0, this.ActualWidth - fogEndRight), this.ActualHeight));
             double fogendBottom = y + _fogImage.PixelHeight;
             dc.DrawRectangle(borderBrush, null, new Rect(0, fogendBottom, this.ActualWidth, Math.Max(0, this.ActualHeight - fogendBottom)));
-
-            // For debugging
-            if (ShowMapBounds)
-            {
-                Pen p = new Pen(Brushes.Red, 1.0);
-                dc.DrawRectangle(null, p, new Rect(x, y, _mapBounds.Width, _mapBounds.Height));
-            }
         }
 
         internal void Reset()

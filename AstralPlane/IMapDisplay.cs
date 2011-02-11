@@ -26,5 +26,8 @@ namespace Astral.Plane
         double ActualHeight { get; }
 
         IIndexable<int, bool> LayerMap { get; }
+
+        Point PixelsToTiles(double x, double y);
+        Point TilesToPixels(double x, double y);
     }
 }
