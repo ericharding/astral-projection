@@ -406,7 +406,7 @@ namespace TileMap
 
         internal static void PopulateTagList(ListView view, Map map)
         {
-            Dictionary<string, int> tags = new Dictionary<string, int>();
+            Dictionary<string, int> tags = new Dictionary<string, int>(StringComparer.CurrentCultureIgnoreCase);
 
             foreach (TileFactory tf in map.TileFactories)
             {
@@ -484,7 +484,7 @@ namespace TileMap
 
         private void menuGoToOrigin_Click(object sender, RoutedEventArgs e)
         {
-            mapPane.SetMapPosition(-1, -1);
+            mapPane.SetMapPosition(0, 0);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
