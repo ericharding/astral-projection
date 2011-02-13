@@ -82,12 +82,12 @@ namespace TileMap
 
         private string GetTags()
         {
-            List<String> tags = new List<string>(tbTileName.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
+            List<String> tags = new List<string>(tbTileName.Text.Split(new string[] { Environment.NewLine, ";" }, StringSplitOptions.RemoveEmptyEntries));
 
             foreach (KeyValuePair<string, int> kvp in viewSearchTags.SelectedItems)
                 tags.Add(kvp.Key);
 
-            tags = tags.Distinct<string>().ToList<string>();
+            tags = tags.Distinct<string>(StringComparer.CurrentCultureIgnoreCase).ToList<string>();
 
             return string.Join(Environment.NewLine, tags);
         }
