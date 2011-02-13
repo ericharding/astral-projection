@@ -24,6 +24,8 @@ namespace TileMap
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string KeyboardHint { set { menuKeyboardHint.Header = value; } }
+
         private ObservableCollection<TileFactory> _filteredLibrary;
         private Map _library = new Map();
         private Settings _prefs = new Settings();
@@ -52,6 +54,8 @@ namespace TileMap
 
             _filteredLibrary = new ObservableCollection<TileFactory>(_library.TileFactories);
             viewTiles.ItemsSource = _filteredLibrary;
+
+            KeyboardHint = "Grab: Y   Drop: Esc   Scale: +/\u2212   Rotate: L/R   Mirror: H/V";
         }
 
         private void bImport_Click(object sender, RoutedEventArgs e)

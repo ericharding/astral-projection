@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,7 +29,7 @@ namespace TileMap
         public bool IsProjectorMode { get { return _projectorMode; } set { _projectorMode = value; this.InvalidateVisual(); } }
         public string FileName { get { return _mapFileName; } private set { _mapFileName = value; FileInfoUpdated(); } }
         public bool Dirty { get { return _dirty; } private set { _dirty = value; FileInfoUpdated(); } }
-        public string MapNotes { get { return _map.Notes; } set { _map.Notes = value; _dirty = true; } }
+        public string MapNotes { get { return _map.Notes; } set { _map.Notes = value; this.Dirty = true; } }
         public Brush GridBrush { get { return _gridPen.Brush; } set { _gridPen = new Pen(value, 1); this.InvalidateVisual(); } }
         public Rect MapBounds { get { return ComputeMapSize(); } }
         public Rect MapViewport { get { return new Rect(_offsetX - _origin, _offsetY - _origin, this.ActualWidth, this.ActualHeight); } }
@@ -185,7 +186,10 @@ namespace TileMap
 
             this.InvalidateVisual();
         }
-
+/*
+        [DllImport("user32.dll")]
+        private static extern bool SetCursorPos(int X, int Y);
+*/
         public void PickUpTile()
         {
             if (!_projectorMode && _highlightedTile != null)
@@ -198,17 +202,17 @@ namespace TileMap
 /*
                 Point pos = RealToCanvas(_highlightedTile.Position);
                 if ((pos.X - _tileWidth) < 0)
-                    SetMapPosition(_offsetX + (long)(_tileWidth - pos.X), _offsetY);
+                    SetMapPosition(_offsetX + (long)(_tileWidth - pos.X), _offsetY, false);
                 if ((pos.Y - _tileHeight) < 0)
-                    SetMapPosition(_offsetX, _offsetY + (long)(_tileHeight - pos.Y));
+                    SetMapPosition(_offsetX, _offsetY + (long)(_tileHeight - pos.Y), false);
                 if ((pos.X + _tileWidth) > this.RenderSize.Width)
-                    SetMapPosition(_offsetX - (long)(pos.X - this.RenderSize.Width) - _tileWidth, _offsetY);
+                    SetMapPosition(_offsetX - (long)(pos.X - this.RenderSize.Width) - _tileWidth, _offsetY, false);
                 if ((pos.Y + _tileHeight) > this.RenderSize.Height)
-                    SetMapPosition(_offsetX, _offsetY - (long)(pos.Y - this.RenderSize.Height) - _tileHeight);
+                    SetMapPosition(_offsetX, _offsetY - (long)(pos.Y - this.RenderSize.Height) - _tileHeight, false);
 
                 pos = this.PointToScreen(RealToCanvas(_highlightedTile.Position));
 
-                System.Windows.Forms.Cursor.Position = new System.Drawing.Point((int)pos.X, (int)pos.Y);
+                SetCursorPos((int)pos.X, (int)pos.Y);
 */
                 _highlightedTile = null;
                 this.Dirty = true;
@@ -309,7 +313,7 @@ namespace TileMap
             this.InvalidateVisual();
         }
 
-        private void ResetLayerMap(int count=8)
+        private void ResetLayerMap(int count = 8)
         {
             _layerMap = new BitArray(Math.Max(count, 8), true);
             _layerMapNotifier = new ChangeNotificationWrapper<BitArray, int, bool>(_layerMap);
@@ -361,20 +365,25 @@ namespace TileMap
             this.InvalidateVisual();
         }
 
-        public void SetMapPosition(long X, long Y)
+        private void SetMapPosition(long X, long Y, bool originZero)
         {
-            _offsetX = X + _origin;
-            _offsetY = Y + _origin;
+            _offsetX = X + (originZero ? _origin : 0);
+            _offsetY = Y + (originZero ? _origin : 0);
 
             MapPositionUpdated();
 
             this.InvalidateVisual();
         }
 
+        public void SetMapPosition(long X, long Y)
+        {
+            SetMapPosition(X, Y, true);
+        }
+
         private void MapPositionUpdated()
         {
             if (MapPositionChanged != null)
-                MapPositionChanged(_offsetX-_origin, _offsetY-_origin);
+                MapPositionChanged(_offsetX - _origin, _offsetY - _origin);
         }
 
         private void FileInfoUpdated()

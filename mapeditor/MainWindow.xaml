@@ -7,6 +7,11 @@
     <Grid>
         <DockPanel HorizontalAlignment="Stretch" Name="dockPanel1" VerticalAlignment="Stretch">
             <Menu Name="menu1" VerticalAlignment="Top" DockPanel.Dock="Top">
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <DockPanel HorizontalAlignment="Stretch"/>
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
                 <MenuItem Header="_File">
                     <MenuItem Header="_New" InputGestureText="Ctrl+N" Name="menuNew" Click="menuNew_Click"/>
                     <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Name="menuOpen" Click="menuOpen_Click"/>
@@ -23,6 +28,7 @@
                     <MenuItem Header="Go To _Origin" InputGestureText="Zero" Name="menuGoToOrigin" Click="menuGoToOrigin_Click"/>
                     <MenuItem Header="_Copy To Clipboard" Name="menuCopyToClipboard" Click="menuCopyToClipboard_Click"/>
                 </MenuItem>
+                <MenuItem x:Name="menuKeyboardHint" IsTabStop="False" HorizontalAlignment="Right" Opacity="0.5"/>
             </Menu>
             <Grid>
                 <Grid.ColumnDefinitions>
