@@ -64,9 +64,7 @@ namespace TileMap
             open.InitialDirectory = (string)_prefs["defaultDirImport"];
 
             if (!HasReadAccess(open.InitialDirectory))
-            {
                 open.InitialDirectory = null;
-            }
 
             if ((bool)open.ShowDialog(this))
             {
@@ -326,6 +324,9 @@ namespace TileMap
                     save.InitialDirectory = (string)_prefs["defaultDirSave"];
                     save.Filter = _fileFilter;
 
+                    if (!HasReadAccess(save.InitialDirectory))
+                        save.InitialDirectory = null;
+
                     if ((bool)save.ShowDialog(this))
                     {
                         _prefs["defaultDirSave"] = Path.GetDirectoryName(save.FileName);
@@ -443,6 +444,9 @@ namespace TileMap
             open.InitialDirectory = (string)_prefs["defaultDirOpen"];
             open.Filter = _fileFilter;
 
+            if (!HasReadAccess(open.InitialDirectory))
+                open.InitialDirectory = null;
+
             if ((bool)open.ShowDialog(this))
             {
                 _prefs["defaultDirOpen"] = Path.GetDirectoryName(open.FileName);
@@ -473,6 +477,9 @@ namespace TileMap
             save.InitialDirectory = (string)_prefs["defaultDirExport"];
             save.Filter = _fileFilter;
             save.Title = "Export";
+
+            if (!HasReadAccess(save.InitialDirectory))
+                save.InitialDirectory = null;
 
             if ((bool)save.ShowDialog(this))
             {
