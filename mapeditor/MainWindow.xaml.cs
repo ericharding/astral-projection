@@ -55,7 +55,7 @@ namespace TileMap
             _filteredLibrary = new ObservableCollection<TileFactory>(_library.TileFactories);
             viewTiles.ItemsSource = _filteredLibrary;
 
-            KeyboardHint = "Grab: Y   Drop: Esc   Scale: +/\u2212   Rotate: L/R   Mirror: H/V";
+            KeyboardHint = "Grab: Y   Copy: C   Delete: D   Drop: Esc   Scale: +/\u2212   Rotate: L/R   Mirror: H/V";
         }
 
         private void bImport_Click(object sender, RoutedEventArgs e)
@@ -259,9 +259,17 @@ namespace TileMap
                     menuGoToOrigin_Click(null, null);
                     break;
                 case Key.Y:
-                    mapPane.PickUpTile();
+                    mapPane.PickUpTile(true, true);
                     UpdateFilteredLibrary();
                     break;
+                case Key.C:
+                    mapPane.PickUpTile(false);
+                    UpdateFilteredLibrary();
+                    break;
+                case Key.X:
+                case Key.D:
+                    mapPane.PickUpTile(true);
+                    goto case Key.Escape;
                 case Key.NumPad0:
                     this._layer.SelectedIndex = 0;
                     break;
