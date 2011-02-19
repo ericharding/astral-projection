@@ -190,34 +190,43 @@ namespace TileMap
         [DllImport("user32.dll")]
         private static extern bool SetCursorPos(int X, int Y);
 */
-        public void PickUpTile()
+        public void PickUpTile(bool andRemove, bool snapTo = false)
         {
             if (!_projectorMode && _highlightedTile != null)
             {
                 TileToPlace = _highlightedTile.Tile.Factory;
                 _tileToPlacePreview.Tile = _highlightedTile.Tile;
 
-                _tiles.Remove(_highlightedTile);
-                _map.RemoveTile(_highlightedTile.Tile);
+                if (andRemove)
+                {
+                    _tiles.Remove(_highlightedTile);
+                    _map.RemoveTile(_highlightedTile.Tile);
+                }
 /*
-                Point pos = RealToCanvas(_highlightedTile.Position);
-                if ((pos.X - _tileWidth) < 0)
-                    SetMapPosition(_offsetX + (long)(_tileWidth - pos.X), _offsetY, false);
-                if ((pos.Y - _tileHeight) < 0)
-                    SetMapPosition(_offsetX, _offsetY + (long)(_tileHeight - pos.Y), false);
-                if ((pos.X + _tileWidth) > this.RenderSize.Width)
-                    SetMapPosition(_offsetX - (long)(pos.X - this.RenderSize.Width) - _tileWidth, _offsetY, false);
-                if ((pos.Y + _tileHeight) > this.RenderSize.Height)
-                    SetMapPosition(_offsetX, _offsetY - (long)(pos.Y - this.RenderSize.Height) - _tileHeight, false);
+                if (snapTo)
+                {
+                    Point pos = RealToCanvas(_highlightedTile.Position);
+                    if ((pos.X - _tileWidth) < 0)
+                        SetMapPosition(_offsetX + (long)(_tileWidth - pos.X), _offsetY, false);
+                    if ((pos.Y - _tileHeight) < 0)
+                        SetMapPosition(_offsetX, _offsetY + (long)(_tileHeight - pos.Y), false);
+                    if ((pos.X + _tileWidth) > this.RenderSize.Width)
+                        SetMapPosition(_offsetX - (long)(pos.X - this.RenderSize.Width) - _tileWidth, _offsetY, false);
+                    if ((pos.Y + _tileHeight) > this.RenderSize.Height)
+                        SetMapPosition(_offsetX, _offsetY - (long)(pos.Y - this.RenderSize.Height) - _tileHeight, false);
 
-                pos = this.PointToScreen(RealToCanvas(_highlightedTile.Position));
+                    pos = this.PointToScreen(RealToCanvas(_highlightedTile.Position));
 
-                SetCursorPos((int)pos.X, (int)pos.Y);
+                    SetCursorPos((int)pos.X, (int)pos.Y);
+                }
 */
                 _highlightedTile = null;
-                this.Dirty = true;
 
-                BitmapUpdated();
+                if (andRemove)
+                {
+                    this.Dirty = true;
+                    BitmapUpdated();
+                }
 
                 this.InvalidateVisual();
             }
