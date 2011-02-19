@@ -160,6 +160,7 @@ namespace TileMap
         private void viewTiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             mapPane.TileToPlace = (TileFactory)viewTiles.SelectedItem;
+            _layer.SelectedIndex = mapPane.TileToPlace != null && mapPane.TileToPlace.Tags.Contains("number") ? 1 : 0;
         }
 
         private void viewTiles_MouseDown(object sender, MouseButtonEventArgs e)

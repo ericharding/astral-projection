@@ -205,6 +205,7 @@ namespace Astral.Plane
 
             double[] borders = { _borders.Top, _borders.Left, _borders.Bottom, _borders.Right };
             int[] tileCount = { _tilesHoriz, _tilesVert };
+            
 
             int srcSize = (borders.Length * sizeof(double)) +
                             (tileCount.Length * sizeof(int)) +
@@ -227,6 +228,11 @@ namespace Astral.Plane
             Debug.Assert(srcSize - offset == (this.Image.PixelWidth * this.Image.PixelHeight * 4));
 
             this.Image.CopyPixels(imageBits, this.Image.PixelWidth * 4, offset);
+
+            // Add in the arbitrary scale bit in a way that does't invalidate existing non-arbitrary hashes.
+            // ^= true isn't very interesting anyway.
+            if (_arbitraryScale)
+                imageBits[0] ^= 1;
 
             SHA1 sha = SHA1.Create();
             byte[] hash = sha.ComputeHash(imageBits);
