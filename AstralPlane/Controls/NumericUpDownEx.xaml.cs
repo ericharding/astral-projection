@@ -19,6 +19,8 @@ namespace Astral.Plane.Controls
             ScaleFactor = 4;
             Maximum = int.MaxValue;
             InitializeComponent();
+
+            this.PreviewKeyDown += new KeyEventHandler(NumericUpDownEx_PreviewKeyDown);
         }
 
         private void Thumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
@@ -85,19 +87,7 @@ namespace Astral.Plane.Controls
 
         public event Action<object, int> ValueChanged;
 
-        private void TextBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == Key.Up)
-            {
-                Value++;
-                e.Handled = true;
-            }
-            else if (e.Key == Key.Down)
-            {
-                Value--;
-                e.Handled = true;
-            }
-        }
+
 
         private void TextBox_MouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -108,6 +98,18 @@ namespace Astral.Plane.Controls
         {
             TextBox tb = (TextBox)sender;
             tb.SelectAll();
+        }
+
+        void NumericUpDownEx_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up)
+            {
+                Value++;
+            }
+            else if (e.Key == Key.Down)
+            {
+                Value--;
+            }
         }
     }
 }

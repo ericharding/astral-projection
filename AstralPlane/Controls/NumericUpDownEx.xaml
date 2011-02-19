@@ -17,7 +17,7 @@
             <ColumnDefinition Width="14" />
         </Grid.ColumnDefinitions>
             
-        <TextBox Text="{Binding Value, ElementName=self, StringFormat={}{0:00}, Mode=TwoWay}" VerticalAlignment="Stretch" Margin="2" KeyUp="TextBox_KeyUp" MouseWheel="TextBox_MouseWheel" GotFocus="TextBox_GotFocus" />
+        <TextBox Text="{Binding Value, ElementName=self, StringFormat={}{0:00}, Mode=TwoWay}" VerticalAlignment="Stretch" Margin="2" MouseWheel="TextBox_MouseWheel" GotFocus="TextBox_GotFocus" />
 
         <Thumb Grid.Column="1" Width="14" Height="14" BorderBrush="Black" BorderThickness="1" DragDelta="Thumb_DragDelta" DragStarted="Thumb_DragStarted" DragCompleted="Thumb_DragCompleted" Cursor="ScrollAll">
             <Thumb.Template>
