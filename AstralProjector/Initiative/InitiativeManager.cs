@@ -37,6 +37,8 @@ namespace Astral.Projector.Initiative
         public static readonly TimeSpan MinorAction = TimeSpan.FromSeconds(MINOR_ACTION_SECONDS);
         public static readonly TimeSpan SwiftAction = TimeSpan.FromSeconds(SWIFT_ACTION_SECONDS);
 
+        public static readonly InitiativeManager Instance = new InitiativeManager();
+
         internal static TimeSpan GetActionLength(ActionType type)
         {
             switch (type)
@@ -61,6 +63,7 @@ namespace Astral.Projector.Initiative
 
         public InitiativeManager()
         {
+            CurrentTeam = Team.Blue;
         }
 
         public IList<Event> Events
@@ -70,6 +73,8 @@ namespace Astral.Projector.Initiative
                 throw new NotImplementedException();
             }
         }
+
+        public Team CurrentTeam { get; set; }
 
         public void AddActor(Actor actor)
         {
@@ -81,7 +86,7 @@ namespace Astral.Projector.Initiative
             throw new NotImplementedException();
         }
 
-        // Reset for combat
+        // spreads combatants out across the next 6 seconds
         public void Shuffle()
         {
             throw new NotImplementedException();
@@ -123,9 +128,15 @@ namespace Astral.Projector.Initiative
             throw new NotImplementedException();
         }
 
+        // Clear spell effects and reset turn count
         public void Reset()
         {
             throw new NotImplementedException();
+        }
+
+        public Event CreateEvent(string description)
+        {
+            return EventFactory.Create(description);
         }
     }
 }

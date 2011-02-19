@@ -43,7 +43,7 @@ namespace Astral.Projector.Initiative
         }
 
         public string Name { get { return _name; } }
-        
+
         public DateTime ScheduledAction { get; private set; }
 
         public void TakeAction(ActionType type)
@@ -75,32 +75,48 @@ namespace Astral.Projector.Initiative
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 
     // Player or monster
     public class Actor : Event
     {
-        public Actor(string name, Team team): base(name)
+        public Actor(string name, Team team, int hp)
+            : base(name)
         {
             this.Team = team;
+            this.MaxHealth = this.CurrentHealth = hp;
         }
 
         public Team Team { get; private set; }
+        public bool IsCasting { get; set; }
+
+        public int MaxHealth { get; set; }
+        public int CurrentHealth { get; set; }
+
+        public override string ToString()
+        {
+            return base.ToString() + string.Format(" hp: {0}/{1}", CurrentHealth, MaxHealth);
+        }
     }
 
     public class TurnEnding : Event
     {
         public TurnEnding(string name)
-            :base(name)
+            : base(name)
         {
-            
+
         }
     }
 
     public class SpellEffect : Event
     {
         private TimeSpan _duration;
-        
+
         public SpellEffect(string name, TimeSpan duration)
             : base(name)
         {
