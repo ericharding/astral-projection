@@ -1,0 +1,172 @@
+﻿<UserControl x:Class="Astral.Projector.InitiativeTracker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:i="clr-namespace:Astral.Projector.Initiative"
+             mc:Ignorable="d"
+             d:DesignHeight="315" d:DesignWidth="299">
+    <UserControl.Resources>
+        <x:Array x:Key="Icons" Type="sys:String">
+            <sys:String>Images/blue.ico</sys:String>
+            <sys:String>Images/gold.ico</sys:String>
+            <sys:String>Images/green.ico</sys:String>
+            <sys:String>Images/purple.ico</sys:String>
+            <sys:String>Images/red.ico</sys:String>
+            <sys:String>Images/redgold.ico</sys:String>
+            <sys:String>Images/silver.ico</sys:String>
+            <sys:String>/Images/Flag_Blue.png</sys:String>
+            <sys:String>/Images/Flag_Green.png</sys:String>
+            <sys:String>/Images/Flag_Purple.png</sys:String>
+            <sys:String>/Images/Flag_Red.png</sys:String>
+            <sys:String>/Images/Flag_Yellow.png</sys:String>
+        </x:Array>
+        <DataTemplate x:Key="IconOnlyTemplate">
+            <Image Source="{Binding}" Width="16"  Height="16" />
+        </DataTemplate>
+        
+        <ControlTemplate TargetType="Button" x:Key="NoButton">
+            <Grid>
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#0000" BorderThickness="2" CornerRadius="3" Name="myBorder" Background="#1000" />
+                <ContentPresenter Margin="2,0,2,0" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <BeginStoryboard.Storyboard>
+                                <Storyboard>
+                                    <ColorAnimation To="Black" Duration="0:0:0.5" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="BorderBrush.Color" />
+                                </Storyboard>
+                            </BeginStoryboard.Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <BeginStoryboard.Storyboard>
+                                <Storyboard>
+                                    <ColorAnimation To="Transparent" Duration="0:0:0.9" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="BorderBrush.Color" />
+                                </Storyboard>
+                            </BeginStoryboard.Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <BeginStoryboard.Storyboard>
+                                <Storyboard>
+                                    <ColorAnimation To="Silver" Duration="0:0:0.1" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="Background.Color" />
+                                </Storyboard>
+                            </BeginStoryboard.Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <BeginStoryboard.Storyboard>
+                                <Storyboard>
+                                    <ColorAnimation To="#1000" Duration="0:0:0.3" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="Background.Color" />
+                                </Storyboard>
+                            </BeginStoryboard.Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </ControlTemplate.Triggers>
+            
+        </ControlTemplate>
+
+        <SolidColorBrush x:Key="ControlBackground" Color="#afff" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Background="Transparent">
+            <TextBox VerticalAlignment="Center" Width="125" Background="#afff">Joe 30</TextBox>
+            <ComboBox x:Name="_cbTeam" SelectedIndex="1" VerticalAlignment="Center" Margin="2" Background="{StaticResource ControlBackground}" 
+                      ItemsSource="{StaticResource Icons}" ItemTemplate="{StaticResource IconOnlyTemplate}" />
+            <Button VerticalAlignment="Center" Margin="1" Background="{StaticResource ControlBackground}">Add</Button>
+        </StackPanel>
+
+        <TextBlock Text="{Binding Path=CurrentTurn, StringFormat=Turn - {0}}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" />
+        <ListBox Grid.Row="1" x:Name="_initiativeList" Background="{StaticResource WhiteAlternativeGradient}" HorizontalContentAlignment="Stretch"
+                 PreviewMouseDown="_initiativeList_PreviewMouseDown" PreviewMouseMove="_initiativeList_PreviewMouseMove">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type i:Actor}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition  />
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Image Source="{Binding TeamImage}" Grid.RowSpan="2" />
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="2" FontWeight="Bold" />
+                        <TextBlock Grid.Column="2" Grid.Row="1"  Margin="0,0,0,5">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}/{1}">
+                                    <Binding Path="CurrentHealth" />
+                                    <Binding Path="MaxHealth" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal" Grid.RowSpan="2" Grid.Column="3" >
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                    <Setter Property="FontSize" Value="16" />
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                    <Setter Property="Margin" Value="3" />
+                                </Style>
+                            </StackPanel.Resources>
+
+                            <Button Template="{StaticResource NoButton}" ToolTip="Full - 6 seconds">
+                                <TextBlock Text=" F " Foreground="Firebrick" />
+                            </Button>
+                            <Button Template="{StaticResource NoButton}" ToolTip="Standard - 4 seconds">
+                                <TextBlock Text=" S " Foreground="DarkBlue" />
+                            </Button>
+                            <Button Template="{StaticResource NoButton}" ToolTip="Minor - 2.5 seconds">
+                                <TextBlock Text=" M " Foreground="Green" />
+                            </Button>
+
+                            <Button Template="{StaticResource NoButton}" ToolTip="Aaarrgghhh...">
+                                <Image  SnapsToDevicePixels="True" Width="16" Height="16" Margin="3,0,3,0" VerticalAlignment="Center">
+                                    <Image.Source>
+                                        <BitmapImage UriSource="/images/skull.png" DecodePixelHeight="16" DecodePixelWidth="16" />
+                                    </Image.Source>
+                                </Image>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Background="Transparent">
+            <ComboBox VerticalAlignment="Center" Margin="2" SelectedIndex="1" Background="{StaticResource ControlBackground}"
+                      ItemsSource="{StaticResource Icons}" ItemTemplate="{StaticResource IconOnlyTemplate}"/>
+            <Button VerticalAlignment="Center" Margin="2" Background="{StaticResource ControlBackground}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Images/x_black.png" />
+                    <TextBlock Text="Clear" VerticalAlignment="Center" Margin="3" />
+                </StackPanel>
+            </Button>
+            <Button VerticalAlignment="Center" Margin="2" Background="{StaticResource ControlBackground}">
+                <StackPanel Orientation="Horizontal">
+                <Image Source="/Images/Plus_Orange.png" />
+                    <TextBlock Text="Heal" VerticalAlignment="Center" Margin="3" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        
+    </Grid>
+</UserControl>
