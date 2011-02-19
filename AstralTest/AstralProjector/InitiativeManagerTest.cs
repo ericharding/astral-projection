@@ -10,21 +10,21 @@ namespace AstralTest
     ///This is a test class for InitiativeManagerTest and is intended
     ///to contain all InitiativeManagerTest Unit Tests
     ///</summary>
-    [TestClass()]
+    [TestClass]
     public class InitiativeManagerTest
     {
-        [TestMethod()]
+        [TestMethod]
         public void InitiativeManagerConstructorTest()
         {
             InitiativeManager mgr = new InitiativeManager();
 
             string[] names = { "Joe", "Stinky", "Orc 1", "Orc 2", "Orc 3" };
 
-            Actor[] actors = {  new Actor("Joe", Team.Gold),
-                                new Actor("Stinky", Team.Gold),
-                                new Actor("Orc 1", Team.Green),
-                                new Actor("Orc 2", Team.Green),
-                                new Actor("Orc 3", Team.Green),
+            Actor[] actors = {  new Actor("Joe", Team.Gold, 12),
+                                new Actor("Stinky", Team.Gold, 10),
+                                new Actor("Orc 1", Team.Green, 10),
+                                new Actor("Orc 2", Team.Green, 10),
+                                new Actor("Orc 3", Team.Green, 10),
                              };
             Actor joe = actors[0];
             Actor stinky = actors[1];
@@ -123,6 +123,26 @@ namespace AstralTest
             VerifyInitiativeState(mgr, "Joe", "Stinky", "Turn 1", "Turn 2", "Turn 3", "Turn 4", "Turn 5", "Turn 6");
 
         }
+
+        [TestMethod]
+        public void DuplicateNameTest()
+        {
+            InitiativeManager mgr = new InitiativeManager();
+
+            mgr.AddActor(new Actor("Orc", Team.Purple, 10));
+            mgr.AddActor(new Actor("orc", Team.Green, 10));
+            Actor orc3 = new Actor("Orc", Team.Purple, 10);
+            mgr.AddActor(orc3);
+
+            Assert.IsTrue(mgr.Events.Where(e => e.Name == "Orc").Count() == 0);
+            Assert.IsTrue(mgr.Events.Where(e => e.Name == "Orc1").Count() == 1);
+            Assert.IsTrue(mgr.Events.Where(e => e.Name == "Orc2").Count() == 1);
+
+            Assert.IsTrue(mgr["Orc3"] == orc3);
+            
+        }
+
+
 
         private void VerifyInitiativeState(InitiativeManager mgr, params string[] args)
         {

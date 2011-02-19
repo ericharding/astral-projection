@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="Converters\TeamToImageConverter.cs" />
     <Compile Include="Effects\ImageDrifter.cs" />
+    <Compile Include="Initiative\EventFactory.cs" />
     <Compile Include="PlayerViewController.cs" />
     <Compile Include="Utility\WriteableBitmapEx.cs" />
   </ItemGroup>

@@ -94,18 +94,22 @@ namespace Astral.Projector
         public void LoadMap(string mapPath)
         {
             Map map = Map.LoadFromFile(mapPath, false);
+            ResetMap(map);
+        }
+
+        private void ResetMap(Map map)
+        {
             _mx = 0;
             _my = 0;
             _x = 0;
             _y = 0;
-            
+
             _pv.MapView.SetMap(map);
-            for (int x = 0; x < map.Layers; x++)
+            for (int x = 1; x < map.Layers; x++)
             {
                 _pv.MapView.LayerMap[x] = false;
             }
-            _pv.MapView.LayerMap[0] = true;
-            Dispatcher.CurrentDispatcher.In(TimeSpan.FromSeconds(1), () => _pv.MapView.TileSize = 34);
+            _pv.MapView.TileSize = 34;
         }
 
 
