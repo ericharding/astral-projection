@@ -30,6 +30,7 @@ namespace TileMap
         private Map _library = new Map();
         private Settings _prefs = new Settings();
         private bool _waitForIt = true;
+        private char _searchMode = '&';
         // private readonly string _libraryFileName = AppDomain.CurrentDomain.BaseDirectory + "library.astral";
         private readonly string _libraryFileName = Environment.CurrentDirectory + "\\library.astral";
         private const string _fileFilter = "Astral Projection files (*.astral)|*.astral|All files (*.*)|*.*";
@@ -382,35 +383,29 @@ namespace TileMap
             filters.AddRange(tbSearchLibrary.Text.Split(' ', ';', ','));
             filters.RemoveAll(x => string.IsNullOrWhiteSpace(x));
 
-            foreach (TileFactory tf in _library.TileFactories)
+            Func<IEnumerable<string>, Func<string, bool>, bool> filterMode;
+
+            switch (_searchMode)
             {
-                if (cbShowFloorTiles.IsChecked != true && !tf.ArbitraryScale)
-                    continue;
-                if (cbShowArbitTiles.IsChecked != true && tf.ArbitraryScale)
-                    continue;
-
-                foreach (string filter in filters)
-                {
-                    bool match = false;
-
-                    foreach (string tag in tf.Tags)
-                    {
-                        if (tag.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            match = true;
-                            break;
-                        }
-                    }
-
-                    if (!match)
-                        goto TryNextFactory;
-                }
-
-                _filteredLibrary.Add(tf);
-
-            TryNextFactory:
-                continue;
+                case '&':
+                    filterMode = Enumerable.All;
+                    break;
+                case '|':
+                    filterMode = Enumerable.Any;
+                    break;
+                default:
+                    throw new Exception("Invalid search mode");
             }
+
+            var filtered = from tile in _library.TileFactories
+                           where (filters.Count == 0 ||
+                                  filterMode(filters, filter => tile.Tags.Any(tag => tag.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase))))
+                           where (cbShowFloorTiles.IsChecked == true && !tile.ArbitraryScale ||
+                                  cbShowArbitTiles.IsChecked == true && tile.ArbitraryScale)
+                           select tile;
+
+            foreach (TileFactory tf in filtered)
+                _filteredLibrary.Add(tf);
 
             if (_filteredLibrary.Contains(mapPane.TileToPlace))
                 viewTiles.SelectedItem = mapPane.TileToPlace;
@@ -569,6 +564,25 @@ namespace TileMap
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             _waitForIt = false;
+            UpdateFilteredLibrary();
+        }
+
+        private void tbSearchAndOr_Click(object sender, RoutedEventArgs e)
+        {
+            switch (_searchMode)
+            {
+                case '&':
+                    _searchMode = '|';
+                    tbSearchAndOr.Content = "OR";
+                    break;
+                case '|':
+                    _searchMode = '&';
+                    tbSearchAndOr.Content = "AND";
+                    break;
+                default:
+                    goto case '|';
+            }
+
             UpdateFilteredLibrary();
         }
     }

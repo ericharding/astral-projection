@@ -82,7 +82,7 @@ namespace TileMap
 
         private string GetTags()
         {
-            List<String> tags = new List<string>(tbTileName.Text.Split(new string[] { Environment.NewLine, ";" }, StringSplitOptions.RemoveEmptyEntries));
+            List<string> tags = new List<string>(tbTileName.Text.Split(new string[] { Environment.NewLine, ";" }, StringSplitOptions.RemoveEmptyEntries));
 
             foreach (KeyValuePair<string, int> kvp in viewSearchTags.SelectedItems)
                 tags.Add(kvp.Key);

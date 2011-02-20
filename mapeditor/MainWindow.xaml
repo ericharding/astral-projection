@@ -92,7 +92,14 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <TextBox x:Name="tbSearchLibrary" FontSize="14" Grid.Row="3" TextChanged="tbSearchLibrary_TextChanged" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="tbSearchLibrary" FontSize="14" Grid.Column="0" TextChanged="tbSearchLibrary_TextChanged" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                        <Button x:Name="tbSearchAndOr" Content="AND" Grid.Column="1" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center" Click="tbSearchAndOr_Click"/>
+                    </Grid>
                     <StackPanel Orientation="Horizontal" Grid.Row="4">
                         <TextBlock Text="Layer:" Margin="5,0,25,0" VerticalAlignment="Center" />
                         <ComboBox x:Name="_layer" SelectedIndex="{Binding Mode=TwoWay, ElementName=mapPane, Path=ActivePlacementLayer}">
