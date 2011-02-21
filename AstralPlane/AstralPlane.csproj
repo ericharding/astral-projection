@@ -64,6 +64,7 @@
     <Compile Include="Utility\DispatcherHelper.cs" />
     <Compile Include="Utility\IIndexable.cs" />
     <Compile Include="Utility\NativeMethods.cs" />
+    <Compile Include="Utility\RandomEx.cs" />
     <Compile Include="Utility\Settings.cs" />
     <Compile Include="Utility\WeakReference.cs" />
     <Compile Include="Utility\XAttributeExtensions.cs" />
