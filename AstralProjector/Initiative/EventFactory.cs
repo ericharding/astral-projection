@@ -6,8 +6,9 @@ using System.Text.RegularExpressions;
 
 namespace Astral.Projector.Initiative
 {
-    public static class EventFactory
+    internal class EventFactory
     {
+        #region static
         static Regex _reSearch = new Regex(@"\w+:", RegexOptions.Compiled);
         static Regex _reIsDice = new Regex(@"(?<count>\d+)(d(?<die>\d+))?((?<operator>[+\-\*\/])(?<operand>\d+))?", RegexOptions.Compiled);
         static Dictionary<string, string> _alternatives = new Dictionary<string, string>();
@@ -20,9 +21,16 @@ namespace Astral.Projector.Initiative
             _alternatives.Add("duration", "dur");
         }
 
-        public static Event Create(string desc)
+        #endregion
+
+        InitiativeManager _initMgr;
+        public EventFactory(InitiativeManager mgr)
         {
-            //string[] stuff = _reSearch.Split(desc);
+            _initMgr = mgr;
+        }
+
+        public Event Create(string desc)
+        {
             var matches = _reSearch.Matches(desc);
 
             if (matches.Count == 0)
@@ -50,9 +58,9 @@ namespace Astral.Projector.Initiative
             return CreateComplex(name, properties);
         }
 
-        private static Event CreateComplex(string name, Dictionary<string, string> properties)
+        private Event CreateComplex(string name, Dictionary<string, string> properties)
         {
-            Team team = InitiativeManager.Instance.CurrentTeam;
+            Team team = _initMgr.CurrentTeam;
             bool isActor = properties.ContainsKey("hp");
             if (isActor)
             {
@@ -60,8 +68,10 @@ namespace Astral.Projector.Initiative
                 if (properties.ContainsKey("team"))
                 {
                     team = ParseTeam(properties["team"]);
+                    properties.Remove("team");
                 }
-                return new Actor(name, team, health);
+                properties.Remove("hp");
+                return new Actor(name, team, health, _initMgr) { Properties = properties };
             }
             else
             {
@@ -71,8 +81,9 @@ namespace Astral.Projector.Initiative
                 }
 
                 int numRounds = Roll(properties["dur"]);
+                properties.Remove("dur");
                 TimeSpan duration = TimeSpan.FromSeconds(numRounds * InitiativeManager.FULLROUND_SECONDS);
-                return new SpellEffect(name, duration);
+                return new SpellEffect(name, duration, _initMgr) { Properties = properties };
             }
         }
 
@@ -94,13 +105,13 @@ namespace Astral.Projector.Initiative
             }
         }
 
-        private static Event CreateSimple(string desc)
+        private Event CreateSimple(string desc)
         {
             // short circut syntax:  Joe 2d8 => Joe hp:2d8
             int lastSpace = desc.LastIndexOf(' ');
-            string name = desc.Substring(0, lastSpace - 1).Trim();
+            string name = desc.Substring(0, lastSpace).Trim();
             string hp = desc.Substring(lastSpace, desc.Length - lastSpace).Trim();
-            return new Actor(name, InitiativeManager.Instance.CurrentTeam, Roll(hp));
+            return new Actor(name, _initMgr.CurrentTeam, Roll(hp), _initMgr);
         }
 
         public static int Roll(string diceExpression)
@@ -154,7 +165,7 @@ namespace Astral.Projector.Initiative
     }
 
     [Serializable]
-    public class EventFactoryException : Exception
+    internal class EventFactoryException : Exception
     {
         public EventFactoryException(string message)
             : base(message)

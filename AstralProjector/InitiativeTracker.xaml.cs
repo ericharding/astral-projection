@@ -19,13 +19,6 @@ namespace Astral.Projector
     /// Interaction logic for InitiativeTracker.xaml
     /// </summary>
     /// 
-
-
-    /* todo
-     * 
-     * 1. Add Status effects - disabled / dying
-     * 2. Add Health back on
-     */
     public partial class InitiativeTracker : UserControl
     {
         InitiativeManager _unitInitiative;
