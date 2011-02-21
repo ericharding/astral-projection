@@ -50,7 +50,7 @@ namespace AstralTest.AstralPlane
 
         private void TestZipContainer(string path, string filename)
         {
-            using (var container = new ZipFileContainer(path))
+            using (var container = new ZipFileContainer(path, true))
             {
                 TestWriteFile(container, filename);
                 TestReadFile(container, filename);
