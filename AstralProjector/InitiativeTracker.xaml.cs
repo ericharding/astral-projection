@@ -57,7 +57,7 @@ namespace Astral.Projector
 
         private void ActionComplete(object sender, MouseButtonEventArgs e)
         {
-            ((Event)_initiativeList.SelectedItem).Complete();
+            EventFromSender(sender).Complete();
 
         }
 
@@ -120,8 +120,13 @@ namespace Astral.Projector
 
         private void TakeAction(object sender, ActionType actionType)
         {
+            (EventFromSender(sender)).TakeAction(actionType);
+        }
+
+        private Event EventFromSender(object sender)
+        {
             ListBoxItem container = (ListBoxItem)_initiativeList.ContainerFromElement((DependencyObject)sender);
-            ((Event)container.Content).TakeAction(actionType);
+            return ((Event)container.Content);
         }
     }
 
@@ -129,7 +134,7 @@ namespace Astral.Projector
     {
         InitiativeManager _unitInitiative = new InitiativeManager();
 
-        public static string[] testEvents = { "Joe The Magnificent Ranger hp:10 team:Gold", "Orc# hp:2d8 team:2", "Orc# hp:2d8 team:2", "Orc# hp:2d8 team:GreenFlag", "Bull's Strength dur:2" };
+        public static string[] testEvents = { "Joe The Magnificent Ranger of DOOM hp:10 team:Gold", "Orc# hp:2d8 team:2", "Orc# hp:2d8 team:2", "Orc# hp:2d8 team:GreenFlag", "Bull's Strength dur:2" };
 
         public MockInitiativeData()
         {
