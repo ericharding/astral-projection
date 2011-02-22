@@ -6,6 +6,10 @@
     <Application.Resources>
 
         <!-- Visual Studio Colors -->
+        <Color x:Key="DarkBlueColor">#344668</Color>
+        <Color x:Key="MedBlueColor">#394F73</Color>
+        <Color x:Key="LightBlueColor">#496696</Color>
+        
         <SolidColorBrush x:Key="VSDarkBlue" Color="#344668" />
         <SolidColorBrush x:Key="VSMedBlue" Color="#394F73" />
         <SolidColorBrush x:Key="VSLightBlue" Color="#496696" />

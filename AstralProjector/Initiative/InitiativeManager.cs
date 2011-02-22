@@ -182,6 +182,7 @@ namespace Astral.Projector.Initiative
         {
             _events.Sort();
             InitiativeManager.Now = _events.First().ScheduledAction;
+            EventsUpdated();
         }
 
         // Clear spell effects and reset turn count
@@ -196,9 +197,15 @@ namespace Astral.Projector.Initiative
 
         public void Undo()
         {
-            var top = _history.Pop();
-            top.Item1.SetNext(top.Item2);
-            UpdateNow();
+            // TODO: Undoing a turn ending is broken
+            // TODO: Should be able to undo a spell expire
+            if (_history.Count > 0)
+            {
+                var top = _history.Pop();
+                if (top.Item1 is TurnEnding) throw new Exception("turn ending undo is broken");
+                top.Item1.SetNext(top.Item2);
+                UpdateNow();
+            }
         }
 
         public Event CreateEvent(string description)
@@ -236,6 +243,9 @@ namespace Astral.Projector.Initiative
 
         internal DateTime Advanceturn(TurnEnding turnEnding, out int newturn)
         {
+            foreach (Event e in _events)
+                e.TurnEnding(turnEnding.Turn);
+
             Debug.Assert(turnEnding == _events[0]);
             DateTime newtime = _lastRealizedTurn.ScheduledAction.AddSeconds(FULLROUND_SECONDS);
             newturn = _lastRealizedTurn.Turn + 1;
