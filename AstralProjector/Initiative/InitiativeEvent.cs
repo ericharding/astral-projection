@@ -7,7 +7,6 @@ namespace Astral.Projector.Initiative
 {
     public enum Team
     {
-        None,
         Blue,
         Gold,
         Green,
@@ -116,6 +115,14 @@ namespace Astral.Projector.Initiative
             this._scheduledAction = time;
         }
 
+        internal virtual void TurnEnding(int turn)
+        {
+        }
+
+        internal virtual void Activate()
+        {
+        }
+
         #region IComparable
 
         public int CompareTo(Event other)
@@ -124,6 +131,9 @@ namespace Astral.Projector.Initiative
             int result = this.ScheduledAction.CompareTo(other.ScheduledAction);
             if (result == 0)
             {
+                if (other is TurnEnding) return 1;
+                if (this is TurnEnding) return -1;
+
                 if (Debugger.IsAttached) Debugger.Break();
                 result = this.Name.CompareTo(other.Name);
             }
@@ -152,9 +162,33 @@ namespace Astral.Projector.Initiative
 
         public Team Team { get; private set; }
         public bool IsCasting { get; set; }
+        public bool IsDead { get; set; }
+
+        private DateTime _nextAttackOfOpportunity = DateTime.MinValue;
+        public bool HasAttackOfOpportunity
+        {
+            get
+            {
+                return _nextAttackOfOpportunity <= InitiativeManager.Now;
+            }
+            set
+            {
+                _nextAttackOfOpportunity = InitiativeManager.Now.AddSeconds(InitiativeManager.FULLROUND_SECONDS);
+            }
+        }
 
         public int MaxHealth { get; set; }
         public int CurrentHealth { get; set; }
+
+        //internal override void TurnEnding(int turn)
+        //{
+        //    this.HasAttackOfOpportunity = true;
+        //}
+
+        internal override void Activate()
+        {
+            // Clear IsCasting?
+        }
 
         public override string ToString()
         {
@@ -176,9 +210,12 @@ namespace Astral.Projector.Initiative
 
         public override void Complete()
         {
-            DateTime newTime = _manager.Advanceturn(this, out _turn);
-            UpdateName();
-            this.ScheduledAction = newTime;
+            if (this == _manager.Next)
+            {
+                DateTime newTime = _manager.Advanceturn(this, out _turn);
+                UpdateName();
+                this.ScheduledAction = newTime;
+            }
         }
 
         public int Turn { get { return _turn; } }

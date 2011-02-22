@@ -17,7 +17,6 @@ namespace Astral.Plane.Controls
         public NumericUpDownEx()
         {
             ScaleFactor = 4;
-            Maximum = int.MaxValue;
             InitializeComponent();
 
             this.PreviewKeyDown += new KeyEventHandler(NumericUpDownEx_PreviewKeyDown);
@@ -46,8 +45,27 @@ namespace Astral.Plane.Controls
         }
 
         public int ScaleFactor { get; set; }
-        public int Minimum { get; set; }
-        public int Maximum { get; set; }
+
+        public int Minimum
+        {
+            get { return (int)GetValue(MinimumProperty); }
+            set { SetValue(MinimumProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Minimum.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MinimumProperty =
+            DependencyProperty.Register("Minimum", typeof(int), typeof(NumericUpDownEx), new UIPropertyMetadata(int.MinValue));
+
+        public int Maximum
+        {
+            get { return (int)GetValue(MaximumProperty); }
+            set { SetValue(MaximumProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Maximum.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MaximumProperty =
+            DependencyProperty.Register("Maximum", typeof(int), typeof(NumericUpDownEx), new UIPropertyMetadata(int.MaxValue));
+
 
         public int Value
         {
@@ -72,7 +90,7 @@ namespace Astral.Plane.Controls
 
             int val = (int)value;
             NumericUpDownEx nud = (NumericUpDownEx)target;
-            return Math.Max(nud.Minimum, val);
+            return Math.Min(Math.Max(nud.Minimum, val), nud.Maximum);
         }
 
         private void Thumb_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)

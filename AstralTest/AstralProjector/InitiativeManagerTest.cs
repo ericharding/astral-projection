@@ -217,6 +217,27 @@ namespace AstralTest
             VerifyInitiativeState(mgr, "Goblin", "Turn 2", "Mr. Lucky 1", "Mr. Lucky 2");
         }
 
+        [TestMethod]
+        public void TurnEnding()
+        {
+            InitiativeManager mgr = new InitiativeManager();
+            mgr.AddEvent("Goblin hp:1d8+2 ac:12");
+            mgr.AddEvent("Orc hp:3d8 ac:13");
+            mgr["Goblin"].MoveBefore(mgr["Orc"]);
+            Actor gob = (Actor)mgr.Events[0];
+            Actor orc = (Actor)mgr.Events[1];
+            Assert.IsTrue(gob.HasAttackOfOpportunity);
+            gob.HasAttackOfOpportunity = false;
+            gob.TakeAction(ActionType.Standard);
+            Assert.IsTrue(gob.HasAttackOfOpportunity == false);
+            orc.HasAttackOfOpportunity = false;
+            orc.TakeAction(ActionType.FullRound);
+            Assert.IsTrue(orc.HasAttackOfOpportunity == true);
+            gob.TakeAction(ActionType.Standard);
+            Assert.IsTrue(gob.HasAttackOfOpportunity == true);
+            VerifyInitiativeState(mgr, "Goblin", "Orc", "Turn 3");
+            
+        }
 
         private void VerifyInitiativeState(InitiativeManager mgr, params string[] args)
         {
