@@ -158,7 +158,7 @@
                  PreviewMouseDown="_initiativeList_PreviewMouseDown" PreviewMouseMove="_initiativeList_PreviewMouseMove" ItemsSource="{StaticResource MockData}">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type i:Actor}">
-                    <Grid>
+                    <Grid MaxWidth="{Binding ElementName=_initiativeList, Path=ActualWidth}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="5" />
