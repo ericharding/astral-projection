@@ -215,13 +215,20 @@ namespace Astral.Projector.Initiative
         {
             if (this == _manager.Next)
             {
-                DateTime newTime = _manager.Advanceturn(this, out _turn);
-                UpdateName();
-                this.ScheduledAction = newTime;
+                _manager.Advanceturn(this);
             }
         }
 
-        public int Turn { get { return _turn; } }
+        public int Turn
+        {
+            get
+            { return _turn; }
+            internal set
+            {
+                _turn = value;
+                UpdateName();
+            }
+        }
         private void UpdateName() { _name = "Turn " + _turn; }
     }
 

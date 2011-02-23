@@ -57,7 +57,7 @@ namespace Astral.Projector.Initiative
         #endregion
 
         private List<Event> _events = new List<Event>();
-        private Stack<Tuple<Event, DateTime>> _history = new Stack<Tuple<Event, DateTime>>();
+        private Stack<Action> _history = new Stack<Action>();
         private EventFactory _eventFactory;
         private TurnEnding _lastRealizedTurn;
 
@@ -106,6 +106,8 @@ namespace Astral.Projector.Initiative
             {
                 throw new ArgumentException("event already exists");
             }
+
+            _history.Push(() => _events.Remove(e));
 
             EventsUpdated();
         }
@@ -167,13 +169,17 @@ namespace Astral.Projector.Initiative
 
         public void Clear(Team team)
         {
-            _events.RemoveAll(e => e is Actor && ((Actor)e).Team == team);
+            Predicate<Event> toRemove = e => e is Actor && ((Actor)e).Team == team;
+            var removeEvents = _events.Where((e) => toRemove(e)).ToArray();
+            _history.Push(() => _events.AddRange(removeEvents));
+            _events.RemoveAll(toRemove);
             UpdateNow();
         }
 
         public bool Remove(Event e)
         {
             bool result = _events.Remove(e);
+            _history.Push(() => _events.Add(e));
             UpdateNow();
             return result;
         }
@@ -202,8 +208,7 @@ namespace Astral.Projector.Initiative
             if (_history.Count > 0)
             {
                 var top = _history.Pop();
-                if (top.Item1 is TurnEnding) throw new Exception("turn ending undo is broken");
-                top.Item1.SetNext(top.Item2);
+                top();
                 UpdateNow();
             }
         }
@@ -220,7 +225,12 @@ namespace Astral.Projector.Initiative
 
         internal void NotifyUpdated(Event p, DateTime prevtime)
         {
-            _history.Push(new Tuple<Event, DateTime>(p, prevtime));
+            _history.Push(() =>
+            {
+                p.SetNext(prevtime);
+                if (!_events.Contains(p))
+                    _events.Add(p);
+            });
             UpdateNow();
         }
 
@@ -241,16 +251,27 @@ namespace Astral.Projector.Initiative
             else return _events[index - 1];
         }
 
-        internal DateTime Advanceturn(TurnEnding turnEnding, out int newturn)
+        internal void Advanceturn(TurnEnding turnEnding)
         {
             foreach (Event e in _events)
                 e.TurnEnding(turnEnding.Turn);
 
+            int oldTurn = turnEnding.Turn;
+            DateTime oldTime = turnEnding.ScheduledAction;
+            TurnEnding oldLastTurn = _lastRealizedTurn;
+            _history.Push(() =>
+            {
+                turnEnding.Turn = oldTurn;
+                turnEnding.SetNext(oldTime);
+                _lastRealizedTurn = oldLastTurn;
+            });
+
             Debug.Assert(turnEnding == _events[0]);
-            DateTime newtime = _lastRealizedTurn.ScheduledAction.AddSeconds(FULLROUND_SECONDS);
-            newturn = _lastRealizedTurn.Turn + 1;
+            turnEnding.SetNext(_lastRealizedTurn.ScheduledAction.AddSeconds(FULLROUND_SECONDS));
+            turnEnding.Turn = _lastRealizedTurn.Turn + 1;
             _lastRealizedTurn = turnEnding;
-            return newtime;
+
+            UpdateNow();
         }
     }
 

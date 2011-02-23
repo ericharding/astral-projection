@@ -231,11 +231,15 @@ namespace AstralTest
             gob.TakeAction(ActionType.Standard);
             Assert.IsTrue(gob.HasAttackOfOpportunity == false);
             orc.HasAttackOfOpportunity = false;
-            orc.TakeAction(ActionType.FullRound);
-            Assert.IsTrue(orc.HasAttackOfOpportunity == true);
+            orc.TakeAction(ActionType.FullRound); // Orc will have an attack on his next turn
+            Assert.IsTrue(mgr.Next == gob);
+            Assert.IsTrue(orc.HasAttackOfOpportunity == false); // not yet turn hasn't ended
             gob.TakeAction(ActionType.Standard);
-            Assert.IsTrue(gob.HasAttackOfOpportunity == true);
-            VerifyInitiativeState(mgr, "Goblin", "Orc", "Turn 3");
+            Assert.IsTrue(mgr.Next is TurnEnding);
+            mgr.Next.Complete();
+            Assert.IsTrue(orc.HasAttackOfOpportunity == true);
+            Assert.IsTrue(gob.HasAttackOfOpportunity == true); // not goblins turn yet but he should have an attack b/c he took 2x 4 second actions
+            VerifyInitiativeState(mgr, "Orc", "Goblin", "Turn 3");
             
         }
 
