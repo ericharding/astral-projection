@@ -89,7 +89,7 @@
 
         <!-- Combat Initiative tracker -->
         <Grid Visibility="{Binding ElementName=_expandCombatMode, Path=IsExpanded, Converter={StaticResource b2v}}" Grid.Column="1" Grid.RowSpan="2" Grid.Row="1">
-            <p:InitiativeTracker Width="300" />
+            <p:InitiativeTracker x:Name="_initiativeTracker" Width="300" />
         </Grid>
 
         <!-- Display Settings -->

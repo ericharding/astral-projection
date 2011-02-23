@@ -67,6 +67,13 @@ namespace Astral.Projector
 
             ResourceDictionary effects = (ResourceDictionary)Application.LoadComponent(new Uri("Effects/Effects.xaml", UriKind.Relative));
             _lbEffects.ItemsSource = effects.Keys;
+
+            _initiativeTracker.InitiativeManager.EventsUpdated += new Action(InitiativeManager_EventsUpdated);
+        }
+
+        void InitiativeManager_EventsUpdated()
+        {
+            _pvc.UpdateInitiative(_initiativeTracker.InitiativeManager.Events);
         }
 
         void _fog_FogChanged(double x, double y, int size, bool clear)

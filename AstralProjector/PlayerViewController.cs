@@ -7,6 +7,7 @@ using Astral.Plane;
 using System.Windows.Threading;
 using System.Windows.Media.Animation;
 using System.Windows.Controls;
+using Astral.Projector.Initiative;
 
 namespace Astral.Projector
 {
@@ -163,32 +164,23 @@ namespace Astral.Projector
 
             _pv.MapView.SetMapPosition(_x + _mx, _y + _my);
         }
-
-        //
-        // Fog of War methods
-        //
-
-        // todo: handle different zoom levels
+        
         public void UpdateFogAt(double x, double y, int size, bool clear)
         {
             _pv.Fog.ChangeFog(x, y, clear);
         }
 
-        //
-        // 
-        //
-
-        internal void ShowImage(string filename)
+        public void ShowImage(string filename)
         {
             _pv.ShowImage(filename);
         }
 
-        internal void HideImage()
+        public void HideImage()
         {
             _pv.HideImage();
         }
 
-        internal void SetGridMode(int gridMode)
+        public void SetGridMode(int gridMode)
         {
             _pv.MapView.IsDrawGridOver = false;
             _pv.MapView.IsDrawGridUnder = false;
@@ -205,5 +197,11 @@ namespace Astral.Projector
                     break;
             }
         }
+
+        public void UpdateInitiative(IEnumerable<Event> events)
+        {
+            _pv.UpdateInitiative(events);
+        }
+
     }
 }

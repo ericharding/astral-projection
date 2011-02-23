@@ -44,6 +44,23 @@ namespace Astral.Plane.Utility
             }
         }
 
+        public T Get<T>(string setting, T defaultValue)
+        {
+            lock(_syncRoot)
+            {
+                if (_settingsTable.ContainsKey(setting))
+                {
+                    return (T)this[setting];
+                }
+            }
+            return defaultValue;
+        }
+        
+        public void Set<T>(string setting, T value)
+        {
+            this[setting] = value;
+        }
+
         #region internal initializer properties
         public static string ApplicationName
         {

@@ -94,7 +94,7 @@
                         <BeginStoryboard>
                             <BeginStoryboard.Storyboard>
                                 <Storyboard>
-                                    <ColorAnimation To="Black" Duration="0:0:0.5" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="BorderBrush.Color" />
+                                    <ColorAnimation To="Black" Duration="0:0:0.3" Storyboard.TargetName="myBorder" Storyboard.TargetProperty="BorderBrush.Color" />
                                 </Storyboard>
                             </BeginStoryboard.Storyboard>
                         </BeginStoryboard>
@@ -137,6 +137,7 @@
         <SolidColorBrush x:Key="ControlBackground" Color="#afff" />
 
         <view:TeamConverter x:Key="teamConverter" />
+        <BooleanToVisibilityConverter x:Key="boolToVis" />
 
         <local:MockInitiativeData x:Key="MockData" />
     </UserControl.Resources>
@@ -147,7 +148,7 @@
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Background="Transparent">
-            <TextBox VerticalAlignment="Center" Width="125" Background="#afff" x:Name="_tbAddText" />
+            <TextBox VerticalAlignment="Center" Width="125" Background="{StaticResource ControlBackground}" x:Name="_tbAddText" />
             <ComboBox x:Name="_cbTeam" SelectedIndex="1" VerticalAlignment="Center" Margin="2" Background="{StaticResource ControlBackground}" 
                       ItemsSource="{StaticResource Icons}" ItemTemplate="{StaticResource IconOnlyTemplate}" SelectionChanged="_cbTeam_SelectionChanged" />
             <Button VerticalAlignment="Center" Margin="1" Background="{StaticResource ControlBackground}" Click="Add_Click">Add</Button>
@@ -155,7 +156,9 @@
 
         <TextBlock Text="{Binding Path=CurrentTurn, StringFormat=Turn - {0}}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" />
         <ListBox Grid.Row="1" x:Name="_initiativeList" Background="{StaticResource WhiteAlternativeGradient}" HorizontalContentAlignment="Stretch"
-                 PreviewMouseDown="_initiativeList_PreviewMouseDown" PreviewMouseMove="_initiativeList_PreviewMouseMove" ItemsSource="{StaticResource MockData}">
+                 PreviewMouseDown="_initiativeList_PreviewMouseDown" PreviewMouseUp="_initiativeList_PreviewMouseUp" PreviewMouseMove="_initiativeList_PreviewMouseMove"
+                 PreviewDragEnter="_initiativeList_PreviewDragEnter" PreviewDragLeave="_initiativeList_PreviewDragLeave" PreviewDragOver="_initiativeList_PreviewDragOver"
+                 AllowDrop="True" ItemsSource="{StaticResource MockData}">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type i:Actor}">
                     <Grid MaxWidth="{Binding ElementName=_initiativeList, Path=ActualWidth}">
@@ -170,6 +173,12 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
+                        <Image Grid.RowSpan="42" Grid.ColumnSpan="42" MaxHeight="40" SnapsToDevicePixels="True" HorizontalAlignment="Center" VerticalAlignment="Stretch" Visibility="{Binding IsChecked, ElementName=_tbIsDead, Converter={StaticResource boolToVis}}">
+                            <Image.Source>
+                                <BitmapImage UriSource="/images/skull.png" DecodePixelHeight="40" DecodePixelWidth="40" />
+                            </Image.Source>
+                        </Image>
+
                         <Image Source="{Binding Team, Converter={StaticResource teamConverter}}" Grid.RowSpan="2" />
 
                         <TextBlock Text="{Binding Name}" Grid.Column="2" FontWeight="Bold" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"/>
@@ -181,7 +190,7 @@
                             <ToggleButton Template="{StaticResource NoToggleButton}" IsChecked="{Binding HasAttackOfOpportunity, Mode=TwoWay}">
                                 <Image Source="/Images/AttackOfOpportunity.png" Height="12" />
                             </ToggleButton>
-                            <ToggleButton Template="{StaticResource NoToggleButton}" IsChecked="{Binding IsDead, Mode=TwoWay}">
+                            <ToggleButton Template="{StaticResource NoToggleButton}" IsChecked="{Binding IsDead, Mode=TwoWay}" x:Name="_tbIsDead">
                                 <Image SnapsToDevicePixels="True" Width="12" Height="12"  VerticalAlignment="Center">
                                     <Image.Source>
                                         <BitmapImage UriSource="/images/skull.png" DecodePixelHeight="12" DecodePixelWidth="12" />
@@ -240,7 +249,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="20" />
                                 <ColumnDefinition Width="5" />
-                                <ColumnDefinition  />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Image Source="/Images/wizardhat.png" VerticalAlignment="Center" />
                             <TextBlock Text="{Binding Name, StringFormat={}{0} expires.}" Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" />
@@ -254,7 +263,9 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
-                                <ContentPresenter />
+                                <Grid Background="#01ffffff">
+                                    <ContentPresenter />
+                                </Grid>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
