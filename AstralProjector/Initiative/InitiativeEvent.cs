@@ -29,6 +29,7 @@ namespace Astral.Projector.Initiative
         Swift,
     }
 
+    [Serializable]
     public abstract class Event : IComparable<Event>
     {
         protected string _name;
@@ -151,6 +152,7 @@ namespace Astral.Projector.Initiative
     }
 
     // Player or monster
+    [Serializable]
     public class Actor : Event
     {
         public Actor(string name, Team team, int hp, InitiativeManager m)
@@ -196,6 +198,7 @@ namespace Astral.Projector.Initiative
         }
     }
 
+    [Serializable]
     public class TurnEnding : Event
     {
         private int _turn;
@@ -222,6 +225,7 @@ namespace Astral.Projector.Initiative
         private void UpdateName() { _name = "Turn " + _turn; }
     }
 
+    [Serializable]
     public class SpellEffect : Event
     {
         private TimeSpan _duration;

@@ -25,7 +25,6 @@ namespace Astral.Projector
         {
             InitializeComponent();
 
-
             foreach (var e in MockInitiativeData.testEvents)
             {
                 _unitInitiative.AddEvent(e);
@@ -33,6 +32,8 @@ namespace Astral.Projector
             _initiativeList.ItemsSource = _unitInitiative.Events;
             this.Loaded += new RoutedEventHandler(InitiativeTracker_Loaded);
         }
+
+        public InitiativeManager InitiativeManager { get { return _unitInitiative; } }
 
         void InitiativeTracker_Loaded(object sender, RoutedEventArgs e)
         {
@@ -43,16 +44,6 @@ namespace Astral.Projector
         {
             // perf cringe
             _initiativeList.Items.Refresh();
-        }
-
-        private void _initiativeList_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void _initiativeList_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-
         }
 
         private void ActionComplete(object sender, MouseButtonEventArgs e)
@@ -100,33 +91,229 @@ namespace Astral.Projector
 
         private void FullAction_Click(object sender, RoutedEventArgs e)
         {
-            TakeAction(sender, ActionType.FullRound);
+            TakeAction(e.Source, ActionType.FullRound);
         }
 
         private void StandardAction_Click(object sender, RoutedEventArgs e)
         {
-            TakeAction(sender, ActionType.Standard);
+            TakeAction(e.Source, ActionType.Standard);
         }
 
         private void MinorAction_Click(object sender, RoutedEventArgs e)
         {
-            TakeAction(sender, ActionType.Minor);
+            TakeAction(e.Source, ActionType.Minor);
         }
 
         private void QuickAction_Click(object sender, RoutedEventArgs e)
         {
-            TakeAction(sender, ActionType.Swift);
+            TakeAction(e.Source, ActionType.Swift);
         }
 
         private void TakeAction(object sender, ActionType actionType)
         {
-            (EventFromSender(sender)).TakeAction(actionType);
+            EventFromSender(sender).TakeAction(actionType);
         }
 
         private Event EventFromSender(object sender)
         {
             ListBoxItem container = (ListBoxItem)_initiativeList.ContainerFromElement((DependencyObject)sender);
-            return ((Event)container.Content);
+            if (container != null)
+            {
+                return ((Event)container.Content);
+            }
+            return null;
+        }
+
+        #region Drag/Drop
+
+        Event _dragData;
+        ListBoxItem _sourceItemContainer;
+        Point _initialMousePosition;
+        Window _topWindow;
+        Vector _mouseOffset;
+        SimpleDragDropAdorner _dragAdorner;
+
+        // Drag part
+
+        private void _initiativeList_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _sourceItemContainer = (ListBoxItem)_initiativeList.ContainerFromElement((DependencyObject)e.OriginalSource);
+            if (_sourceItemContainer != null)
+            {
+                _dragData = (Event)_sourceItemContainer.Content;
+
+                _topWindow = Window.GetWindow(this);
+                _initialMousePosition = e.GetPosition(_topWindow);
+            }
+        }
+
+        private void _initiativeList_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _dragData = null;
+            _sourceItemContainer = null;
+        }
+
+        private void _initiativeList_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_dragData != null && IsSufficientDelta(_initialMousePosition, e.GetPosition(_topWindow)))
+            {
+                DataObject data = new DataObject(DataFormats.GetDataFormat("DragDropItemsControl").Name, _dragData);
+                //Point[] p = { _initialMousePosition, this.TranslatePoint(new Point(0, 0), _topWindow), _sourceItemContainer.TranslatePoint(new Point(0, 0), _topWindow) };
+                //_mouseOffset = p[0] - new Point(p[1].X + p[2].X, p[1].Y + p[2].Y);
+                _mouseOffset = _initialMousePosition - this.TranslatePoint(new Point(0, 0), _topWindow);
+
+                //_mouseOffset +  .TranslatePoint(new Point(0, 0), _topWindow);
+
+                Console.WriteLine("" + _initialMousePosition.X + ", " + _initialMousePosition.Y);
+                Console.WriteLine("" + _mouseOffset.X + ", " + _mouseOffset.Y);
+
+                _topWindow.AllowDrop = true;
+                _topWindow.DragEnter += _topWindow_DragEnter;
+                _topWindow.DragOver += _topWindow_DragOver;
+                _topWindow.DragLeave += _topWindow_DragLeave;
+
+                Console.WriteLine("Dragstart");
+
+                DragDropEffects effect = DragDrop.DoDragDrop(this, _dragData, DragDropEffects.Move);
+
+                Console.WriteLine("Dragstop");
+
+                RemoveDragAdorner();
+                _topWindow.DragEnter -= _topWindow_DragEnter;
+                _topWindow.DragOver -= _topWindow_DragOver;
+                _topWindow.DragLeave -= _topWindow_DragLeave;
+                _dragData = null;
+            }
+        }
+
+        private void ShowDragAdorner(Point point)
+        {
+            if (_dragAdorner == null)
+            {
+                _dragAdorner = CreateAdorner(_sourceItemContainer);
+            }
+            _dragAdorner.SetPosition(
+                point.X - _initialMousePosition.X + _mouseOffset.X,
+                point.Y - _initialMousePosition.Y + _mouseOffset.Y);
+        }
+
+        private SimpleDragDropAdorner CreateAdorner(ListBoxItem _sourceItemContainer)
+        {
+            Console.WriteLine("Create drag adorner");
+            return new SimpleDragDropAdorner(_sourceItemContainer, this);
+        }
+
+        private void RemoveDragAdorner()
+        {
+            if (_dragAdorner != null)
+            {
+                Console.WriteLine("Remove drag adorner");
+                _dragAdorner.Detach();
+                _dragAdorner = null;
+            }
+        }
+
+        void _topWindow_DragEnter(object sender, DragEventArgs e)
+        {
+            ShowDragAdorner(e.GetPosition(_topWindow));
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        void _topWindow_DragOver(object sender, DragEventArgs e)
+        {
+            ShowDragAdorner(e.GetPosition(_topWindow));
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        void _topWindow_DragLeave(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        // Drop part
+        #region Drop
+        private void _initiativeList_PreviewDragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void _initiativeList_PreviewDragLeave(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void _initiativeList_PreviewDragOver(object sender, DragEventArgs e)
+        {
+
+        }
+        #endregion
+
+        // Utility
+        private bool IsSufficientDelta(Point origin, Point currentPosition)
+        {
+            return (Math.Abs(currentPosition.X - origin.X) >= SystemParameters.MinimumHorizontalDragDistance ||
+                 Math.Abs(currentPosition.Y - origin.Y) >= SystemParameters.MinimumVerticalDragDistance);
+        }
+
+        #endregion
+
+
+    }
+
+    public class SimpleDragDropAdorner : Adorner
+    {
+        VisualBrush _brush;
+        AdornerLayer _adornerLayer;
+        UIElement _adornedElement;
+        Rect _bounds;
+        double _x, _y;
+
+        public SimpleDragDropAdorner(FrameworkElement source, UIElement adornedElement)
+            :base (adornedElement)
+        {
+            _brush = new VisualBrush(source);
+            RenderOptions.SetCachingHint(_brush, CachingHint.Cache);
+            this.Width = source.ActualWidth;
+            this.Height = source.ActualHeight;
+            _bounds = new Rect(0, 0, source.ActualWidth, source.ActualHeight);
+            _adornedElement = adornedElement;
+            _adornerLayer = AdornerLayer.GetAdornerLayer(adornedElement);
+
+            _adornerLayer.Add(this);
+        }
+
+        public void SetPosition(double x, double y)
+        {
+            Console.WriteLine("UpdatePos " + x + ", " + y);
+            _x = x;
+            _y = y;
+            _adornerLayer.Update(_adornedElement);
+        }
+
+        public void Detach()
+        {
+            _adornerLayer.Remove(this);
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            drawingContext.PushOpacity(0.3);
+            drawingContext.DrawRoundedRectangle(Brushes.GhostWhite, null, _bounds, 5, 5);
+            drawingContext.Pop();
+            drawingContext.PushOpacity(0.7);
+            drawingContext.DrawRectangle(_brush, null, _bounds);
+
+            Console.WriteLine("OnRender");
+        }
+
+        public override GeneralTransform GetDesiredTransform(GeneralTransform transform)
+        {
+            GeneralTransformGroup result = new GeneralTransformGroup();
+            result.Children.Add(base.GetDesiredTransform(transform));
+            result.Children.Add(new TranslateTransform(_x, _y));
+            return result;
         }
     }
 
