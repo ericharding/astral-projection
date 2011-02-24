@@ -73,7 +73,7 @@ namespace Astral.Plane
             get
             {
                 string dim = _arbitraryScale ? "(*)" : string.Format("({0}x{1})", _tilesHoriz, _tilesVert);
-                return string.Format("{0} {1}", dim, Tags[0]);
+                return string.Format("{0} {1}", dim, string.Join(", ", _tags));
             }
         }
 

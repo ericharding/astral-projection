@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tilemap="clr-namespace:TileMap"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        Title="Astral Map" Height="768" Width="1024" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseWheel="Window_MouseWheel" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded" Background="#FFD4D0C8">
+        Title="Astral Map" Height="768" Width="1024" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseWheel="Window_MouseWheel" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded">
     <Grid>
         <DockPanel HorizontalAlignment="Stretch" Name="dockPanel1" VerticalAlignment="Stretch">
             <Menu Name="menu1" VerticalAlignment="Top" DockPanel.Dock="Top">
@@ -17,10 +17,9 @@
                     <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Name="menuOpen" Click="menuOpen_Click"/>
                     <MenuItem Header="_Save" InputGestureText="Ctrl+S" Name="menuSave" Click="menuSave_Click"/>
                     <MenuItem Header="Save _As..." InputGestureText="Ctrl+Shift+S" Name="menuSaveAs" Click="menuSaveAs_Click"/>
+                    <MenuItem Header="_Export..." InputGestureText="Ctrl+Shift+E" Name="menuExport" Click="menuExport_Click"/>
                     <Separator/>
                     <MenuItem Header="_Import Tile..." InputGestureText="Ctrl+I" Name="menuImportTile" Click="bImport_Click"/>
-                    <Separator/>
-                    <MenuItem Header="_Export..." InputGestureText="Ctrl+Shift+E" Name="menuExport" Click="menuExport_Click"/>
                     <Separator/>
                     <MenuItem Header="E_xit" Name="menuExit" Click="menuExit_Click"/>
                 </MenuItem>
@@ -48,7 +47,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="250"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Text="Adventure Text..." Grid.Column="0" TextChanged="TextBox_TextChanged" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                    <TextBox Text="Adventure Text..." Grid.Column="0" TextChanged="TextBox_TextChanged" IsTabStop="False" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown" />
                     <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Focusable="False" Grid.Column="1" Width="5"/>
                     <tilemap:Minimap x:Name="miniMap" Grid.Column="2" Background="White"/>
                 </Grid>
@@ -60,7 +59,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <ListView Name="viewTiles" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="True" Grid.Row="0" SelectionMode="Single" SelectionChanged="viewTiles_SelectionChanged" MouseDown="viewTiles_MouseDown">
+                    <ListView Name="viewTiles" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingStackPanel.IsVirtualizing="True" Grid.Row="0" SelectionMode="Single" SelectionChanged="viewTiles_SelectionChanged" MouseDown="viewTiles_MouseDown">
                         <ListView.ItemTemplate>
                             <DataTemplate DataType="{x:Type tilemap:TileCluster}">
                                 <StackPanel Orientation="Vertical" Margin="0,0,0,5">
@@ -74,14 +73,18 @@
                                         <TextBlock.Text>
                                             <Binding Path="DisplayName"/>
                                         </TextBlock.Text>
+                                        <TextBlock.ToolTip>
+                                            <ToolTip Content="{Binding DisplayName}" Placement="Relative"/>
+                                        </TextBlock.ToolTip>
                                     </TextBlock>
                                     <!-- hackhack: remove tooltip later -->
-                                    <Image MaxHeight="125" MaxWidth="125" Source="{Binding Path=Image}" ToolTip="{Binding Path=TileID}"/>
+                                    <Image MaxHeight="125" Margin="0,1,2,0" HorizontalAlignment="Left" Source="{Binding Path=Image}" ToolTip="{Binding Path=TileID}"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
+                    <GridSplitter Height="{Binding ElementName=spTileTypeFilter, Path=ActualHeight}" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Focusable="False"/>
+                    <StackPanel x:Name="spTileTypeFilter" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
                         <CheckBox x:Name="cbShowFloorTiles" FontSize="12" Margin="0,2.5,5,2.5" Content="Tiles" IsChecked="True" Checked="cbShowTiles_Checked" Unchecked="cbShowTiles_Checked"/>
                         <CheckBox x:Name="cbShowArbitTiles" FontSize="12" Margin="5,2.5,0,2.5" Content="Props" IsChecked="True" Checked="cbShowTiles_Checked" Unchecked="cbShowTiles_Checked"/>
                     </StackPanel>
@@ -124,7 +127,7 @@
                         </UniformGrid>
                     </StackPanel>
                 </Grid>
-                <GridSplitter Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="3" Focusable="False"/>
+                <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="3" Focusable="False"/>
                 <tilemap:MapPane x:Name="mapPane" Grid.Column="2" Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Grid>
         </DockPanel>
