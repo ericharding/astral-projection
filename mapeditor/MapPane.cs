@@ -20,8 +20,7 @@ namespace TileMap
         public int TileWidth { get { return _tileWidth; } set { ResizeTiles(value, _tileHeight); } }
         public int TileHeight { get { return _tileHeight; } set { ResizeTiles(_tileWidth, value); } }
         public int TileSize { get { return Math.Max(_tileWidth, _tileHeight); } set { ResizeTiles(value, value); } }
-        public event Action<int> TileSizeChanged;
-        public TileFactory TileToPlace { get { return _tileToPlace; } set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); this.InvalidateVisual(); } }
+        public TileFactory TileToPlace { get { return _tileToPlace; } set { _tileToPlace = value; _tileToPlacePreview = ((value == null) ? null : new TileCluster(value, new Size(_tileWidth, _tileHeight))); this.InvalidateVisual(); UIStateUpdated(); } }
         public int ActivePlacementLayer { get; set; }
         public bool IsSnapToGrid { get { return _snapToGrid; } set { _snapToGrid = value; this.InvalidateVisual(); } }
         public bool IsDrawGridUnder { get { return _drawGridUnder; } set { _drawGridUnder = value; this.InvalidateVisual(); } }
@@ -34,10 +33,15 @@ namespace TileMap
         public Rect MapBounds { get { return ComputeMapSize(); } }
         public Rect MapViewport { get { return new Rect(_offsetX - _origin, _offsetY - _origin, this.ActualWidth, this.ActualHeight); } }
         public IIndexable<int, bool> LayerMap { get { return _layerMapNotifier; } }
+
+        public event Action<int> TileSizeChanged;
         public event Action<long, long> MapPositionChanged;
         public event Action OnFileInfoUpdated;
         public event Action MapChanged;
         public event Action BitmapChanged;
+        public event Action<UIState> UIStateChanged;
+
+        public enum UIState { None, TileHighlighted, TileHovering }
 
         private const long _origin = 0x7FFFFFFF;
         private Pen _gridPen = new Pen(Brushes.Black, 1);
@@ -100,6 +104,8 @@ namespace TileMap
         {
             _hoverTile = true;
             this.InvalidateVisual();
+
+            UIStateUpdated();
         }
 
         private void MapPane_MouseLeave(object sender, MouseEventArgs e)
@@ -109,6 +115,8 @@ namespace TileMap
             _leftClick = false;
             _highlightedTile = null;
             this.InvalidateVisual();
+
+            UIStateUpdated();
         }
 
         private void MapPane_MouseMove(object sender, MouseEventArgs e)
@@ -136,6 +144,8 @@ namespace TileMap
                     _highlightedTile = tile;
 
                     this.InvalidateVisual();
+
+                    UIStateUpdated();
                 }
             }
 
@@ -185,6 +195,8 @@ namespace TileMap
             BitmapUpdated();
 
             this.InvalidateVisual();
+
+            UIStateUpdated();
         }
 /*
         [DllImport("user32.dll")]
@@ -229,6 +241,8 @@ namespace TileMap
                 }
 
                 this.InvalidateVisual();
+
+                UIStateUpdated();
             }
         }
 
@@ -294,6 +308,8 @@ namespace TileMap
             {
                 this.TileSizeChanged(this.TileSize);
             }
+
+            UIStateUpdated();
         }
 
         public void Clear()
@@ -320,6 +336,8 @@ namespace TileMap
             BitmapUpdated();
 
             this.InvalidateVisual();
+
+            UIStateUpdated();
         }
 
         private void ResetLayerMap(int count = 8)
@@ -372,6 +390,8 @@ namespace TileMap
             BitmapUpdated();
 
             this.InvalidateVisual();
+
+            UIStateUpdated();
         }
 
         private void SetMapPosition(long X, long Y, bool originZero)
@@ -382,6 +402,8 @@ namespace TileMap
             MapPositionUpdated();
 
             this.InvalidateVisual();
+
+            UIStateUpdated();
         }
 
         public void SetMapPosition(long X, long Y)
@@ -411,6 +433,21 @@ namespace TileMap
         {
             if (BitmapChanged != null)
                 BitmapChanged();
+        }
+
+        private void UIStateUpdated()
+        {
+            UIState state;
+
+            if (_highlightedTile != null)
+                state = UIState.TileHighlighted;
+            else if (_hoverTile && _tileToPlacePreview != null)
+                state = UIState.TileHovering;
+            else
+                state = UIState.None;
+
+            if (UIStateChanged != null)
+                UIStateChanged(state);
         }
 
         private Rect ComputeMapSize()

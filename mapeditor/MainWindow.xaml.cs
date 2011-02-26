@@ -39,7 +39,7 @@ namespace TileMap
         {
             InitializeComponent();
 
-            mapPane.OnFileInfoUpdated += new Action(this.UpdateTitle);
+            mapPane.OnFileInfoUpdated += UpdateTitle;
             UpdateTitle();
 
             if (File.Exists(_libraryFileName))
@@ -56,7 +56,9 @@ namespace TileMap
             _filteredLibrary = new ObservableCollection<TileFactory>(_library.TileFactories);
             viewTiles.ItemsSource = _filteredLibrary;
 
-            KeyboardHint = "Grab: Y   Copy: C   Delete: D   Drop: Esc   Scale: +/\u2212   Rotate: L/R   Mirror: H/V";
+            UpdateKeyboardHint(MapPane.UIState.None);
+
+            mapPane.UIStateChanged += UpdateKeyboardHint;
         }
 
         private void bImport_Click(object sender, RoutedEventArgs e)
@@ -370,6 +372,28 @@ namespace TileMap
         private void UpdateTitle()
         {
             this.Title = "Astral Map - " + (mapPane.FileName ?? "(no file)") + (mapPane.Dirty ? "*" : "");
+        }
+
+        private void UpdateKeyboardHint(MapPane.UIState state)
+        {
+            string hover = "Grab: Y   Copy: C   Delete: D";
+            string carry = "Drop: Esc   Rotate: L/R   Mirror: H/V";
+            string carryArb = "Drop: Esc   Scale: +/\u2212   Rotate: L/R   Mirror: H/V";
+
+            switch (state)
+            {
+                case MapPane.UIState.None:
+                    KeyboardHint = "";
+                    break;
+                case MapPane.UIState.TileHighlighted:
+                    KeyboardHint = hover;
+                    break;
+                case MapPane.UIState.TileHovering:
+                    KeyboardHint = mapPane.TileToPlace.ArbitraryScale ? carryArb : carry;
+                    break;
+                default:
+                    goto case MapPane.UIState.None;
+            }
         }
 
         private void UpdateFilteredLibrary()
