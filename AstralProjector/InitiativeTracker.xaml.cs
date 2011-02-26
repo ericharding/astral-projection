@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Astral.Projector.Initiative;
 using System.Diagnostics;
+using Astral.Projector.Initiative.View;
 
 namespace Astral.Projector
 {
@@ -130,11 +131,16 @@ namespace Astral.Projector
         ListBoxItem _sourceItemContainer;
         Point _initialMousePosition;
         Window _topWindow;
-        Vector _mouseOffset;
-        SimpleDragDropAdorner _dragAdorner;
+        Point _mouseOffset;
+        SimpleDragAdorner _dragAdorner;
+
+        ListBoxItem _dropTargetItemContainer;
+        Event _dropTargetItem;
+        bool _isInFirstHalf;
+        InsertionAdorner _insertionAdorner;
 
         // Drag part
-
+        #region Drag
         private void _initiativeList_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             _sourceItemContainer = (ListBoxItem)_initiativeList.ContainerFromElement((DependencyObject)e.OriginalSource);
@@ -158,25 +164,21 @@ namespace Astral.Projector
             if (_dragData != null && IsSufficientDelta(_initialMousePosition, e.GetPosition(_topWindow)))
             {
                 DataObject data = new DataObject(DataFormats.GetDataFormat("DragDropItemsControl").Name, _dragData);
-                //Point[] p = { _initialMousePosition, this.TranslatePoint(new Point(0, 0), _topWindow), _sourceItemContainer.TranslatePoint(new Point(0, 0), _topWindow) };
-                //_mouseOffset = p[0] - new Point(p[1].X + p[2].X, p[1].Y + p[2].Y);
-                _mouseOffset = _initialMousePosition - this.TranslatePoint(new Point(0, 0), _topWindow);
+                
+                Point mouseWindowOffset = this.TranslatePoint(new Point(0, 0), _topWindow);
+                Point mouseContainerOffset = e.GetPosition(_sourceItemContainer);
 
-                //_mouseOffset +  .TranslatePoint(new Point(0, 0), _topWindow);
-
-                Console.WriteLine("" + _initialMousePosition.X + ", " + _initialMousePosition.Y);
-                Console.WriteLine("" + _mouseOffset.X + ", " + _mouseOffset.Y);
+                _mouseOffset = new Point(_initialMousePosition.X - mouseWindowOffset.X - mouseContainerOffset.X,
+                                         _initialMousePosition.Y - mouseWindowOffset.Y - mouseContainerOffset.Y);
 
                 _topWindow.AllowDrop = true;
                 _topWindow.DragEnter += _topWindow_DragEnter;
                 _topWindow.DragOver += _topWindow_DragOver;
                 _topWindow.DragLeave += _topWindow_DragLeave;
 
-                Console.WriteLine("Dragstart");
-
+                // Console.WriteLine("Dragstart");
                 DragDropEffects effect = DragDrop.DoDragDrop(this, _dragData, DragDropEffects.Move);
-
-                Console.WriteLine("Dragstop");
+                // Console.WriteLine("Dragstop");
 
                 RemoveDragAdorner();
                 _topWindow.DragEnter -= _topWindow_DragEnter;
@@ -197,17 +199,15 @@ namespace Astral.Projector
                 point.Y - _initialMousePosition.Y + _mouseOffset.Y);
         }
 
-        private SimpleDragDropAdorner CreateAdorner(ListBoxItem _sourceItemContainer)
+        private SimpleDragAdorner CreateAdorner(ListBoxItem _sourceItemContainer)
         {
-            Console.WriteLine("Create drag adorner");
-            return new SimpleDragDropAdorner(_sourceItemContainer, this);
+            return new SimpleDragAdorner(_sourceItemContainer, this);
         }
 
         private void RemoveDragAdorner()
         {
             if (_dragAdorner != null)
             {
-                Console.WriteLine("Remove drag adorner");
                 _dragAdorner.Detach();
                 _dragAdorner = null;
             }
@@ -223,7 +223,6 @@ namespace Astral.Projector
         void _topWindow_DragOver(object sender, DragEventArgs e)
         {
             ShowDragAdorner(e.GetPosition(_topWindow));
-            e.Effects = DragDropEffects.None;
             e.Handled = true;
         }
 
@@ -232,22 +231,87 @@ namespace Astral.Projector
             e.Handled = true;
         }
 
+        #endregion
+
         // Drop part
         #region Drop
         private void _initiativeList_PreviewDragEnter(object sender, DragEventArgs e)
         {
-
-        }
-
-        private void _initiativeList_PreviewDragLeave(object sender, DragEventArgs e)
-        {
-
+            if (_dragData != null)
+            {
+                DecideDropTarget(e);
+                UpdateInsertionAdorner();
+            }
+            e.Effects = e.AllowedEffects;
+            e.Handled = true;
         }
 
         private void _initiativeList_PreviewDragOver(object sender, DragEventArgs e)
         {
+            DecideDropTarget(e);
+            UpdateInsertionAdorner();
 
+            e.Effects = DragDropEffects.Move;
         }
+
+        private void _initiativeList_PreviewDragLeave(object sender, DragEventArgs e)
+        {
+            if (_dragData != null)
+            {
+                RemoveInsertionAdorner();
+            }
+        }
+
+        private void _initiativeList_Drop(object sender, DragEventArgs e)
+        {
+            if (_isInFirstHalf)
+            {
+                _dragData.MoveBefore(_dropTargetItem);
+            }
+            else
+            {
+                _dragData.MoveAfter(_dropTargetItem);
+            }
+        }
+
+        private void DecideDropTarget(DragEventArgs e)
+        {
+            _dropTargetItemContainer = (ListBoxItem)_initiativeList.ContainerFromElement((DependencyObject)e.OriginalSource);
+            if (_dropTargetItemContainer != null)
+            {
+
+                Point positionRelativeToContainer = e.GetPosition(_dropTargetItemContainer);
+                _isInFirstHalf = positionRelativeToContainer.Y < (_dropTargetItemContainer.ActualHeight/2);
+
+                _dropTargetItem = (Event)_dropTargetItemContainer.Content;
+            }
+            else
+            {
+                _dropTargetItem = null;
+            }
+        }
+
+        private void UpdateInsertionAdorner()
+        {
+            if (_insertionAdorner == null && _dropTargetItemContainer != null)
+            {
+                _insertionAdorner = new InsertionAdorner(_isInFirstHalf, _dropTargetItemContainer);
+            }
+            if (_insertionAdorner != null)
+            {
+                _insertionAdorner.IsInFirstHalf = _isInFirstHalf;
+            }
+        }
+
+        private void RemoveInsertionAdorner()
+        {
+            if (_insertionAdorner != null)
+            {
+                _insertionAdorner.Detach();
+                _insertionAdorner = null;
+            }
+        }
+
         #endregion
 
         // Utility
@@ -259,62 +323,6 @@ namespace Astral.Projector
 
         #endregion
 
-
-    }
-
-    public class SimpleDragDropAdorner : Adorner
-    {
-        VisualBrush _brush;
-        AdornerLayer _adornerLayer;
-        UIElement _adornedElement;
-        Rect _bounds;
-        double _x, _y;
-
-        public SimpleDragDropAdorner(FrameworkElement source, UIElement adornedElement)
-            :base (adornedElement)
-        {
-            _brush = new VisualBrush(source);
-            RenderOptions.SetCachingHint(_brush, CachingHint.Cache);
-            this.Width = source.ActualWidth;
-            this.Height = source.ActualHeight;
-            _bounds = new Rect(0, 0, source.ActualWidth, source.ActualHeight);
-            _adornedElement = adornedElement;
-            _adornerLayer = AdornerLayer.GetAdornerLayer(adornedElement);
-
-            _adornerLayer.Add(this);
-        }
-
-        public void SetPosition(double x, double y)
-        {
-            Console.WriteLine("UpdatePos " + x + ", " + y);
-            _x = x;
-            _y = y;
-            _adornerLayer.Update(_adornedElement);
-        }
-
-        public void Detach()
-        {
-            _adornerLayer.Remove(this);
-        }
-
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            drawingContext.PushOpacity(0.3);
-            drawingContext.DrawRoundedRectangle(Brushes.GhostWhite, null, _bounds, 5, 5);
-            drawingContext.Pop();
-            drawingContext.PushOpacity(0.7);
-            drawingContext.DrawRectangle(_brush, null, _bounds);
-
-            Console.WriteLine("OnRender");
-        }
-
-        public override GeneralTransform GetDesiredTransform(GeneralTransform transform)
-        {
-            GeneralTransformGroup result = new GeneralTransformGroup();
-            result.Children.Add(base.GetDesiredTransform(transform));
-            result.Children.Add(new TranslateTransform(_x, _y));
-            return result;
-        }
     }
 
     public class MockInitiativeData : IEnumerable<Event>
