@@ -202,6 +202,5 @@ namespace Astral.Projector
         {
             _pv.UpdateInitiative(events);
         }
-
     }
 }
