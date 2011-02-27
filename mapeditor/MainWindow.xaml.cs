@@ -24,7 +24,7 @@ namespace TileMap
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string KeyboardHint { set { menuKeyboardHint.Header = value; } }
+        private object KeyboardHint { set { menuKeyboardHint.Header = value; } }
 
         private ObservableCollection<TileFactory> _filteredLibrary;
         private Map _library = new Map();
@@ -376,24 +376,24 @@ namespace TileMap
 
         private void UpdateKeyboardHint(MapPane.UIState state)
         {
-            string hover = "Grab: Y   Copy: C   Delete: D";
-            string carry = "Drop: Esc   Rotate: L/R   Mirror: H/V";
-            string carryArb = "Drop: Esc   Scale: +/\u2212   Rotate: L/R   Mirror: H/V";
+            string hintKey;
 
             switch (state)
             {
                 case MapPane.UIState.None:
-                    KeyboardHint = "";
+                    hintKey = "none";
                     break;
                 case MapPane.UIState.TileHighlighted:
-                    KeyboardHint = hover;
+                    hintKey = "hover";
                     break;
                 case MapPane.UIState.TileHovering:
-                    KeyboardHint = mapPane.TileToPlace.ArbitraryScale ? carryArb : carry;
+                    hintKey = mapPane.TileToPlace.ArbitraryScale ? "carryArb" : "carry";
                     break;
                 default:
                     goto case MapPane.UIState.None;
             }
+
+            KeyboardHint = menuKeyboardHint.Resources[hintKey];
         }
 
         private void UpdateFilteredLibrary()
