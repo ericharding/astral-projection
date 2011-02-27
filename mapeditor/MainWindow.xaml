@@ -27,7 +27,14 @@
                     <MenuItem Header="Go To _Origin" InputGestureText="Zero" Name="menuGoToOrigin" Click="menuGoToOrigin_Click"/>
                     <MenuItem Header="_Copy To Clipboard" Name="menuCopyToClipboard" Click="menuCopyToClipboard_Click"/>
                 </MenuItem>
-                <MenuItem x:Name="menuKeyboardHint" IsTabStop="False" HorizontalAlignment="Right" Opacity="0.5"/>
+                <MenuItem x:Name="menuKeyboardHint" IsTabStop="False" HorizontalAlignment="Right" Opacity="0.75">
+                    <MenuItem.Resources>
+                        <TextBlock x:Key="none"></TextBlock>
+                        <TextBlock x:Key="hover" xml:space="preserve">Grab: <Bold>Y</Bold>   Copy: <Bold>C</Bold>   Delete: <Bold>D</Bold></TextBlock>
+                        <TextBlock x:Key="carry" xml:space="preserve">Drop: <Bold>Esc</Bold>   Rotate: <Bold>L/R</Bold>   Mirror: <Bold>H/V</Bold></TextBlock>
+                        <TextBlock x:Key="carryArb" xml:space="preserve">Drop: <Bold>Esc</Bold>   Scale: <Bold>+/&#x2212;</Bold>   Rotate: <Bold>L/R</Bold>   Mirror: <Bold>H/V</Bold></TextBlock>
+                    </MenuItem.Resources>
+                </MenuItem>
             </Menu>
             <Grid>
                 <Grid.ColumnDefinitions>
