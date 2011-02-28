@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Astral.Plane.Utility;
+using Astral.Projector.Initiative.View;
 
 namespace Astral.Projector.Initiative
 {
@@ -203,8 +204,6 @@ namespace Astral.Projector.Initiative
 
         public void Undo()
         {
-            // TODO: Undoing a turn ending is broken
-            // TODO: Should be able to undo a spell expire
             if (_history.Count > 0)
             {
                 var top = _history.Pop();
