@@ -464,6 +464,8 @@ namespace TileMap
             if (!SaveIfNeeded(false))
                 return;
 
+            _mapNotes.Text = string.Empty;
+
             mapPane.Clear();
         }
 
@@ -487,9 +489,9 @@ namespace TileMap
 
                 // TODO: sanity check
 
-                mapPane.SetMap(load);
-
                 _mapNotes.Text = load.Notes;
+
+                mapPane.SetMap(load);
             }
         }
 
@@ -540,7 +542,7 @@ namespace TileMap
             _prefs.Save();
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void _mapNotes_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (mapPane != null)
             {
