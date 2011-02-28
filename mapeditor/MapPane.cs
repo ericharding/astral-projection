@@ -207,7 +207,9 @@ namespace TileMap
             if (!_projectorMode && _highlightedTile != null)
             {
                 TileToPlace = _highlightedTile.Tile.Factory;
-                _tileToPlacePreview.Tile = _highlightedTile.Tile;
+                _tileToPlacePreview.Rotation = _highlightedTile.Rotation;
+                _tileToPlacePreview.Mirror = _highlightedTile.Mirror;
+                _tileToPlacePreview.Scale = _highlightedTile.Scale;
 
                 if (andRemove)
                 {

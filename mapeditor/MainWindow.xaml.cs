@@ -173,6 +173,8 @@ namespace TileMap
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            e.Handled = true;
+
             if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
             {
                 switch (e.Key)
@@ -208,6 +210,8 @@ namespace TileMap
 
                 return;
             }
+
+            e.Handled = false;
 
             if (Keyboard.Modifiers == ModifierKeys.Alt)
             {
