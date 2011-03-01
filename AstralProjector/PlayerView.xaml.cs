@@ -44,7 +44,7 @@ namespace Astral.Projector
 
         public void UpdateInitiative(IEnumerable<Event> events)
         {
-            _initiativeView.ItemsSource = events;
+            _initiativeView.UpdateEvents(events);
         }
 
     }

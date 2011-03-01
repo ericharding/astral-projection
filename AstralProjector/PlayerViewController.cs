@@ -110,7 +110,7 @@ namespace Astral.Projector
             {
                 _pv.MapView.LayerMap[x] = false;
             }
-            _pv.MapView.TileSize = 34;
+            _pv.MapView.TileSize = 34; /* Default setting for *my* projector - should probably be made into a setting */
         }
 
 
