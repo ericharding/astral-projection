@@ -26,10 +26,6 @@ namespace Astral.Projector
         {
             InitializeComponent();
 
-            foreach (var e in MockInitiativeData.testEvents)
-            {
-                _unitInitiative.AddEvent(e);
-            }
             _initiativeList.ItemsSource = _unitInitiative.Events;
             this.Loaded += new RoutedEventHandler(InitiativeTracker_Loaded);
         }
@@ -264,6 +260,7 @@ namespace Astral.Projector
 
         private void _initiativeList_Drop(object sender, DragEventArgs e)
         {
+            if (_dragData == null) return;
             if (_isInFirstHalf)
             {
                 _dragData.MoveBefore(_dropTargetItem);
@@ -322,7 +319,6 @@ namespace Astral.Projector
         }
 
         #endregion
-
     }
 
     public class MockInitiativeData : IEnumerable<Event>

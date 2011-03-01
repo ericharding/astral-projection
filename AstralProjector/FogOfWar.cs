@@ -162,7 +162,7 @@ namespace Astral.Projector
 
         public void ChangeFog(double x, double y, bool clear)
         {
-            int multiplier = Keyboard.IsKeyDown(Key.LeftCtrl) ? 5 : 1;
+            int multiplier = Keyboard.IsKeyDown(Key.LeftCtrl) ? 1 : 5;
             ChangeFog(x, y, _map.TileSize * multiplier, clear);
         }
 

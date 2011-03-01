@@ -68,7 +68,11 @@
     </Compile>
     <Compile Include="Converters\TeamToImageConverter.cs" />
     <Compile Include="Effects\ImageDrifter.cs" />
+    <Compile Include="InitiativeView.xaml.cs">
+      <DependentUpon>InitiativeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Initiative\EventFactory.cs" />
+    <Compile Include="Initiative\View\HealthConverter.cs" />
     <Compile Include="Initiative\View\InsertionAdorner.cs" />
     <Compile Include="Initiative\View\SimpleDragAdorner.cs" />
     <Compile Include="PlayerViewController.cs" />
@@ -125,6 +129,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="InitiativeTracker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="InitiativeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

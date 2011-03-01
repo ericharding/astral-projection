@@ -27,8 +27,6 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
-
-        <view:TeamConverter x:Key="teamConverter" />
     </Window.Resources>
     <Grid x:Name="_outterGrid">
         <Grid.RenderTransform>
@@ -39,55 +37,8 @@
         <Grid x:Name="_effectContainer" />
         
         <p:FogOfWar MapDisplay="{Binding ElementName=_mapView}" Grid.Row="1" x:Name="_fog" Opacity="1" />
-
-        <ListBox x:Name="_initiativeView">
-            <ListBox.Resources>
-                <DataTemplate DataType="{x:Type i:Actor}">
-                    <Grid>
-                        <Image Source="{Binding Team, Converter={StaticResource teamConverter}}" Grid.RowSpan="2" />
-                    </Grid>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type i:TurnEnding}">
-                    <Grid>
-                        <Grid.Background>
-                            <LinearGradientBrush>
-                                <GradientStop Offset="0" Color="Transparent" />
-                                <GradientStop Offset="0.4" Color="{StaticResource DarkBlueColor}" />
-                                <GradientStop Offset="0.5" Color="{StaticResource DarkBlueColor}" />
-                                <GradientStop Offset="0.6" Color="{StaticResource DarkBlueColor}" />
-                                <GradientStop Offset="1" Color="Transparent" />
-                            </LinearGradientBrush>
-                        </Grid.Background>
-                        <Ellipse HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Width="25" Fill="White" Opacity="0.95" Stroke="{StaticResource VSDarkBlue}" StrokeThickness="1" />
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="18" Text="{Binding Turn}" />
-                    </Grid>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type i:SpellEffect}">
-                    <Grid>
-                        <Image Source="{Binding Team, Converter={StaticResource teamConverter}}" Grid.RowSpan="2" />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.Resources>
-            
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListBoxItem">
-                                <ContentPresenter />
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListBox.ItemContainerStyle>
-
-        </ListBox>
+ 
+        <p:InitiativeView x:Name="_initiativeView" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="68" />
         
         <Border BorderBrush="White" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="_imageAnimator">
             <Border.RenderTransform>
