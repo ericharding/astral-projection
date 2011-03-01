@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Astral.Plane.Utility;
+using System.ComponentModel;
 
 namespace Astral.Projector.Initiative
 {
@@ -57,6 +58,15 @@ namespace Astral.Projector.Initiative
                 _manager.NotifyUpdated(this, oldTime);
             }
         }
+
+        public double SecondsUntilTurn
+        {
+            get
+            {
+                return Math.Round((ScheduledAction - InitiativeManager.Now).TotalSeconds, 2);
+            }
+        }
+
         public IDictionary<string, string> Properties { get; set; }
 
         #endregion
@@ -75,11 +85,18 @@ namespace Astral.Projector.Initiative
 
         public void MoveAfter(Event other)
         {
-            TimeSpan nextDelta = _manager.GetEventAfter(other).ScheduledAction - other.ScheduledAction;
-            nextDelta = nextDelta.DivideBy(2);
-            TimeSpan fixedNext = TimeSpan.FromMilliseconds(InitiativeManager.REACTION_TIME_MS);
-
-            this.ScheduledAction = other.ScheduledAction + TimeSpanEx.Min(nextDelta, fixedNext);
+            Event nextEvent = _manager.GetEventAfter(other);
+            if (nextEvent == null)
+            {
+                this.ScheduledAction = other.ScheduledAction.AddSeconds(InitiativeManager.REACTION_TIME_MS);
+            }
+            else
+            {
+                TimeSpan nextDelta = _manager.GetEventAfter(other).ScheduledAction - other.ScheduledAction;
+                nextDelta = nextDelta.DivideBy(2);
+                TimeSpan fixedNext = TimeSpan.FromMilliseconds(InitiativeManager.REACTION_TIME_MS);
+                this.ScheduledAction = other.ScheduledAction + TimeSpanEx.Min(nextDelta, fixedNext);
+            }
         }
 
         public void MoveBefore(Event other)
@@ -94,7 +111,7 @@ namespace Astral.Projector.Initiative
             else
             {
                 TimeSpan delta = other.ScheduledAction - before.ScheduledAction;
-                delta.DivideBy(2);
+                delta = delta.DivideBy(2);
                 TimeSpan fixedDelta = TimeSpan.FromMilliseconds(InitiativeManager.REACTION_TIME_MS);
                 this.ScheduledAction = other.ScheduledAction - TimeSpanEx.Min(delta, fixedDelta);
             }
@@ -117,12 +134,10 @@ namespace Astral.Projector.Initiative
         }
 
         internal virtual void TurnEnding(int turn)
-        {
-        }
+        { }
 
         internal virtual void Activate()
-        {
-        }
+        { }
 
         #region IComparable
 
@@ -149,6 +164,7 @@ namespace Astral.Projector.Initiative
             return this.CompareTo(other);
         }
         #endregion
+
     }
 
     // Player or monster
@@ -182,14 +198,8 @@ namespace Astral.Projector.Initiative
         public int MaxHealth { get; set; }
         public int CurrentHealth { get; set; }
 
-        //internal override void TurnEnding(int turn)
-        //{
-        //    this.HasAttackOfOpportunity = true;
-        //}
-
         internal override void Activate()
         {
-            // Clear IsCasting?
         }
 
         public override string ToString()
