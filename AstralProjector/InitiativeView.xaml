@@ -13,12 +13,35 @@
         <view:HealthConverter x:Key="healthConverter" Width="128" />
         <local:MockInitiativeData x:Key="MockData" />
         <BooleanToVisibilityConverter x:Key="boolToVis" />
+        
     </UserControl.Resources>
+
     <Grid>
         <ListBox x:Name="_initiativeView" ItemsSource="{StaticResource MockData}">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type i:Actor}">
                     <Grid Width="128" Background="#afff">
+                        <Grid.Resources>
+                            <BitmapImage x:Key="Flame1" UriSource="/Images/flame/flame1.png" DecodePixelWidth="128" />
+                            <BitmapImage x:Key="Flame2" UriSource="/Images/flame/flame2.png" DecodePixelWidth="128" />
+                            <BitmapImage x:Key="Flame3" UriSource="/Images/flame/flame3.png" DecodePixelWidth="128" />
+                            <BitmapImage x:Key="Flame4" UriSource="/Images/flame/flame4.png" DecodePixelWidth="128" />
+                            <ImageBrush x:Key="FlameBrush" x:Name="_flameBrush" Stretch="Fill" ImageSource="{StaticResource Flame1}" />
+                        </Grid.Resources>
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="Control.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="_flameBrush" Storyboard.TargetProperty="ImageSource" Duration="0:0:0.8" RepeatBehavior="Forever">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{StaticResource Flame1}" />
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{StaticResource Flame2}" />
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{StaticResource Flame3}" />
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.6" Value="{StaticResource Flame4}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="4" />
                             <ColumnDefinition />
@@ -32,8 +55,7 @@
                             <RowDefinition Height="2" />
                         </Grid.RowDefinitions>
 
-                        <Border BorderBrush="OrangeRed" BorderThickness="2" Grid.RowSpan="42" Grid.ColumnSpan="42" Visibility="{Binding IsCasting, Converter={StaticResource boolToVis}}" />
-                        <Image Source="{Binding Team, Converter={StaticResource teamConverter}}" MaxWidth="20" Grid.RowSpan="42" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        <Image Source="/Images/wizardhat.png" MaxWidth="20" Grid.RowSpan="42" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="{Binding IsCasting, Converter={StaticResource boolToVis}}" />
 
                         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Black" FontSize="16" Text="{Binding Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Grid.Row="1" Grid.Column="1" />
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="1">
@@ -41,11 +63,13 @@
                             <Rectangle Width="{Binding Converter={StaticResource healthConverter}}" Fill="Green" HorizontalAlignment="Left" />
                         </Grid>
 
-                        <Image SnapsToDevicePixels="True" Width="40" Height="40" Grid.RowSpan="42" Grid.ColumnSpan="42"  VerticalAlignment="Center" Visibility="{Binding IsDead, Converter={StaticResource boolToVis}}">
+                        <Image SnapsToDevicePixels="True" Height="32" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="42"  VerticalAlignment="Center" Visibility="{Binding IsDead, Converter={StaticResource boolToVis}}">
                             <Image.Source>
                                 <BitmapImage UriSource="/images/skull.png" DecodePixelHeight="40" DecodePixelWidth="40" />
                             </Image.Source>
                         </Image>
+
+                        <Rectangle Fill="{StaticResource FlameBrush}" Grid.Row="3" Grid.Column="1" Visibility="{Binding IsCasting, Converter={StaticResource boolToVis}}" />
                     </Grid>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type i:TurnEnding}">
@@ -66,7 +90,7 @@
                     </Border>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type i:SpellEffect}">
-                    <Border BorderThickness="1,2,1,2" BorderBrush="FireBrick" Width="128" Padding="4">
+                    <Border Width="128" Padding="4" VerticalAlignment="Stretch">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />

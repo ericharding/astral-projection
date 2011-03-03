@@ -43,6 +43,16 @@ namespace Astral.Projector.Initiative
             _scheduledAction = InitiativeManager.Now.Add(TimeSpan.FromTicks(RandomEx.Instance.Next(100000)));
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void FirePropertyChanged(string property)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+            }
+        }
+
         #region properties
 
         public string Name { get { return _name; } }
@@ -196,7 +206,19 @@ namespace Astral.Projector.Initiative
         }
 
         public int MaxHealth { get; set; }
-        public int CurrentHealth { get; set; }
+        private int _currentHealth;
+        public int CurrentHealth
+        {
+            get
+            {
+                return _currentHealth;
+            }
+            set
+            {
+                _currentHealth = value;
+                FirePropertyChanged("CurrentHealth");
+            }
+        }
 
         internal override void Activate()
         {
@@ -206,6 +228,7 @@ namespace Astral.Projector.Initiative
         {
             return base.ToString() + string.Format(" hp: {0}/{1}", CurrentHealth, MaxHealth);
         }
+
     }
 
     [Serializable]

@@ -29,17 +29,29 @@
         </Storyboard>
     </Window.Resources>
     <Grid x:Name="_outterGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
         <Grid.RenderTransform>
             <TranslateTransform X="0" />
         </Grid.RenderTransform>
 
-        <tile:MapPane Background="#000" GridBrush="#5fff" Grid.Row="1" x:Name="_mapView" IsEnabled="False" IsProjectorMode="true" />
+        <tile:MapPane Background="#000" GridBrush="#5fff" x:Name="_mapView" IsEnabled="False" IsProjectorMode="true" />
         <Grid x:Name="_effectContainer" />
         
-        <p:FogOfWar MapDisplay="{Binding ElementName=_mapView}" Grid.Row="1" x:Name="_fog" Opacity="1" />
- 
-        <p:InitiativeView x:Name="_initiativeView" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="68" />
-        
+        <p:FogOfWar MapDisplay="{Binding ElementName=_mapView}" x:Name="_fog" Opacity="1" />
+
+        <p:InitiativeView x:Name="_initiativeView" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="68" >
+            <p:InitiativeView.OpacityMask>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Offset="0" Color="White" />
+                    <GradientStop Offset="0.4" Color="White" />
+                    <GradientStop Offset="0.6" Color="Transparent" />
+                </LinearGradientBrush>
+            </p:InitiativeView.OpacityMask>
+        </p:InitiativeView>
+
         <Border BorderBrush="White" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="_imageAnimator">
             <Border.RenderTransform>
                 <TransformGroup>
