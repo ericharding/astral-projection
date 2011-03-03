@@ -148,11 +148,13 @@
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Background="Transparent">
-            <TextBox VerticalAlignment="Center" Width="125" Background="{StaticResource ControlBackground}" x:Name="_tbAddText" />
+            <TextBox VerticalAlignment="Center" Width="125" Background="{StaticResource ControlBackground}" x:Name="_tbAddText" KeyDown="_tbAddText_KeyDown" />
             <ComboBox x:Name="_cbTeam" SelectedIndex="1" VerticalAlignment="Center" Margin="2" Background="{StaticResource ControlBackground}" 
                       ItemsSource="{StaticResource Icons}" ItemTemplate="{StaticResource IconOnlyTemplate}" SelectionChanged="_cbTeam_SelectionChanged" />
             <Button VerticalAlignment="Center" Margin="1" Background="{StaticResource ControlBackground}" Click="Add_Click">Add</Button>
+            
         </StackPanel>
+        <CheckBox Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="6" />
 
         <TextBlock Text="{Binding Path=CurrentTurn, StringFormat=Turn - {0}}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" />
         <ListBox Grid.Row="1" x:Name="_initiativeList" Background="{StaticResource WhiteAlternativeGradient}" HorizontalContentAlignment="Stretch"

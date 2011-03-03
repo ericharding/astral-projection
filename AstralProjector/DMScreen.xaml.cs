@@ -69,6 +69,12 @@ namespace Astral.Projector
             _lbEffects.ItemsSource = effects.Keys;
 
             _initiativeTracker.InitiativeManager.EventsUpdated += new Action(InitiativeManager_EventsUpdated);
+            _initiativeTracker.VisibleToPlayersChanged += new Action<bool>(_initiativeTracker_VisibleToPlayersChanged);
+        }
+
+        void _initiativeTracker_VisibleToPlayersChanged(bool visible)
+        {
+            _pvc.SetInitiativeVisibility(visible);
         }
 
         void InitiativeManager_EventsUpdated()

@@ -32,9 +32,22 @@ namespace Astral.Projector
 
         public InitiativeManager InitiativeManager { get { return _unitInitiative; } }
 
+        private bool _visibleToPlayers;
+        public event Action<bool> VisibleToPlayersChanged = (_) => { };
+        public bool IsVisibleToPlayers
+        {
+            get { return _visibleToPlayers; }
+            set
+            {
+                _visibleToPlayers = value;
+                VisibleToPlayersChanged(value);
+            }
+        }
+
         void InitiativeTracker_Loaded(object sender, RoutedEventArgs e)
         {
             _unitInitiative.EventsUpdated += new Action(_unitInitiative_EventsUpdated);
+            
         }
 
         void _unitInitiative_EventsUpdated()
@@ -319,6 +332,24 @@ namespace Astral.Projector
         }
 
         #endregion
+
+        private void _tbAddText_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Add_Click(this, null);
+            }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            this.IsVisibleToPlayers = true;
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            this.IsVisibleToPlayers = false;
+        }
     }
 
     public class MockInitiativeData : IEnumerable<Event>

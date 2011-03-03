@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using Astral.Plane;
-using System.Windows.Threading;
 using System.Windows.Media.Animation;
-using System.Windows.Controls;
+using Astral.Plane;
 using Astral.Projector.Initiative;
 
 namespace Astral.Projector
@@ -201,6 +197,11 @@ namespace Astral.Projector
         public void UpdateInitiative(IEnumerable<Event> events)
         {
             _pv.UpdateInitiative(events);
+        }
+
+        internal void SetInitiativeVisibility(bool visible)
+        {
+            _pv._initiativeView.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

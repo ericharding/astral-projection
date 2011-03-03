@@ -17,7 +17,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -196,6 +196,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Edit_Undo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\flame\flame1.png" />
+    <Resource Include="Images\flame\flame2.png" />
+    <Resource Include="Images\flame\flame3.png" />
+    <Resource Include="Images\flame\flame4.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
