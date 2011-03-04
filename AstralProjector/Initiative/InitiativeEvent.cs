@@ -31,7 +31,7 @@ namespace Astral.Projector.Initiative
     }
 
     [Serializable]
-    public abstract class Event : IComparable<Event>
+    public abstract class Event : IComparable<Event>, INotifyPropertyChanged
     {
         protected string _name;
         protected InitiativeManager _manager;
@@ -179,7 +179,7 @@ namespace Astral.Projector.Initiative
 
     // Player or monster
     [Serializable]
-    public class Actor : Event
+    public class Actor : Event, INotifyPropertyChanged
     {
         public Actor(string name, Team team, int hp, InitiativeManager m)
             : base(name, m)
@@ -189,8 +189,10 @@ namespace Astral.Projector.Initiative
         }
 
         public Team Team { get; private set; }
-        public bool IsCasting { get; set; }
-        public bool IsDead { get; set; }
+        private bool _isCasting;
+        public bool IsCasting { get { return _isCasting; } set { _isCasting = value; FirePropertyChanged("IsCasting"); } }
+        private bool _isDead;
+        public bool IsDead { get { return _isDead; } set { _isDead = value; FirePropertyChanged("IsDead"); } }
 
         private DateTime _nextAttackOfOpportunity = DateTime.MinValue;
         public bool HasAttackOfOpportunity
@@ -221,8 +223,7 @@ namespace Astral.Projector.Initiative
         }
 
         internal override void Activate()
-        {
-        }
+        { }
 
         public override string ToString()
         {

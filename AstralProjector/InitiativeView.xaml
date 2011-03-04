@@ -10,7 +10,7 @@
              d:DesignHeight="68" d:DesignWidth="1024">
     <UserControl.Resources>
         <view:TeamConverter x:Key="teamConverter" />
-        <view:HealthConverter x:Key="healthConverter" Width="128" />
+        <view:HealthConverter x:Key="healthConverter" Width="124" />
         <local:MockInitiativeData x:Key="MockData" />
         <BooleanToVisibilityConverter x:Key="boolToVis" />
         
@@ -43,7 +43,7 @@
                             </EventTrigger>
                         </Grid.Triggers>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition Width="2" />
                             <ColumnDefinition />
                             <ColumnDefinition Width="2" />
                         </Grid.ColumnDefinitions>
@@ -60,7 +60,14 @@
                         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Black" FontSize="16" Text="{Binding Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Grid.Row="1" Grid.Column="1" />
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="1">
                             <Rectangle Fill="#3000" />
-                            <Rectangle Width="{Binding Converter={StaticResource healthConverter}}" Fill="Green" HorizontalAlignment="Left" />
+                            <Rectangle Fill="Green" HorizontalAlignment="Left">
+                                <Rectangle.Width>
+                                    <MultiBinding Converter="{StaticResource healthConverter}">
+                                        <Binding Path="CurrentHealth" />
+                                        <Binding Path="MaxHealth" />
+                                    </MultiBinding>
+                                </Rectangle.Width>
+                            </Rectangle>
                         </Grid>
 
                         <Image SnapsToDevicePixels="True" Height="32" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="42"  VerticalAlignment="Center" Visibility="{Binding IsDead, Converter={StaticResource boolToVis}}">
