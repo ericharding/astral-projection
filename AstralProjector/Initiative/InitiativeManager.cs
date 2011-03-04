@@ -81,7 +81,7 @@ namespace Astral.Projector.Initiative
             }
         }
 
-        public event Action EventsUpdated = () => { };
+        public event Action<InitiativeManager> EventsUpdated = (_) => { };
 
         public IList<Event> Events
         {
@@ -110,7 +110,7 @@ namespace Astral.Projector.Initiative
 
             _history.Push(() => _events.Remove(e));
 
-            EventsUpdated();
+            EventsUpdated(this);
         }
 
         public void AddEvent(string desc)
@@ -189,7 +189,7 @@ namespace Astral.Projector.Initiative
         {
             _events.Sort();
             InitiativeManager.Now = _events.First().ScheduledAction;
-            EventsUpdated();
+            EventsUpdated(this);
         }
 
         // Clear spell effects and reset turn count

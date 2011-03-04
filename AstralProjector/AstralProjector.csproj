@@ -72,6 +72,7 @@
       <DependentUpon>InitiativeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Initiative\EventFactory.cs" />
+    <Compile Include="Initiative\InitiativeBroadcaster.cs" />
     <Compile Include="Initiative\View\HealthConverter.cs" />
     <Compile Include="Initiative\View\InsertionAdorner.cs" />
     <Compile Include="Initiative\View\SimpleDragAdorner.cs" />
