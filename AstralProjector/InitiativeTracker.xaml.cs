@@ -21,6 +21,7 @@ namespace Astral.Projector
     public partial class InitiativeTracker : UserControl
     {
         InitiativeManager _unitInitiative = new InitiativeManager();
+        InitiativeBroadcaster _networkBroadcast;
 
         public InitiativeTracker()
         {
@@ -46,11 +47,11 @@ namespace Astral.Projector
 
         void InitiativeTracker_Loaded(object sender, RoutedEventArgs e)
         {
-            _unitInitiative.EventsUpdated += new Action(_unitInitiative_EventsUpdated);
-            
+            _unitInitiative.EventsUpdated += _unitInitiative_EventsUpdated;
+            _networkBroadcast = new InitiativeBroadcaster(_unitInitiative);
         }
 
-        void _unitInitiative_EventsUpdated()
+        void _unitInitiative_EventsUpdated(InitiativeManager unused)
         {
             // perf cringe
             _initiativeList.Items.Refresh();

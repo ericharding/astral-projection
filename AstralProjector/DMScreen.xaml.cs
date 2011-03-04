@@ -8,6 +8,7 @@ using Astral.Plane;
 using Microsoft.Win32;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Astral.Projector.Initiative;
 
 namespace Astral.Projector
 {
@@ -68,7 +69,7 @@ namespace Astral.Projector
             ResourceDictionary effects = (ResourceDictionary)Application.LoadComponent(new Uri("Effects/Effects.xaml", UriKind.Relative));
             _lbEffects.ItemsSource = effects.Keys;
 
-            _initiativeTracker.InitiativeManager.EventsUpdated += new Action(InitiativeManager_EventsUpdated);
+            _initiativeTracker.InitiativeManager.EventsUpdated += InitiativeManager_EventsUpdated;
             _initiativeTracker.VisibleToPlayersChanged += new Action<bool>(_initiativeTracker_VisibleToPlayersChanged);
         }
 
@@ -77,7 +78,7 @@ namespace Astral.Projector
             _pvc.SetInitiativeVisibility(visible);
         }
 
-        void InitiativeManager_EventsUpdated()
+        void InitiativeManager_EventsUpdated(InitiativeManager sender)
         {
             _pvc.UpdateInitiative(_initiativeTracker.InitiativeManager.Events);
         }
