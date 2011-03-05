@@ -219,5 +219,31 @@ namespace Astral.Projector
         {
             return Math.Max(0, Math.Min(max, value));
         }
+
+        public static WriteableBitmapPixels Pixels(this WriteableBitmap self)
+        {
+            return new WriteableBitmapPixels(self);
+        }
+    }
+
+    public class WriteableBitmapPixels
+    {
+        private WriteableBitmap _bitmap;
+        public WriteableBitmapPixels(WriteableBitmap bitmap)
+        {
+            _bitmap = bitmap;
+        }
+
+        public unsafe uint this[int x]
+        {
+            get
+            {
+                return ((uint*)_bitmap.BackBuffer)[x];
+            }
+            set
+            {
+                ((uint*)_bitmap.BackBuffer)[x] = value;
+            }
+        }
     }
 }
