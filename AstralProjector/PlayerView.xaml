@@ -19,13 +19,21 @@
             <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].ScaleX" From="1" To="0" Duration="0:0:2" />
             <DoubleAnimation Storyboard.TargetName="_imageAnimator" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].ScaleY" From="1" To="0" Duration="0:0:2" />
         </Storyboard>
-
         <Storyboard x:Key="Shake">
             <DoubleAnimation Storyboard.TargetName="_outterGrid" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="0" From="30" Duration="0:0:5">
                 <DoubleAnimation.EasingFunction>
                     <ElasticEase Oscillations="30" Springiness="5" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Key="ShowInitiative">
+            <DoubleAnimation Storyboard.TargetName="_initiativeView" Storyboard.TargetProperty="(UIElement.OpacityMask).(LinearGradientBrush.GradientStops)[1].Offset" To="0.4" From="0" Duration="0:0:2" />
+            <DoubleAnimation Storyboard.TargetName="_initiativeView" Storyboard.TargetProperty="(UIElement.OpacityMask).(LinearGradientBrush.GradientStops)[2].Offset" To="0.6" From="0" Duration="0:0:2" />
+        </Storyboard>
+        <Storyboard x:Key="HideInitiative">
+            <DoubleAnimation Storyboard.TargetName="_initiativeView" Storyboard.TargetProperty="(UIElement.OpacityMask).(LinearGradientBrush.GradientStops)[1].Offset" To="0" Duration="0:0:2" />
+            <DoubleAnimation Storyboard.TargetName="_initiativeView" Storyboard.TargetProperty="(UIElement.OpacityMask).(LinearGradientBrush.GradientStops)[2].Offset" To="0" Duration="0:0:2" />
         </Storyboard>
     </Window.Resources>
     <Grid x:Name="_outterGrid">
@@ -42,7 +50,7 @@
         
         <p:FogOfWar MapDisplay="{Binding ElementName=_mapView}" x:Name="_fog" Opacity="1" />
 
-        <p:InitiativeView x:Name="_initiativeView" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="68" >
+        <p:InitiativeView x:Name="_initiativeView" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="68" Visibility="Hidden">
             <p:InitiativeView.OpacityMask>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                     <GradientStop Offset="0" Color="White" />

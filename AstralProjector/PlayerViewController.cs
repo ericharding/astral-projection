@@ -201,7 +201,25 @@ namespace Astral.Projector
 
         internal void SetInitiativeVisibility(bool visible)
         {
-            _pv._initiativeView.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            if (visible)
+            {
+                _pv._initiativeView.Visibility = Visibility.Visible;
+                Storyboard sb = _pv.Resources["ShowInitiative"] as Storyboard;
+                _pv.BeginStoryboard(sb);
+            }
+            else
+            {
+                Storyboard sb = _pv.Resources["HideInitiative"] as Storyboard;
+
+                EventHandler hideInitiative = null;
+                hideInitiative = (o, e) =>
+                {
+                    sb.Completed -= hideInitiative;
+                    _pv._initiativeView.Visibility = Visibility.Collapsed;
+                };
+                sb.Completed += hideInitiative;
+                _pv.BeginStoryboard(sb);
+            }
         }
     }
 }
