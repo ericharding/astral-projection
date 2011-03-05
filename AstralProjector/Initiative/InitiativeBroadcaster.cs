@@ -16,7 +16,7 @@ namespace Astral.Projector.Initiative
             manager.EventsUpdated += new Action<InitiativeManager>(manager_EventsUpdated);
 
             _client = new UdpClient();
-            _client.Connect(new IPEndPoint(IPAddress.Broadcast, 14727));
+            _client.Connect(new IPEndPoint(IPAddress.Broadcast, 38727));
         }
 
         void manager_EventsUpdated(InitiativeManager sender)

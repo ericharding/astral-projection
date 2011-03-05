@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using Astral.Projector.Initiative;
 using System.Diagnostics;
 using Astral.Projector.Initiative.View;
+using Astral.Plane.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace Astral.Projector
 {
@@ -21,7 +23,6 @@ namespace Astral.Projector
     public partial class InitiativeTracker : UserControl
     {
         InitiativeManager _unitInitiative = new InitiativeManager();
-        InitiativeBroadcaster _networkBroadcast;
 
         public InitiativeTracker()
         {
@@ -48,7 +49,6 @@ namespace Astral.Projector
         void InitiativeTracker_Loaded(object sender, RoutedEventArgs e)
         {
             _unitInitiative.EventsUpdated += _unitInitiative_EventsUpdated;
-            _networkBroadcast = new InitiativeBroadcaster(_unitInitiative);
         }
 
         void _unitInitiative_EventsUpdated(InitiativeManager unused)
@@ -154,7 +154,7 @@ namespace Astral.Projector
         private void _initiativeList_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             _sourceItemContainer = (ListBoxItem)_initiativeList.ContainerFromElement((DependencyObject)e.OriginalSource);
-            if (_sourceItemContainer != null)
+            if (_sourceItemContainer != null && !IsOverThumb(e))
             {
                 _dragData = (Event)_sourceItemContainer.Content;
 
@@ -171,7 +171,7 @@ namespace Astral.Projector
 
         private void _initiativeList_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (_dragData != null && IsSufficientDelta(_initialMousePosition, e.GetPosition(_topWindow)))
+            if (_dragData != null && IsSufficientDelta(_initialMousePosition, e.GetPosition(_topWindow)) && !IsOverThumb(e))
             {
                 DataObject data = new DataObject(DataFormats.GetDataFormat("DragDropItemsControl").Name, _dragData);
                 
@@ -332,6 +332,22 @@ namespace Astral.Projector
                  Math.Abs(currentPosition.Y - origin.Y) >= SystemParameters.MinimumVerticalDragDistance);
         }
 
+        private bool IsOverThumb(MouseEventArgs e)
+        {
+            var element = this.InputHitTest(e.GetPosition(this)) as DependencyObject;
+            do
+            {
+                element = VisualTreeHelper.GetParent(element);
+                if (element is Thumb)
+                {
+                    return true;
+                }
+
+            } while (element != null);
+
+            return false;
+        }
+
         #endregion
 
         private void _tbAddText_KeyDown(object sender, KeyEventArgs e)
@@ -350,6 +366,19 @@ namespace Astral.Projector
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             this.IsVisibleToPlayers = false;
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            _unitInitiative.Reset();
+        }
+
+        private void Border_Drop(object sender, DragEventArgs e)
+        {
+            if (_dragData != null)
+            {
+                _unitInitiative.Remove(_dragData);
+            }
         }
     }
 
