@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Astral.Plane.Utility;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Astral.Projector.Initiative
 {
@@ -78,6 +79,19 @@ namespace Astral.Projector.Initiative
         }
 
         public IDictionary<string, string> Properties { get; set; }
+
+        public string PropertyString
+        {
+            get
+            {
+                string props = "";
+                if (Properties != null)
+                {
+                    props = string.Join(Environment.NewLine, Properties.Keys.Select(k => k + ": " + Properties[k]));
+                }
+                return props;
+            }
+        }
 
         #endregion
 
