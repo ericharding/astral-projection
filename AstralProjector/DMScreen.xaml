@@ -16,7 +16,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
-            <RowDefinition Height="120"/>
+            <RowDefinition Height="200"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -40,7 +40,7 @@
         <!-- Bottom panel-->
         <Grid Grid.Row="2" Grid.Column="0" Margin="5,7,5,5" Background="{StaticResource WhiteAlternativeGradient}">
             <!--<TextBox Background="Transparent" x:Name="_tbMapNotes" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" /> -->
-            <FlowDocumentReader Background="Transparent" x:Name="_fdMapNotes" HorizontalContentAlignment="Left" ViewingMode="Scroll"  />
+            <FlowDocumentReader Background="Transparent" x:Name="_fdMapNotes" HorizontalContentAlignment="Left" ViewingMode="Scroll" FontFamily="Segoe UI" FontSize="12" IsFindEnabled="True" IsManipulationEnabled="False" IsPageViewEnabled="False" IsTwoPageViewEnabled="False" />
         </Grid>
 
         <GridSplitter Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterH}" Opacity="0.9" />
@@ -190,7 +190,7 @@
         </Border>
 
         <!-- Status Bar -->
-        <Grid Grid.Row="3" Grid.ColumnSpan="3">
+        <!--<Grid Grid.Row="3" Grid.ColumnSpan="3">
             <Grid.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="Foreground" Value="White" />
@@ -198,6 +198,6 @@
             </Grid.Resources>
             <Rectangle Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Fill="White" />
             <TextBlock>Status...</TextBlock>
-        </Grid>
+        </Grid>-->
     </Grid>
 </Window>

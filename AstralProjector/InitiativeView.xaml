@@ -69,7 +69,15 @@
                             <RowDefinition />
                             <RowDefinition Height="2" />
                         </Grid.RowDefinitions>
-                       
+
+                        <Rectangle Grid.RowSpan="42" Grid.ColumnSpan="42" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding IsCasting, Converter={StaticResource boolToVis}}">
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                    <GradientStop Offset="1" Color="Firebrick" />
+                                    <GradientStop Offset="0" Color="Transparent" />
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
                         <Image Source="/Images/wizardhat.png" MaxWidth="20" Grid.RowSpan="42" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="{Binding IsCasting, Converter={StaticResource boolToVis}}" />
 
                         <TextBlock Style="{StaticResource TitleText}" Text="{Binding Name}" Grid.Row="1" Grid.Column="1" />
@@ -91,7 +99,7 @@
                             </Image.Source>
                         </Image>
 
-                        <Rectangle Fill="{StaticResource FlameBrush}" Grid.Row="3" Grid.Column="1" Visibility="{Binding IsCasting, Converter={StaticResource boolToVis}}" />
+                        <!--<Rectangle Fill="{StaticResource FlameBrush}" Grid.Row="3" Grid.Column="1" Visibility="{Binding IsCasting, Converter={StaticResource boolToVis}}" />-->
                     </Grid>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type i:TurnEnding}">
