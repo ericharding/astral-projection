@@ -19,6 +19,7 @@ namespace Astral.Projector
     {
         private IMapDisplay _map;
         private PlayerViewController _pvc;
+        private AdventureTextFormatter _docFormatter;
 
         public DMScreen()
         {
@@ -71,6 +72,10 @@ namespace Astral.Projector
 
             _initiativeTracker.InitiativeManager.EventsUpdated += InitiativeManager_EventsUpdated;
             _initiativeTracker.VisibleToPlayersChanged += new Action<bool>(_initiativeTracker_VisibleToPlayersChanged);
+
+            _docFormatter = new AdventureTextFormatter(_initiativeTracker.InitiativeManager);
+            _docFormatter.FontFamily = _fdMapNotes.FontFamily;
+            _docFormatter.FontSize = _fdMapNotes.FontSize;
         }
 
         void _initiativeTracker_VisibleToPlayersChanged(bool visible)
@@ -114,7 +119,8 @@ namespace Astral.Projector
                 {
                     _map.LayerMap[x] = false;
                 }
-                _fdMapNotes.Document = MakeFlowDocument(map.Notes);
+
+                _fdMapNotes.Document = _docFormatter.MakeDocument(map.Notes);
 
                 _pvc.LoadMap(ofd.FileName);
 
@@ -122,39 +128,6 @@ namespace Astral.Projector
                 UpdatePlayerMapBounds();
                 _playerMapBounds.Visibility = System.Windows.Visibility.Visible;
             }
-        }
-
-        private System.Windows.Documents.FlowDocument MakeFlowDocument(string notes)
-        {
-            FlowDocument doc = new FlowDocument();
-            doc.FontSize = 12;
-            doc.ColumnWidth = 900;
-
-            if (string.IsNullOrEmpty(notes))
-                return doc;
-
-            Paragraph p = new Paragraph();
-            p.TextAlignment = TextAlignment.Left;
-
-            foreach (string s in notes.Trim().Split('\n'))
-            {
-                p.Inlines.Add(s);
-                bool isEmpty = string.IsNullOrEmpty(s);
-
-                if (isEmpty || Char.IsNumber(s[0]))
-                {
-                    if (p.Inlines.Count != 0)
-                    {
-                        p.BreakPageBefore = !isEmpty;
-                        doc.Blocks.Add(p);
-                        p = new Paragraph();
-                    }
-                }
-            }
-
-            doc.Blocks.Add(p);
-
-            return doc;
         }
 
         private void _dmMapView_MouseWheel(object sender, MouseWheelEventArgs e)

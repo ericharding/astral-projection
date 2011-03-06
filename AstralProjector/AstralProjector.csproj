@@ -88,11 +88,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AdventureTextFormatter.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Converters\TeamToImageConverter.cs" />
     <Compile Include="Effects\ImageDrifter.cs" />
     <Compile Include="InitiativeView.xaml.cs">
       <DependentUpon>InitiativeView.xaml</DependentUpon>
@@ -230,6 +230,7 @@
     <Resource Include="Images\flame\flame3.png" />
     <Resource Include="Images\flame\flame4.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
