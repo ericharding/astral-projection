@@ -17,7 +17,8 @@
     </UserControl.Resources>
 
     <Grid>
-        <ListBox x:Name="_initiativeView" ItemsSource="{StaticResource MockData}">
+        <ListBox x:Name="_initiativeView">
+            <!-- ItemsSource="{StaticResource MockData}" -->
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type i:Actor}">
                     <Grid Width="128" Background="#afff">
