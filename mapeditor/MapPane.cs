@@ -36,6 +36,7 @@ namespace TileMap
 
         public event Action<int> TileSizeChanged;
         public event Action<long, long> MapPositionChanged;
+        public event Action MapViewportChanged;
         public event Action OnFileInfoUpdated;
         public event Action MapChanged;
         public event Action BitmapChanged;
@@ -70,6 +71,7 @@ namespace TileMap
             this.MouseEnter += new MouseEventHandler(MapPane_MouseEnter);
             this.MouseLeftButtonDown += new MouseButtonEventHandler(MapPane_MouseLeftButtonDown);
             this.MouseLeftButtonUp += new MouseButtonEventHandler(MapPane_MouseLeftButtonUp);
+            this.SizeChanged += new SizeChangedEventHandler(MapPane_SizeChanged);
 
             this.Clear();
 
@@ -164,6 +166,11 @@ namespace TileMap
             _mousePos = e.GetPosition(this);
             _scrolling = true;
             Mouse.Capture(this);
+        }
+
+        private void MapPane_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            MapViewportUpdated();
         }
 
         public void SetLibrary(Map library)
@@ -417,6 +424,8 @@ namespace TileMap
         {
             if (MapPositionChanged != null)
                 MapPositionChanged(_offsetX - _origin, _offsetY - _origin);
+
+            MapViewportUpdated();
         }
 
         private void FileInfoUpdated()
@@ -450,6 +459,12 @@ namespace TileMap
 
             if (UIStateChanged != null)
                 UIStateChanged(state);
+        }
+
+        private void MapViewportUpdated()
+        {
+            if (MapViewportChanged != null)
+                MapViewportChanged();
         }
 
         private Rect ComputeMapSize()
@@ -506,6 +521,10 @@ namespace TileMap
             dc.DrawRectangle(this.Background, null, new Rect(0, 0, w, h));
 
             DrawTiles(dc, new Vector(-bounds.Left, -bounds.Top), _tiles.Query(bounds), false);
+
+            //Rect mvp = MapViewport;
+            //mvp = new Rect(-mvp.Left - bounds.Left, -mvp.Top - bounds.Top, mvp.Width, mvp.Height);
+            //dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(0x80, 0xDA, 0xA5, 0x20)), null, mvp);
 
             dc.Close();
 
