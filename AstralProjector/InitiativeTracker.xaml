@@ -165,7 +165,7 @@
                  AllowDrop="True" ItemsSource="{StaticResource MockData}">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type i:Actor}">
-                    <Grid MaxWidth="295">
+                    <Grid MaxWidth="295" ToolTip="{Binding PropertyString}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="5" />
