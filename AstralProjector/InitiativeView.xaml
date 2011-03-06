@@ -6,22 +6,36 @@
              xmlns:i="clr-namespace:Astral.Projector.Initiative"
              xmlns:view="clr-namespace:Astral.Projector.Initiative.View"
              xmlns:local="clr-namespace:Astral.Projector"
-             mc:Ignorable="d"  Background="Transparent"
+             mc:Ignorable="d" 
              d:DesignHeight="68" d:DesignWidth="1024">
     <UserControl.Resources>
         <view:TeamConverter x:Key="teamConverter" />
         <view:HealthConverter x:Key="healthConverter" Width="124" />
         <local:MockInitiativeData x:Key="MockData" />
         <BooleanToVisibilityConverter x:Key="boolToVis" />
-        
+        <Style TargetType="TextBlock" x:Key="TitleText">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
     </UserControl.Resources>
+    <UserControl.Background>
+        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+            <LinearGradientBrush.GradientStops>
+                <GradientStop Color="GhostWhite" Offset="0" />
+                <GradientStop Color="Transparent" Offset="1" />
+            </LinearGradientBrush.GradientStops>
+        </LinearGradientBrush>
+    </UserControl.Background>
 
     <Grid>
-        <ListBox x:Name="_initiativeView">
-            <!-- ItemsSource="{StaticResource MockData}" -->
+        <ListBox x:Name="_initiativeView" Background="Transparent" ItemsSource="{StaticResource MockData}">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type i:Actor}">
-                    <Grid Width="128" Background="#afff">
+                    <Grid Width="128">
                         <Grid.Resources>
                             <BitmapImage x:Key="Flame1" UriSource="/Images/flame/flame1.png" DecodePixelWidth="128" />
                             <BitmapImage x:Key="Flame2" UriSource="/Images/flame/flame2.png" DecodePixelWidth="128" />
@@ -58,7 +72,7 @@
                        
                         <Image Source="/Images/wizardhat.png" MaxWidth="20" Grid.RowSpan="42" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="{Binding IsCasting, Converter={StaticResource boolToVis}}" />
 
-                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Black" FontSize="16" Text="{Binding Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Grid.Row="1" Grid.Column="1" />
+                        <TextBlock Style="{StaticResource TitleText}" Text="{Binding Name}" Grid.Row="1" Grid.Column="1" />
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="1">
                             <Rectangle Fill="#3000" />
                             <Rectangle Fill="Green" HorizontalAlignment="Left">
@@ -98,18 +112,22 @@
                     </Border>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type i:SpellEffect}">
-                    <Border Width="128" Padding="4" VerticalAlignment="Stretch">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <Image Source="/Images/wizardhat.png" HorizontalAlignment="Right" Grid.Row="2" MaxWidth="20" />
-                            <TextBlock Text="{Binding Name, StringFormat={}{0} expires}" Grid.Row="1" FontWeight="Bold" VerticalAlignment="Center" TextWrapping="Wrap" />
-                        </Grid>
-                    </Border>
+                    <Grid Width="128">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="2" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2" />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition Height="2" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Style="{StaticResource TitleText}" Text="{Binding Name}" TextWrapping="Wrap" Grid.Row="1" Grid.Column="1" />
+                        <Image Source="/Images/wizardhat.png" HorizontalAlignment="Right" Grid.Row="2" Grid.Column="1" MaxWidth="20" />
+                    </Grid>
                 </DataTemplate>
             </ListBox.Resources>
 
