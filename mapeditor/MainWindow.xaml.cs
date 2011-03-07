@@ -312,7 +312,7 @@ namespace TileMap
             }
         }
 
-        private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void mapPane_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
                 Zoom(5);
@@ -614,11 +614,6 @@ namespace TileMap
             }
 
             UpdateFilteredLibrary();
-        }
-
-        private void _mapNotes_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            e.Handled = true;
         }
     }
 }

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tilemap="clr-namespace:TileMap"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        Title="Astral Map" Height="768" Width="1024" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseWheel="Window_MouseWheel" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded">
+        Title="Astral Map" Height="768" Width="1024" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded">
     <Grid>
         <DockPanel HorizontalAlignment="Stretch" Name="dockPanel1" VerticalAlignment="Stretch">
             <Menu Name="menu1" VerticalAlignment="Top" DockPanel.Dock="Top">
@@ -54,7 +54,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="250"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" TextChanged="_mapNotes_TextChanged" IsTabStop="False" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown" MouseWheel="_mapNotes_MouseWheel"/>
+                    <TextBox Grid.Column="0" TextChanged="_mapNotes_TextChanged" IsTabStop="False" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown" />
                     <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Focusable="False" Grid.Column="1" Width="5"/>
                     <tilemap:Minimap x:Name="miniMap" Grid.Column="2" Background="White"/>
                 </Grid>
@@ -135,7 +135,7 @@
                     </StackPanel>
                 </Grid>
                 <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="3" Focusable="False"/>
-                <tilemap:MapPane x:Name="mapPane" Grid.Column="2" Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <tilemap:MapPane x:Name="mapPane" Grid.Column="2" Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseWheel="mapPane_MouseWheel"/>
             </Grid>
         </DockPanel>
     </Grid>
