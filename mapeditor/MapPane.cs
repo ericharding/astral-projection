@@ -41,6 +41,7 @@ namespace TileMap
         public event Action MapChanged;
         public event Action BitmapChanged;
         public event Action<UIState> UIStateChanged;
+        public event Action<Tile> TileClicked;
 
         public enum UIState { None, TileHighlighted, TileHovering }
 
@@ -94,6 +95,14 @@ namespace TileMap
                 {
                     PlaceTile(_tileToPlace, (_snapToGrid && !_tileToPlace.ArbitraryScale) ? FindNearestGridIntersect(e.GetPosition(this)) : e.GetPosition(this), true, this.ActivePlacementLayer);
                 }
+                else
+                {
+                    if (_highlightedTile != null)
+                    {
+                        if (TileClicked != null)
+                            TileClicked(_highlightedTile.Tile);
+                    }
+                }
             }
         }
 
@@ -137,7 +146,7 @@ namespace TileMap
                 this.InvalidateVisual();
             }
 
-            if (!_projectorMode && _hoverTile && _tileToPlace == null && !_scrolling)
+            if (_hoverTile && _tileToPlace == null && !_scrolling)
             {
                 TileCluster tile = FindTopmostVisibleTileAt(_mouseHover);
 
@@ -601,7 +610,7 @@ namespace TileMap
             return (0 <= A && A <= B && 0 <= C && C <= D);
         }
 
-        private void DrawTiles(DrawingContext dc, Vector offset, List<TileCluster> tiles, bool allowHighlight)
+        private void DrawTiles(DrawingContext dc, Vector offset, IEnumerable<TileCluster> tiles, bool allowHighlight)
         {
             foreach (TileCluster tc in tiles)
             {
