@@ -615,5 +615,10 @@ namespace TileMap
 
             UpdateFilteredLibrary();
         }
+
+        private void _mapNotes_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

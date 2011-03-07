@@ -54,7 +54,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="250"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" TextChanged="_mapNotes_TextChanged" IsTabStop="False" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                    <TextBox Grid.Column="0" TextChanged="_mapNotes_TextChanged" IsTabStop="False" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown" MouseWheel="_mapNotes_MouseWheel"/>
                     <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Focusable="False" Grid.Column="1" Width="5"/>
                     <tilemap:Minimap x:Name="miniMap" Grid.Column="2" Background="White"/>
                 </Grid>
@@ -108,7 +108,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox x:Name="tbSearchLibrary" FontSize="14" Grid.Column="0" TextChanged="tbSearchLibrary_TextChanged" PreviewKeyDown="TextBox_PreviewKeyDown" />
-                        <Button x:Name="tbSearchAndOr" Content="AND" Grid.Column="1" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center" Click="tbSearchAndOr_Click"/>
+                        <Button x:Name="tbSearchAndOr" Content="AND" Grid.Column="1" Width="35" HorizontalAlignment="Center" VerticalAlignment="Center" Click="tbSearchAndOr_Click"/>
                     </Grid>
                     <StackPanel Orientation="Horizontal" Grid.Row="4">
                         <TextBlock Text="Layer:" Margin="5,0,25,0" VerticalAlignment="Center" />
