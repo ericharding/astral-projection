@@ -55,6 +55,18 @@ namespace Astral.Projector.Initiative
                 properties[key] = value;
             }
 
+            // Special case for Orc 3d8 ac:12
+            int lastSpace = name.LastIndexOf(' ');
+            if (lastSpace > 0)
+            {
+                string lastToken = name.Substring(lastSpace);
+                if (!properties.ContainsKey("hp") && _reIsDice.IsMatch(lastToken))
+                {
+                    name = name.Substring(0, lastSpace);
+                    properties["hp"] = lastToken;
+                }
+            }
+
             return CreateComplex(name, properties);
         }
 
