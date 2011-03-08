@@ -4,7 +4,7 @@
         xmlns:tilemap="clr-namespace:TileMap"
         xmlns:plane="clr-namespace:Astral.Plane.Controls;assembly=AstralPlane"
         FocusManager.FocusedElement="{Binding ElementName=tbTileName}"
-        Title="Import" Height="600" Width="600" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ResizeMode="CanResizeWithGrip" Background="LightGray" Loaded="Window_Loaded">
+        Title="Import" Height="750" Width="750" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ResizeMode="CanResizeWithGrip" Background="LightGray" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
