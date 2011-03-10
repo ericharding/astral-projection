@@ -277,6 +277,12 @@ namespace TileMap
                 case Key.D:
                     mapPane.PickUpTile(true);
                     goto case Key.Escape;
+                case Key.B:
+                    mapPane.SendTileTo(false);
+                    break;
+                case Key.F:
+                    mapPane.SendTileTo(true);
+                    break;
                 case Key.NumPad0:
                     this._layer.SelectedIndex = 0;
                     break;

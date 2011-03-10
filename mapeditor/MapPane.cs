@@ -264,6 +264,34 @@ namespace TileMap
             }
         }
 
+        public void SendTileTo(bool front)
+        {
+            if (!_projectorMode && _highlightedTile != null)
+            {
+                _tiles.Remove(_highlightedTile);
+                _map.RemoveTile(_highlightedTile.Tile);
+
+                if (front)
+                {
+                    _tiles.Insert(_highlightedTile);
+                    _map.AddTile(_highlightedTile.Tile);
+                }
+                else
+                {
+                    _tiles.Insert(_highlightedTile, true);
+                    _map.AddTile(_highlightedTile.Tile, false);
+                }
+
+                this.Dirty = true;
+
+                BitmapUpdated();
+
+                this.InvalidateVisual();
+
+                UIStateUpdated();
+            }
+        }
+
         public void RotatePreview(bool clockwise)
         {
             if (_tileToPlacePreview != null)

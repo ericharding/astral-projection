@@ -16,6 +16,7 @@ namespace CSharpQuadTree
         public QuadNode Root { get { return root; } }
         private object syncLock = new object();
         private int objectSortId = 0;
+        private int objectBackSortId = 0;
 
         public QuadTree(Size minLeafSize, int maxObjectsPerLeaf)
         {
@@ -48,13 +49,13 @@ namespace CSharpQuadTree
             this.sort = sort;
         }
 
-        public void Insert(T quadObject)
+        public void Insert(T quadObject, bool atFront = false)
         {
             lock (syncLock)
             {
                 if (sort & !objectSortOrder.ContainsKey(quadObject))
                 {
-                    objectSortOrder.Add(quadObject, objectSortId++);
+                    objectSortOrder.Add(quadObject, atFront ? --objectBackSortId : objectSortId++);
                 }
 
                 Rect bounds = quadObject.Bounds;
