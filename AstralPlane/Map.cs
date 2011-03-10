@@ -137,7 +137,7 @@ namespace Astral.Plane
         // todo: Include a way for the application to resolve the unresolved factory
         public event Action<string> UnresolvedTileFactory;
 
-        public void AddTile(Tile tile)
+        public void AddTile(Tile tile, bool topMost=true)
         {
             if (this.FindTileFactory(tile.Factory) == null)
             {
@@ -145,7 +145,14 @@ namespace Astral.Plane
             }
 
             // Ok, you may pass
-            _tiles.Add(tile);
+            if (topMost)
+            {
+                _tiles.Add(tile);
+            }
+            else
+            {
+                _tiles.Insert(0, tile);
+            }
             tile.Map = this;
             tile.Factory.RefCount++;
             _isDirty = true;

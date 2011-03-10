@@ -11,13 +11,16 @@ namespace Astral.Projector
     class AdventureTextFormatter
     {
         private InitiativeManager _initiativeManager;
+        private Action<Uri> _uriNavigate;
         private Regex _linkParser = new Regex(@"\[\[.*?\]\]", RegexOptions.Compiled);
 
-        public AdventureTextFormatter(InitiativeManager initiativeManager)
+
+        public AdventureTextFormatter(InitiativeManager initiativeManager, Action<Uri> uriNavigate)
         {
             _initiativeManager = initiativeManager;
             FontFamily = new FontFamily("Segou UI");
             FontSize = 12;
+            _uriNavigate = uriNavigate;
         }
 
         public FlowDocument MakeDocument(string notes)
@@ -72,12 +75,11 @@ namespace Astral.Projector
                 {
                     para.Inlines.Add(s.Substring(lastMatch, matches[x].Index - lastMatch));
                     lastMatch = matches[x].Index + matches[x].Length;
+                    
                     string linkText = matches[x].Value;
 
                     string eventText = linkText.Substring(2, linkText.Length-4);
-                    Event parsedEvent = _initiativeManager.CreateEvent(eventText);
-                    Hyperlink link = CreateHyperlink(eventText, parsedEvent);
-                    para.Inlines.Add(link);
+                    CreateLink(para, eventText);
                 }
                 para.Inlines.Add(s.Substring(lastMatch, s.Length - lastMatch));
                 para.Inlines.Add(Environment.NewLine);
@@ -88,7 +90,26 @@ namespace Astral.Projector
             }
         }
 
-        private Hyperlink CreateHyperlink(string line, Event doodad)
+        private void CreateLink(Paragraph para, string eventText)
+        {
+            Hyperlink link;
+            if (eventText.StartsWith("http://"))
+            {
+                link = new Hyperlink();
+                link.Inlines.Add(eventText);
+                link.NavigateUri = new Uri(eventText);
+                link.Click += (sender, e) => _uriNavigate(((Hyperlink)sender).NavigateUri);
+            }
+            else
+            {
+
+                Event parsedEvent = _initiativeManager.CreateEvent(eventText);
+                link = CreateInitiativeLink(eventText, parsedEvent);
+            }
+            para.Inlines.Add(link);
+        }
+
+        private Hyperlink CreateInitiativeLink(string line, Event doodad)
         {
             Hyperlink hl = new Hyperlink();
             hl.Inlines.Add(doodad.Name);

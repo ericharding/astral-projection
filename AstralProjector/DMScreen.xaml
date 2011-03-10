@@ -174,7 +174,7 @@
 
         <!-- D20 Srd -->
         <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandD20SRD, Path=IsExpanded, Converter={StaticResource b2v}}">
-            <WebBrowser Source="http://digitalsorcery.net/d20/" />
+            <WebBrowser x:Name="_webBrowser" Source="http://digitalsorcery.net/d20/" />
         </Grid>
 
         <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="{Binding ElementName=_expandEffects, Path=IsExpanded, Converter={StaticResource b2v}}" Background="{StaticResource WhiteAlternativeGradient}" >

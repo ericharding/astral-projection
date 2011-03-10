@@ -103,7 +103,7 @@ namespace Astral.Projector.Initiative
         {
             Team result;
             int teamNum;
-            if (Enum.TryParse<Team>(teamName, out result))
+            if (Enum.TryParse<Team>(teamName, true, out result))
             {
                 return result;
             }
