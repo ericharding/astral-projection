@@ -73,7 +73,10 @@ namespace Astral.Projector
             _initiativeTracker.InitiativeManager.EventsUpdated += InitiativeManager_EventsUpdated;
             _initiativeTracker.VisibleToPlayersChanged += new Action<bool>(_initiativeTracker_VisibleToPlayersChanged);
 
-            _docFormatter = new AdventureTextFormatter(_initiativeTracker.InitiativeManager);
+            _docFormatter = new AdventureTextFormatter(_initiativeTracker.InitiativeManager, (uri) => {
+                _webBrowser.Navigate(uri);
+                _expandD20SRD.IsExpanded = true;
+            });
             _docFormatter.FontFamily = _fdMapNotes.FontFamily;
             _docFormatter.FontSize = _fdMapNotes.FontSize;
         }
