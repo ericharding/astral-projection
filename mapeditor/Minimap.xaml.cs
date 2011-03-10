@@ -22,6 +22,10 @@ namespace TileMap
     {
         public MapPane Map
         {
+            get
+            {
+                return _map;
+            }
             set
             {
                 if (_map != null)
@@ -159,7 +163,7 @@ namespace TileMap
         public OverlayBounds()
         {
             this.Background = Brushes.Transparent;
-            _pen = new Pen(Brushes.Blue, 1.0);
+            _pen = new Pen(Brushes.Blue, 1.5);
             _pen.DashStyle = DashStyles.Solid;
         }
 

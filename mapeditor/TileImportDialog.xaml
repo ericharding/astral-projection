@@ -48,8 +48,8 @@
             </Grid>
         </Viewbox>
         <tilemap:OverlayGrid x:Name="overlayTile" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="5" Width="{Binding ElementName=viewBoxTile, Path=ActualWidth}" Height="{Binding ElementName=viewBoxTile, Path=ActualHeight}"/>
-        <Rectangle x:Name="rectBottom" Grid.Column="2" Grid.Row="5" Height="2" Grid.ColumnSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
-        <Rectangle x:Name="rectRight" Grid.Column="5" Grid.Row="2" Width="2" Grid.RowSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
+        <Rectangle x:Name="rectBottom" Grid.Column="2" Grid.Row="5" Width="{Binding ElementName=viewBoxTile, Path=ActualWidth}" Height="3" Grid.ColumnSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
+        <Rectangle x:Name="rectRight" Grid.Column="5" Grid.Row="2" Width="3" Height="{Binding ElementName=viewBoxTile, Path=ActualHeight}" Grid.RowSpan="3" Margin="5" Stroke="Black" Fill="Black"/>
         <CheckBox x:Name="cbArbitrary" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Center" Focusable="False" Content="Arbitrary Scale" Checked="cbArbitrary_Checked" Unchecked="cbArbitrary_Checked"/>
         <plane:NumericUpDownEx x:Name="tbBorderTop" Grid.Column="3" Grid.Row="0" Value="0" Minimum="0" ValueChanged="NumericUpDown_ValueChanged" />
         <plane:NumericUpDownEx x:Name="tbBorderLeft" Grid.Column="0" Grid.Row="3" Value="0" Minimum="0" ValueChanged="NumericUpDown_ValueChanged" />
