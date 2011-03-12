@@ -82,9 +82,9 @@ namespace Astral.Projector
             _docFormatter.FontSize = _fdMapNotes.FontSize;
 
             string[] commandLineArgs = Environment.GetCommandLineArgs();
-            if (commandLineArgs.Length > 0 && File.Exists(commandLineArgs[0]))
+            if (commandLineArgs.Length > 1 && File.Exists(commandLineArgs[1]))
             {
-                LoadMap(commandLineArgs[0]);
+                LoadMap(commandLineArgs[1]);
             }
         }
 
