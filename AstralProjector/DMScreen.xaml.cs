@@ -9,6 +9,7 @@ using Microsoft.Win32;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Astral.Projector.Initiative;
+using System.IO;
 
 namespace Astral.Projector
 {
@@ -79,6 +80,12 @@ namespace Astral.Projector
             });
             _docFormatter.FontFamily = _fdMapNotes.FontFamily;
             _docFormatter.FontSize = _fdMapNotes.FontSize;
+
+            string[] commandLineArgs = Environment.GetCommandLineArgs();
+            if (commandLineArgs.Length > 0 && File.Exists(commandLineArgs[0]))
+            {
+                LoadMap(commandLineArgs[0]);
+            }
         }
 
         void _initiativeTracker_VisibleToPlayersChanged(bool visible)
@@ -114,23 +121,28 @@ namespace Astral.Projector
 
             if (ofd.ShowDialog() == true)
             {
-                Map map = Map.LoadFromFile(ofd.FileName);
-                _map.SetMap(map);
-                _map.LayerMap[0] = true;
-                _map.LayerMap[1] = true;
-                for (int x = 2; x < map.Layers; x++)
-                {
-                    _map.LayerMap[x] = false;
-                }
-
-                _fdMapNotes.Document = _docFormatter.MakeDocument(map.Notes);
-
-                _pvc.LoadMap(ofd.FileName);
-
-                Dispatcher.In(TimeSpan.FromSeconds(0.2), () => _dmMapView.IsEnabled = true);
-                UpdatePlayerMapBounds();
-                _playerMapBounds.Visibility = System.Windows.Visibility.Visible;
+                LoadMap(ofd.FileName);
             }
+        }
+
+        private void LoadMap(string fileName)
+        {
+            Map map = Map.LoadFromFile(fileName);
+            _map.SetMap(map);
+            _map.LayerMap[0] = true;
+            _map.LayerMap[1] = true;
+            for (int x = 2; x < map.Layers; x++)
+            {
+                _map.LayerMap[x] = false;
+            }
+
+            _fdMapNotes.Document = _docFormatter.MakeDocument(map.Notes);
+
+            _pvc.LoadMap(fileName);
+
+            Dispatcher.In(TimeSpan.FromSeconds(0.2), () => _dmMapView.IsEnabled = true);
+            UpdatePlayerMapBounds();
+            _playerMapBounds.Visibility = System.Windows.Visibility.Visible;
         }
 
         private void _dmMapView_MouseWheel(object sender, MouseWheelEventArgs e)

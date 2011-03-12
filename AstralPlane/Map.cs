@@ -453,7 +453,7 @@ namespace Astral.Plane
             {
                 foreach (XElement r in references.Elements(Map.REFERENCE_NODE))
                 {
-                    string filename = r.Attribute("Source").Value;
+                    string filename = Uri.UnescapeDataString(r.Attribute("Source").Value);
                     if (File.Exists(filename))
                     {
                         // Should lazy load maps already in memory
