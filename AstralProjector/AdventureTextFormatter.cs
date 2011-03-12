@@ -123,7 +123,14 @@ namespace Astral.Projector
         {
             Hyperlink link = (Hyperlink)sender;
             string text = link.Tag as string;
-            _initiativeManager.AddEvent(text);
+            try
+            {
+                _initiativeManager.AddEvent(text);
+            }
+            catch
+            {
+                MessageBox.Show("Invalid.");
+            }
         }
 
         

@@ -121,6 +121,8 @@
                                     <sys:Int32>3</sys:Int32>
                                     <sys:Int32>4</sys:Int32>
                                     <sys:Int32>5</sys:Int32>
+                                    <sys:Int32>6</sys:Int32>
+                                    <sys:Int32>7</sys:Int32>
                                 </x:Array>
                             </ComboBox.ItemsSource>
                         </ComboBox>
