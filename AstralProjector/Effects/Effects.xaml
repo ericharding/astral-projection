@@ -6,4 +6,8 @@
     
     <effects:ImageDrifter x:Key="DarkClouds" ImageSource="/Images/SolidNoise.png" />
     <effects:ImageDrifter x:Key="YellowFlag" ImageSource="/Images/Flag_Yellow.png" DeltaX="2" DeltaY="0" />
+    <effects:ImageDrifter x:Key="Clouds (Black)" ImageSource="/Images/Clouds1.png"/>
+    <effects:ImageDrifter x:Key="Clouds (White)" ImageSource="/Images/Clouds1.png" Tint="White"/>
+    <effects:ImageDrifter x:Key="Clouds (Green)" ImageSource="/Images/Clouds1.png" Tint="Green"/>
+    <effects:ImageDrifter x:Key="Clouds (Blue)"  ImageSource="/Images/Clouds1.png" Tint="Blue"/>
 </ResourceDictionary>
