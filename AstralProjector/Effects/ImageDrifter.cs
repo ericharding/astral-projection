@@ -74,7 +74,7 @@ namespace Astral.Projector.Effects
             _imageBrush.BeginAnimation(ImageBrush.ViewportProperty, _rectAnim);
         }
 
-        private BitmapSource Colorize(BitmapSource bmp, Color color)
+        private static BitmapSource Colorize(BitmapSource bmp, Color color)
         {
             WriteableBitmap wbmp = new WriteableBitmap(bmp);
 
