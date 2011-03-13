@@ -129,12 +129,12 @@ namespace Astral.Projector.Initiative
             }
         }
 
-        // spreads combatants out across the next 6 seconds
+        // spreads combatants out across the next 1 seconds
         public void Shuffle()
         {
             var actors = _events.OfType<Actor>().ToArray();
-            actors = actors.OrderBy(a => RandomEx.Instance.NextDouble()).ToArray();
-            double delta = ((FULLROUND_SECONDS) / actors.Length);
+            //actors = actors.OrderBy(a => RandomEx.Instance.NextDouble()).ToArray();
+            double delta = ((MINOR_ACTION_SECONDS) / actors.Length);
             for (int x = 0; x < actors.Length; x++)
             {
                 actors[x].SetNext(InitiativeManager.Now.AddSeconds(delta * x).AddTicks(RandomEx.Instance.Next(100000)));

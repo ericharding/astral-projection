@@ -32,7 +32,7 @@
     </UserControl.Background>
 
     <Grid>
-        <ListBox x:Name="_initiativeView" Background="Transparent" ItemsSource="{StaticResource MockData}">
+        <ListBox x:Name="_initiativeView" Background="Transparent" ItemsSource="{StaticResource MockData}" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type i:Actor}">
                     <Grid Width="128">
