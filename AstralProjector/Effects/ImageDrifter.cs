@@ -15,8 +15,9 @@ namespace Astral.Projector.Effects
         int _fps = 30;
         int _width, _height;
         ImageBrush _imageBrush;
-        ImageSource _imageSource;
+        BitmapSource _imageSource;
         RectAnimation _rectAnim;
+        Color? _tint;
         bool _loaded = false;
 
         static ImageDrifter()
@@ -48,9 +49,13 @@ namespace Astral.Projector.Effects
             if (!_loaded)
                 return;
 
-            _imageBrush.ImageSource = this.ImageSource;
-            _width = ((BitmapSource)this.ImageSource).PixelWidth;
-            _height = ((BitmapSource)this.ImageSource).PixelHeight;
+            if (_tint != null)
+                _imageBrush.ImageSource = Colorize(this.ImageSource, (Color)_tint);
+            else
+                _imageBrush.ImageSource = this.ImageSource;
+
+            _width = this.ImageSource.PixelWidth;
+            _height = this.ImageSource.PixelHeight;
 
             int x = _deltaX * _width;
             int y = _deltaY * _height;
@@ -67,6 +72,32 @@ namespace Astral.Projector.Effects
             _rectAnim.RepeatBehavior = RepeatBehavior.Forever;
 
             _imageBrush.BeginAnimation(ImageBrush.ViewportProperty, _rectAnim);
+        }
+
+        private BitmapSource Colorize(BitmapSource bmp, Color color)
+        {
+            WriteableBitmap wbmp = new WriteableBitmap(bmp);
+
+            WriteableBitmapPixels pixels = new WriteableBitmapPixels(wbmp);
+
+            int w = wbmp.PixelWidth,
+                h = wbmp.PixelHeight;
+
+            uint[] colorizedPixels = new uint[w * h];
+
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    int i = x + (y * w);
+
+                    colorizedPixels[i] = (pixels[i] & 0xFF000000) | (uint)((color.R << 16) | (color.G << 8) | color.B);
+                }
+            }
+
+            wbmp.WritePixels(new Int32Rect(0, 0, w, h), colorizedPixels, wbmp.BackBufferStride, 0);
+
+            return wbmp;
         }
 
         public void Dispose()
@@ -91,10 +122,20 @@ namespace Astral.Projector.Effects
             set { _fps = value; ResetAnimation(); }
         }
 
-        public ImageSource ImageSource
+        public BitmapSource ImageSource
         {
             get { return _imageSource; }
             set { _imageSource = value; ResetAnimation(); }
+        }
+
+        /// <summary>
+        /// Gets or sets a Color to tint the image.
+        /// When set, this treats ImageSource as an alpha mask.
+        /// </summary>
+        public Color? Tint
+        {
+            get { return _tint; }
+            set { _tint = value; ResetAnimation(); }
         }
     }
 }
