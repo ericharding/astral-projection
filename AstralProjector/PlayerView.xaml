@@ -28,8 +28,8 @@
         </Storyboard>
 
         <Storyboard x:Key="ShowInitiative">
-            <DoubleAnimation Storyboard.TargetName="_initiativeView" Storyboard.TargetProperty="(UIElement.OpacityMask).(LinearGradientBrush.GradientStops)[1].Offset" To="0.4" From="0" Duration="0:0:2" />
-            <DoubleAnimation Storyboard.TargetName="_initiativeView" Storyboard.TargetProperty="(UIElement.OpacityMask).(LinearGradientBrush.GradientStops)[2].Offset" To="0.6" From="0" Duration="0:0:2" />
+            <DoubleAnimation Storyboard.TargetName="_initiativeView" Storyboard.TargetProperty="(UIElement.OpacityMask).(LinearGradientBrush.GradientStops)[1].Offset" To="0.7" From="0" Duration="0:0:2" />
+            <DoubleAnimation Storyboard.TargetName="_initiativeView" Storyboard.TargetProperty="(UIElement.OpacityMask).(LinearGradientBrush.GradientStops)[2].Offset" To="0.9" From="0" Duration="0:0:2" />
         </Storyboard>
         <Storyboard x:Key="HideInitiative">
             <DoubleAnimation Storyboard.TargetName="_initiativeView" Storyboard.TargetProperty="(UIElement.OpacityMask).(LinearGradientBrush.GradientStops)[1].Offset" To="0" Duration="0:0:2" />
@@ -54,8 +54,8 @@
             <p:InitiativeView.OpacityMask>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                     <GradientStop Offset="0" Color="White" />
-                    <GradientStop Offset="0.4" Color="White" />
-                    <GradientStop Offset="0.6" Color="Transparent" />
+                    <GradientStop Offset="0.8" Color="White" />
+                    <GradientStop Offset="0.9" Color="Transparent" />
                 </LinearGradientBrush>
             </p:InitiativeView.OpacityMask>
         </p:InitiativeView>

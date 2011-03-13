@@ -23,6 +23,7 @@ namespace Astral.Projector
     public partial class InitiativeTracker : UserControl
     {
         InitiativeManager _unitInitiative = new InitiativeManager();
+        InitiativeBroadcaster _broadcaster;
 
         public InitiativeTracker()
         {
@@ -30,6 +31,7 @@ namespace Astral.Projector
 
             _initiativeList.ItemsSource = _unitInitiative.Events;
             this.Loaded += new RoutedEventHandler(InitiativeTracker_Loaded);
+            this._broadcaster = new InitiativeBroadcaster(_unitInitiative);
         }
 
         public InitiativeManager InitiativeManager { get { return _unitInitiative; } }
