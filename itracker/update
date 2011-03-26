@@ -1,0 +1,4 @@
+#!/bin/bash
+
+android update project --path $( pwd )
+
