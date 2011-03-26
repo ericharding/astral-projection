@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ini-tracker</string>
+    <string name="QuitButton">ABANDON THE BATTLE</string>
+    <string name="app_label">Initiative Tracker</string>
+    <string name="debug_tag">Initracker</string>
+</resources>
