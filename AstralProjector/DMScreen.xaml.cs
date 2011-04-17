@@ -83,7 +83,7 @@ namespace Astral.Projector
                 new AdventureLinkWithParens("link", navigate),
                 new SpellLinkHandler("spell", navigate),
                 new BasicAdventureLinkHandler("image", file => ShowImageEffect(file.Trim('"'))),
-                new LayerLinkHandler(ToggleLayerVisibility)
+                new LayerLinkHandler("layer", ToggleLayerVisibility)
                 );
 
             _docFormatter.FontFamily = _fdMapNotes.FontFamily;

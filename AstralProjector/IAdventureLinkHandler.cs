@@ -4,7 +4,7 @@ namespace Astral.Projector
 {
     interface IAdventureLinkHandler
     {
-        Hyperlink MakeHyperlink(string rawText);
+        Span MakeHyperlink(string rawText);
         string Prefix { get; }
     }
 }
