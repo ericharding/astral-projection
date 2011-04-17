@@ -30,7 +30,7 @@ namespace Astral.Projector
             return Tuple.Create(raw, default(T));
         }
 
-        public Hyperlink MakeHyperlink(string rawText)
+        public Span MakeHyperlink(string rawText)
         {
             Hyperlink link = new Hyperlink();
             link.Click += Invoke;
@@ -104,8 +104,8 @@ namespace Astral.Projector
     {
         Regex _layerParser = new Regex(@"(player|dm )?(\d+)");
 
-        public LayerLinkHandler(Action<View, int> toggle)
-            : base("layer", tupple => toggle(tupple.Item1, tupple.Item2))
+        public LayerLinkHandler(string prefix, Action<View, int> toggle)
+            : base(prefix, tupple => toggle(tupple.Item1, tupple.Item2))
         {
         }
 

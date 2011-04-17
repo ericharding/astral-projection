@@ -80,7 +80,7 @@ namespace Astral.Projector
 
         private void CreateLink(Paragraph para, string eventText)
         {
-            Hyperlink link = null;
+            Span link = null;
             try
             {
                 foreach(var action in _linkActions)
@@ -103,7 +103,7 @@ namespace Astral.Projector
             catch (Exception e) { para.Inlines.Add(e.ToString()); }
         }
 
-        private Hyperlink CreateInitiativeLink(string line, Event doodad)
+        private Span CreateInitiativeLink(string line, Event doodad)
         {
             Hyperlink hl = new Hyperlink();
             hl.Inlines.Add(doodad.Name);
