@@ -82,6 +82,11 @@ namespace Astral.Projector
             _pv.Fog.Reset();
         }
 
+        public void ToggleLayervisibility(int layer)
+        {
+            _pv.MapView.LayerMap[layer] = !_pv.MapView.LayerMap[layer];
+        }
+
         public void SetLayerVisibility(int layer, bool visibility)
         {
             _pv.MapView.LayerMap[layer] = visibility;
