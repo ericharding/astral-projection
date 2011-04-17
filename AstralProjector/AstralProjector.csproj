@@ -88,12 +88,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AdventureLinkHandlers.cs" />
     <Compile Include="AdventureTextFormatter.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Effects\ImageDrifter.cs" />
+    <Compile Include="IAdventureLinkHandler.cs" />
     <Compile Include="InitiativeView.xaml.cs">
       <DependentUpon>InitiativeView.xaml</DependentUpon>
     </Compile>
