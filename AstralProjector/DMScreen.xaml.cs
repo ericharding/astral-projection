@@ -185,6 +185,7 @@ namespace Astral.Projector
             else
             {
                 _map.LayerMap[layer] = !_map.LayerMap[layer];
+                _dmMapView.InvalidateVisual();
             }
         }
 
@@ -197,6 +198,7 @@ namespace Astral.Projector
             else
             {
                 _map.LayerMap[layer] = visible;
+                _dmMapView.InvalidateVisual();
             }
         }
 

@@ -85,6 +85,7 @@ namespace Astral.Projector
         public void ToggleLayervisibility(int layer)
         {
             _pv.MapView.LayerMap[layer] = !_pv.MapView.LayerMap[layer];
+            _pv.MapView.InvalidateVisual();
         }
 
         public void SetLayerVisibility(int layer, bool visibility)
