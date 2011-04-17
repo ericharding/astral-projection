@@ -13,6 +13,8 @@ using System.IO;
 
 namespace Astral.Projector
 {
+    enum View { DM, Player };
+
     /// <summary>
     /// Interaction logic for DMScreen.xaml
     /// </summary>
@@ -74,10 +76,15 @@ namespace Astral.Projector
             _initiativeTracker.InitiativeManager.EventsUpdated += InitiativeManager_EventsUpdated;
             _initiativeTracker.VisibleToPlayersChanged += new Action<bool>(_initiativeTracker_VisibleToPlayersChanged);
 
-            _docFormatter = new AdventureTextFormatter(_initiativeTracker.InitiativeManager, (uri) => {
-                _webBrowser.Navigate(uri);
-                _expandD20SRD.IsExpanded = true;
-            });
+            Action<string> navigate = (url) => { _webBrowser.Navigate(url); _expandD20SRD.IsExpanded = true; };
+            _docFormatter = new AdventureTextFormatter(_initiativeTracker.InitiativeManager,
+                new AdventureLinkHandlers("http", navigate),
+                new AdventureLinkHandlers("map", (name) => MenuOpen_Click(null, null)),
+                new AdventureLinkWithParens("link", navigate),
+                new SpellLinkHandler("spell", navigate),
+                new AdventureLinkHandlers("image", file => ShowImageEffect(file.Trim('"')))
+                );
+
             _docFormatter.FontFamily = _fdMapNotes.FontFamily;
             _docFormatter.FontSize = _fdMapNotes.FontSize;
 
@@ -162,16 +169,21 @@ namespace Astral.Projector
             CheckBox cb = sender as CheckBox;
             if (cb == null) return;
 
-            bool isPlayer = cb.Content.ToString()[0] == 'P';
+            View view = cb.Content.ToString()[0] == 'P' ? View.Player : View.DM;
             int layer = Grid.GetRow(cb);
 
-            if (isPlayer)
+            SetLayerVisibility(view, layer, (bool)cb.IsChecked);
+        }
+
+        private void SetLayerVisibility(View view, int layer, bool visible)
+        {
+            if (view == View.Player)
             {
-                _pvc.SetLayerVisibility(layer, (bool)cb.IsChecked);
+                _pvc.SetLayerVisibility(layer, visible);
             }
             else
             {
-                _map.LayerMap[layer] = (bool)cb.IsChecked;
+                _map.LayerMap[layer] = visible;
             }
         }
 
@@ -201,12 +213,27 @@ namespace Astral.Projector
             if (ofd.ShowDialog() == true)
             {
                 string filename = ofd.FileName;
-                _pvc.ShowImage(filename);
-                _bHideImage.IsEnabled = true;
+                ShowImageEffect(filename);
             }
         }
 
+        private void ShowImageEffect(string filename)
+        {
+            if (_bHideImage.IsEnabled)
+            {
+                HideImageEffect();
+                return;
+            }
+            _pvc.ShowImage(filename);
+            _bHideImage.IsEnabled = true;
+        }
+
         private void _bHideImage_Click(object sender, RoutedEventArgs e)
+        {
+            HideImageEffect();
+        }
+
+        private void HideImageEffect()
         {
             _bHideImage.IsEnabled = false;
             _pvc.HideImage();
