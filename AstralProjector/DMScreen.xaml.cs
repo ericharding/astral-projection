@@ -78,11 +78,12 @@ namespace Astral.Projector
 
             Action<string> navigate = (url) => { _webBrowser.Navigate(url); _expandD20SRD.IsExpanded = true; };
             _docFormatter = new AdventureTextFormatter(_initiativeTracker.InitiativeManager,
-                new AdventureLinkHandlers("http", navigate),
-                new AdventureLinkHandlers("map", (name) => MenuOpen_Click(null, null)),
+                new BasicAdventureLinkHandler("http", navigate),
+                new BasicAdventureLinkHandler("map", (name) => MenuOpen_Click(null, null)),
                 new AdventureLinkWithParens("link", navigate),
                 new SpellLinkHandler("spell", navigate),
-                new AdventureLinkHandlers("image", file => ShowImageEffect(file.Trim('"')))
+                new BasicAdventureLinkHandler("image", file => ShowImageEffect(file.Trim('"'))),
+                new LayerLinkHandler(ToggleLayerVisibility)
                 );
 
             _docFormatter.FontFamily = _fdMapNotes.FontFamily;
@@ -173,6 +174,18 @@ namespace Astral.Projector
             int layer = Grid.GetRow(cb);
 
             SetLayerVisibility(view, layer, (bool)cb.IsChecked);
+        }
+
+        private void ToggleLayerVisibility(View view, int layer)
+        {
+            if (view == View.Player)
+            {
+                _pvc.ToggleLayervisibility(layer);
+            }
+            else
+            {
+                _map.LayerMap[layer] = !_map.LayerMap[layer];
+            }
         }
 
         private void SetLayerVisibility(View view, int layer, bool visible)

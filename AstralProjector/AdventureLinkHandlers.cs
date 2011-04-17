@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Documents;
+using System.Text.RegularExpressions;
 
 namespace Astral.Projector
 {
-    class AdventureLinkHandlers : IAdventureLinkHandler
+    class AdventureLinkHandler<T> : IAdventureLinkHandler
     {
-        protected Action<string> _action;
+        protected Action<T> _action;
 
-        public AdventureLinkHandlers(string prefix, Action<string> action)
+        public AdventureLinkHandler(string prefix, Action<T> action)
         {
             Prefix = prefix + ":";
             _action = action;
@@ -20,13 +21,13 @@ namespace Astral.Projector
         public void Invoke(object sender, EventArgs args)
         {
             Hyperlink link = sender as Hyperlink;
-            string parameter = link.CommandParameter as string;
+            T parameter = (T)link.CommandParameter;
             _action(parameter);
         }
 
-        protected virtual Tuple<string, string> ParseLink(string raw)
+        protected virtual Tuple<string, T> ParseLink(string raw)
         {
-            return Tuple.Create(raw, raw);
+            return Tuple.Create(raw, default(T));
         }
 
         public Hyperlink MakeHyperlink(string rawText)
@@ -35,12 +36,18 @@ namespace Astral.Projector
             link.Click += Invoke;
             var linkdata = ParseLink(rawText.Substring(Prefix.Length).Trim());
             link.Inlines.Add(linkdata.Item1.Trim());
-            link.CommandParameter = linkdata.Item2.Trim();
+            link.CommandParameter = linkdata.Item2;
             return link;
         }
     }
 
-    class AdventureLinkWithParens : AdventureLinkHandlers
+    class BasicAdventureLinkHandler : AdventureLinkHandler<string>
+    {
+        public BasicAdventureLinkHandler(string prefix, Action<string> action)
+            : base(prefix, action) {}
+    }
+
+    class AdventureLinkWithParens : AdventureLinkHandler<string>
     {
         public AdventureLinkWithParens(string prefix, Action<string> action)
         : base(prefix, action)
@@ -93,6 +100,27 @@ namespace Astral.Projector
         }
     }
 
+    class LayerLinkHandler : AdventureLinkHandler<Tuple<View, int>>
+    {
+        Regex _layerParser = new Regex(@"(player|dm )?(\d+)");
+
+        public LayerLinkHandler(Action<View, int> toggle)
+            : base("layer", tupple => toggle(tupple.Item1, tupple.Item2))
+        {
+        }
+
+        protected override Tuple<string, Tuple<View, int>> ParseLink(string raw)
+        {
+            string lower = raw.ToLower();
+            View view = lower.Contains("dm") ? View.DM : View.Player;
+            var match = _layerParser.Match(lower);
+            if (match == null) return base.ParseLink(raw);
+
+            var layer = Tuple.Create(view, Int32.Parse(match.Groups[0].Value));
+            return Tuple.Create("Layer "+raw, layer);
+        }
+
+    }
 
     public class TextSplit
     {
