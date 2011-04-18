@@ -110,11 +110,11 @@ namespace TileMap
 
         private void SaveLibrary()
         {
-            if (File.Exists(_libraryFileName))
-            {
-                File.Delete(_libraryFileName + ".bak");
-                File.Copy(_libraryFileName, _libraryFileName + ".bak");
-            }
+            //if (File.Exists(_libraryFileName))
+            //{
+            //    File.Delete(_libraryFileName + ".bak");
+            //    File.Copy(_libraryFileName, _libraryFileName + ".bak");
+            //}
             _library.Save(_libraryFileName);
             PopulateTagList(viewSearchTags, _library);
             UpdateFilteredLibrary();
