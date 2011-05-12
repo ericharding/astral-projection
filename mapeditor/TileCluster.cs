@@ -153,6 +153,10 @@ namespace TileMap
 
         public void RotateTile(bool clockwise)
         {
+            if (((_tile.Mirror & TileMirror.Horizontal) == TileMirror.Horizontal) ^
+                ((_tile.Mirror & TileMirror.Vertical) == TileMirror.Vertical))
+                clockwise = !clockwise;
+
             int inc = _tile.ArbitraryScale ? 5 : 90;
             int max = _tile.ArbitraryScale ? 355 : 270;
 
