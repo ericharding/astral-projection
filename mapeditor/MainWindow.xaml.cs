@@ -266,6 +266,7 @@ namespace TileMap
                     menuGoToOrigin_Click(null, null);
                     break;
                 case Key.Y:
+                case Key.G:
                     mapPane.PickUpTile(true, true);
                     UpdateFilteredLibrary();
                     break;
@@ -581,7 +582,7 @@ namespace TileMap
                 viewTiles.Focus();
                 e.Handled = true;
             }
-            else if (e.Key == Key.Tab)
+            else if (e.Key == Key.Tab && sender == _mapNotes)
             {
                 const string tab = "    ";
                 int caretIndex = _mapNotes.CaretIndex;
