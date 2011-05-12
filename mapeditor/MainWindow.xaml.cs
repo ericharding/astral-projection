@@ -581,6 +581,14 @@ namespace TileMap
                 viewTiles.Focus();
                 e.Handled = true;
             }
+            else if (e.Key == Key.Tab)
+            {
+                const string tab = "    ";
+                int caretIndex = _mapNotes.CaretIndex;
+                _mapNotes.Text = _mapNotes.Text.Insert(caretIndex, tab);
+                _mapNotes.CaretIndex = caretIndex + tab.Length;
+                e.Handled = true;
+            }
         }
 
         private void menuCopyToClipboard_Click(object sender, RoutedEventArgs e)
