@@ -100,6 +100,7 @@ namespace Astral.Projector
         }
     }
 
+    // [[layer: 3]]  or [[layer: dm 2]]
     class LayerLinkHandler : AdventureLinkHandler<Tuple<View, int>>
     {
         Regex _layerParser = new Regex(@"(player|dm )?(\d+)");

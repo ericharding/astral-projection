@@ -85,7 +85,7 @@ namespace Astral.Projector
             {
                 foreach(var action in _linkActions)
                 {
-                    if (eventText.StartsWith(action.Prefix))
+                    if (eventText.StartsWith(action.Prefix, StringComparison.OrdinalIgnoreCase))
                     {
                         link = action.MakeHyperlink(eventText);
                         break;
@@ -100,7 +100,7 @@ namespace Astral.Projector
 
                 para.Inlines.Add(link);
             }
-            catch (Exception e) { para.Inlines.Add(e.ToString()); }
+            catch (Exception e) { para.Inlines.Add("\n" + e.ToString()); }
         }
 
         private Span CreateInitiativeLink(string line, Event doodad)
