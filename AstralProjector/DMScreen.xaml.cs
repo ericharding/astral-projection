@@ -82,7 +82,7 @@ namespace Astral.Projector
                 new BasicAdventureLinkHandler("map", (name) => MenuOpen_Click(null, null)),
                 new AdventureLinkWithParens("link", navigate),
                 new SpellLinkHandler("spell", navigate),
-                new BasicAdventureLinkHandler("image", file => ShowImageEffect(file.Trim('"'))),
+                new AdventureLinkWithParens("image", file => ShowImageEffect(file.Trim('"'))),
                 new LayerLinkHandler("layer", ToggleLayerVisibility)
                 );
 

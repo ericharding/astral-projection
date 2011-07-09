@@ -45,7 +45,13 @@ namespace Astral.Projector
     {
         public BasicAdventureLinkHandler(string prefix, Action<string> action)
             : base(prefix, action) {}
+
+        protected override Tuple<string, string> ParseLink(string raw)
+        {
+            return Tuple.Create(Prefix + raw, Prefix + raw);
+        }
     }
+
 
     class AdventureLinkWithParens : AdventureLinkHandler<string>
     {
