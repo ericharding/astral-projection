@@ -204,6 +204,7 @@ namespace Astral.Projector
 
         private void ResetFog_Button_Click(object sender, RoutedEventArgs e)
         {
+            _fog.Reset();
             _pvc.ResetFog();
         }
 
