@@ -16,7 +16,7 @@ namespace Astral.Plane
     /*
      * Responsible for loading, saving and holding map tile data
      */
-    public class Map
+    public sealed class Map : IDisposable
     {
         #region Strings
         private const int MAP_VERSION = 2;
@@ -104,11 +104,7 @@ namespace Astral.Plane
             _fileName = fileName;
             lock (_fileLock)
             {
-                CloseContainer();
-                using (IContainer container = new ZipFileContainer(fileName))
-                {
-                    Load(container);
-                }
+                Load(CurrentContainer);
             }
             _isDirty = false;
         }
@@ -255,6 +251,19 @@ namespace Astral.Plane
 
         internal bool IsDirty { get { return _isDirty; } set { _isDirty = value; } }
 
+        private IContainer _currentContainer = null;
+        private IContainer CurrentContainer
+        {
+            get
+            {
+                if (_currentContainer == null)
+                {
+                    _currentContainer = new ZipFileContainer(_fileName, false);
+                }
+                return _currentContainer;
+            }
+        }
+
         /// <summary>
         /// Save the Map
         /// </summary>
@@ -307,11 +316,7 @@ namespace Astral.Plane
 
             lock (_fileLock)
             {
-                CloseContainer();
-                using (IContainer container = new ZipFileContainer(_fileName))
-                {
-                    Load(container);
-                }
+                Load(CurrentContainer);
                 _isDirty = false;
             }
         }
@@ -328,10 +333,11 @@ namespace Astral.Plane
 
         private void CloseContainer()
         {
-            if (_currentFile != null)
+            if (_currentContainer != null)
             {
-                _currentFile.Dispose();
-                _currentFile = null;
+                Log.log("Close container {0}", _fileName);
+                _currentContainer.Dispose();
+                _currentContainer = null;
             }
         }
 
@@ -605,7 +611,6 @@ namespace Astral.Plane
         private bool _isDirty = true;
         
         private object _fileLock = new object();
-        private ZipFileContainer _currentFile = null;
 
         private static Dictionary<string, WeakReference<Map>> TheMapCache = new Dictionary<string, WeakReference<Map>>();
         private static Map _rootMap;
@@ -622,14 +627,16 @@ namespace Astral.Plane
             lock (_fileLock)
             {
                 MemoryStream memStream;
-                if (_currentFile == null)
-                    _currentFile = new ZipFileContainer(_fileName);
-                IContainer zipContainer = _currentFile;
-                Stream imageStream = zipContainer.GetFileStream(imagePath, false);
+                Stream imageStream = CurrentContainer.GetFileStream(imagePath, false);
                 memStream = new MemoryStream((int)imageStream.Length);
                 CopyStream(imageStream, memStream);
                 return memStream;
             }
+        }
+
+        public void Dispose()
+        {
+            CloseContainer();
         }
     }
 }

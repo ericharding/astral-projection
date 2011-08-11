@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 
 namespace Astral.Plane.Utility
 {
-    public class NativeMethods
+    internal class NativeMethods
     {
         [DllImport("kernel32.dll")]
-        public static extern bool AllocConsole();
+        internal static extern bool AllocConsole();
     }
 }

@@ -9,13 +9,12 @@ namespace Astral.Plane
 {
     internal static class Log
     {
-        static Lazy<StreamWriter> _writer = new Lazy<StreamWriter>(() =>
+        static StreamWriter GetWriter()
         {
-            Stream s = File.OpenWrite("map_access_log.txt");
-                StreamWriter writer = new StreamWriter(s);
+            StreamWriter writer = new StreamWriter("map_access_log.txt");
             writer.AutoFlush = true;
             return writer;
-        });
+        }
 
         static StringBuilder _stringLog = new StringBuilder();
 
@@ -26,9 +25,11 @@ namespace Astral.Plane
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            _writer.Value.WriteLine(_stringLog.ToString());
-            _writer.Value.Flush();
-            _writer.Value.Close();
+            using (var writer = GetWriter())
+            {
+                writer.WriteLine(_stringLog.ToString());
+                writer.Flush();
+            }
         }
 
         public static void log(string format, params object[] args)
