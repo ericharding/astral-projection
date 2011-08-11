@@ -31,6 +31,11 @@ namespace Astral.Plane.Container
                     Thread.Sleep(100);
                 }
             }
+            if (_package == null)
+            {
+                _package = (ZipPackage)Package.Open(packageName, mode);
+            }
+
             _packageName = packageName;
         }
 
