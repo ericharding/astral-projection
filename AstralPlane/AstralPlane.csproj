@@ -74,6 +74,7 @@
     </Compile>
     <Compile Include="IMapDisplay.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="MarkerTileFactory.cs" />
     <Compile Include="QuadTree\IQuadObject.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

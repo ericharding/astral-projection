@@ -446,9 +446,9 @@ namespace AstralTest.AstralPlane
             Assert.IsFalse(object.ReferenceEquals(map1, map2)); // assert map is not psychic
 
             Assert.IsTrue(map1.Tiles.Count() == map2.Tiles.Count());
-            Assert.IsTrue(map1.References.Count == 1);
-            Assert.IsTrue(map1.References.Count == 1);
-            Assert.IsTrue(object.ReferenceEquals(map1.References[0], map2.References[0]));
+            Assert.IsTrue(map1.References.Count == 2);
+            Assert.IsTrue(map2.References.Count == 2);
+            Assert.IsTrue(object.ReferenceEquals(map1.References[1], map2.References[1]));
         }
 
         [TestMethod]
@@ -482,9 +482,9 @@ namespace AstralTest.AstralPlane
             Assert.IsTrue(failsafe > 0, "We're leaking memory, captain, and the GC just can't take any more!");
 
             map = Map.LoadFromFile(TempFile2); // Loads both map and lib
-            Assert.IsTrue(map.References.Count == 1);
+            Assert.IsTrue(map.References.Count > 1);
             lib = Map.LoadFromFile(TempFile1);
-            Assert.IsTrue(map.References[0] == lib);
+            Assert.IsTrue(map.References.Contains(lib));
         }
 
         [TestMethod]
@@ -628,26 +628,93 @@ namespace AstralTest.AstralPlane
             Assert.IsTrue(map1.IsDirty);
         }
 
-        //[TestMethod]
-        public void RemoveTileFactorySimple()
+        [TestMethod]
+        public void TestTileProperties()
         {
             Map map1 = new Map();
-            throw new NotImplementedException();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "Teal is for real!", Borders.Empty, 1, 1);
+            TileFactory tf2 = new TileFactory(TestUtility.TealImage, "lalala I'm not listening", new Borders(5), 1, 2);
+            var tile = tf1.CreateTile();
+            var tile2 = tf2.CreateTile();
+
+            map1.AddTileFactory(tf1);
+            map1.AddTileFactory(tf2);
+            map1.AddTile(tile);
+            map1.AddTile(tile2);
+
+            tile.Properties["iscool"] = "sure is";
+            tile2.Properties["Marker"] = "3";
+
+            map1.Save(this.TempFile1);
+
+            File.Copy(TempFile1, TempFile2, true);
+            
+            Map map2 = Map.LoadFromFile(TempFile2);
+
+            Assert.IsTrue(map2.Tiles.Any(t => t.Properties.ContainsKey("iscool") && t.Properties["iscool"] == "sure is"));
+            Assert.IsTrue(map2.Tiles.Any(t => t.Properties.ContainsKey("Marker") && t.Properties["Marker"] == "3"));
         }
 
-        //[TestMethod]
-        public void RemoveTileFactoryFromReference()
+        [TestMethod]
+        public void TestCounter()
         {
-            // Add a TF to library
-            // add a tile of type tf to map
-            // save map1 - tf is not saved in map1
-            // remove tile from library
-            // save map1 - tf is now saved in map1
-            Map library = new Map();
             Map map1 = new Map();
-            throw new NotImplementedException();
+            map1.MarkerCounter++;
+
+            map1.Save(TempFile1);
+            File.Copy(TempFile1, TempFile2, true);
+
+            Map map2 = Map.LoadFromFile(TempFile2);
+
+            Assert.IsTrue(map2.MarkerCounter == 1);
         }
 
+        [TestMethod]
+        public void TestLayerInterop()
+        {
+            Map map1 = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "Teal is for real!", Borders.Empty, 1, 1);
+            map1.AddTileFactory(tf1);
+
+            Tile tile1 = tf1.CreateTile();
+            tile1.Layer = 3;
+            map1.AddTile(tile1);
+
+            Tile tile2 = tf1.CreateTile();
+            tile2.Layer = 4;
+            tile2.Tag = "Pit Trap";
+            map1.AddTile(tile2);
+
+            map1.Save(TempFile1);
+            File.Copy(TempFile1, TempFile2, true);
+
+            Map map2 = Map.LoadFromFile(TempFile2);
+
+            Tile tile3 = map2.Tiles.Where(t => t.Layer == 3).First();
+            Tile tile4 = map2.Tiles.Where(t => t.Layer == 4).First();
+            Assert.IsTrue(tile3.Tag == "Layer3");
+            Assert.IsTrue(tile4.Tag == "Pit Trap");
+        }
+
+        [TestMethod]
+        public void TestMarkerFactory()
+        {
+            var mtf = Map.RootMap.TileFactories.First();
+
+            Map m1 = new Map();
+
+            Tile newTile = mtf.CreateTile();
+            newTile.Location = new Point(100, 100);
+            m1.AddTile(newTile);
+            m1.Save(TempFile1);
+
+            File.Copy(TempFile1, TempFile2, true);
+            Map m2 = Map.LoadFromFile(TempFile2);
+
+            Assert.IsTrue(m2.Tiles.Count() == 1);
+            Assert.IsTrue(m2.TileFactories.Count == 0);
+
+        }
 
     }
 

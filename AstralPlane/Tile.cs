@@ -18,6 +18,15 @@ namespace Astral.Plane
         Vertical = 2,
     }
 
+    [Flags]
+    public enum TileVisibility
+    {
+        Hidden = 0,
+        DM = 1,
+        Player = 2,
+        All = 3
+    }
+
     public class Tile
     {
         internal Tile(TileFactory source)
@@ -26,6 +35,8 @@ namespace Astral.Plane
             this.Factory = source;
             this.Note = string.Empty;
             this.Scale = 1.0;
+            this.Tag = string.Empty;
+            this.Visibility = TileVisibility.All;
         }
 
         public TileFactory Factory { get; private set; }
@@ -58,17 +69,37 @@ namespace Astral.Plane
         public int TilesHorizontal { get { return this.Factory.TilesHorizontal; } }
         public int TilesVertical { get { return this.Factory.TilesVertical; } }
         public bool ArbitraryScale { get { return this.Factory.ArbitraryScale; } }
+        
+        public string Tag { get; set; }
+        public TileVisibility Visibility { get; set; }
+
+        private Dictionary<string, string> _properties = new Dictionary<string, string>();
+        public IDictionary<string, string> Properties { get { return _properties; } }
+
 
         internal XNode ToXML()
         {
-            return new XElement(Map.TILE_NODE,
+            XElement newNode = new XElement(Map.TILE_NODE,
                 new XAttribute("Type", this.Factory.TileID),
                 new XAttribute("Location", this.Location.ToString()),
-                new XAttribute("Layer", this.Layer),
                 new XAttribute("Rotation", (int)this.Rotation),
                 new XAttribute("Mirror", this.Mirror),
                 new XAttribute("Note", this.Note),
-                new XAttribute("Scale", this.Scale));
+                new XAttribute("Scale", this.Scale),
+                new XAttribute("Tag", this.Tag),
+                new XAttribute("Visibility", (int)this.Visibility));
+
+            if (this.Layer != 0)
+            {
+                newNode.SetAttributeValue("Layer", this.Layer);
+            }
+
+            foreach(string key in _properties.Keys)
+            {
+                newNode.Add(new XElement(key, _properties[key]));
+            }
+
+            return newNode;
         }
 
         internal void LoadFromXML(XElement element)
@@ -78,9 +109,23 @@ namespace Astral.Plane
             this.Location = element.Attribute("Location").Parse(Point.Parse);
             this.Layer = (int)element.Attribute("Layer").Parse(UInt32.Parse);
             this.Rotation = element.Attribute("Rotation").Parse(Int32.Parse);
-            this.Mirror = element.Attribute("Mirror").Parse(s => (TileMirror)Enum.Parse(typeof(TileMirror), s));
+            this.Mirror = element.Attribute("Mirror").Parse(typeof(TileMirror), TileMirror.None);
             this.Note = element.Attribute("Note").Parse(s => s);
             this.Scale = element.Attribute("Scale").Parse(Double.Parse);
+            this.Tag = element.Attribute("Tag").Parse(s => s);
+            this.Visibility = element.Attribute("Visibility").Parse(typeof(TileVisibility), TileVisibility.All);
+
+            if (this.Layer > 0 && string.IsNullOrEmpty(this.Tag))
+            {
+                this.Tag = "Layer" + this.Layer;
+            }
+
+            foreach (XElement child in element.Nodes())
+            {
+                string name = child.Name.ToString();
+                string value = child.Value;
+                _properties[name] = value;
+            }
         }
 
         private void Dirty()
