@@ -104,6 +104,7 @@ namespace Astral.Plane
             _fileName = fileName;
             lock (_fileLock)
             {
+                CloseContainer();
                 using (IContainer container = new ZipFileContainer(fileName))
                 {
                     Load(container);
@@ -306,6 +307,7 @@ namespace Astral.Plane
 
             lock (_fileLock)
             {
+                CloseContainer();
                 using (IContainer container = new ZipFileContainer(_fileName))
                 {
                     Load(container);
@@ -318,9 +320,19 @@ namespace Astral.Plane
         {
             string tempFile = Path.GetTempFileName();
             ActuallySave(standalone, prune, tempFile, filename);
+            CloseContainer();
             TryDelete(filename);
             Log.log("move {0}  =>  {1}", tempFile, filename);
             File.Move(tempFile, filename);
+        }
+
+        private void CloseContainer()
+        {
+            if (_currentFile != null)
+            {
+                _currentFile.Dispose();
+                _currentFile = null;
+            }
         }
 
         // All the save overloads end up here.
@@ -419,11 +431,13 @@ namespace Astral.Plane
                     foreach (TileFactory t in usedTiles)
                     {
                         Log.log("saving: {0}", t.TileID);
-                        Stream saveStream = saveContainer.GetFileStream("images/" + t.TileID);
-                        Stream imageStream = t.GetImageStream();
-                        CopyStream(imageStream, saveStream);
-                        saveStream.Close();
-                        imageStream.Close();
+                        using (Stream saveStream = saveContainer.GetFileStream("images/" + t.TileID))
+                        {
+                            using (Stream imageStream = t.GetImageStream())
+                            {
+                                CopyStream(imageStream, saveStream);
+                            }
+                        }
                     }
                 }
             }
@@ -589,31 +603,33 @@ namespace Astral.Plane
         private List<Map> _references = new List<Map>();
         private List<Tile> _tiles = new List<Tile>();
         private bool _isDirty = true;
+        
         private object _fileLock = new object();
+        private ZipFileContainer _currentFile = null;
 
         private static Dictionary<string, WeakReference<Map>> TheMapCache = new Dictionary<string, WeakReference<Map>>();
         private static Map _rootMap;
+        
 
         #endregion
 
 
-        // !! Caution !!
-        // This function takes a lock on the file and does not release
-        // it until the returned object is disposed!
-        internal IDisposable LoadStream(string imagePath, out Stream imageStream)
+        internal Stream LoadStream(string imagePath)
         {
             Log.log("Load stream {0}", imagePath);
             if (string.IsNullOrEmpty(this._fileName)) /*Impossible!*/ throw new InvalidOperationException("State invalid.  You cannot delay load an image from a Map which has never been saved.");
 
-            Monitor.Enter(_fileLock);
-            IContainer zipContainer = new ZipFileContainer(_fileName);
-            imageStream = zipContainer.GetFileStream(imagePath, false);
-
-            return new AnonymousDisposable(() =>
-                {
-                    zipContainer.Dispose();
-                    Monitor.Exit(_fileLock);
-                });
+            lock (_fileLock)
+            {
+                MemoryStream memStream;
+                if (_currentFile == null)
+                    _currentFile = new ZipFileContainer(_fileName);
+                IContainer zipContainer = _currentFile;
+                Stream imageStream = zipContainer.GetFileStream(imagePath, false);
+                memStream = new MemoryStream((int)imageStream.Length);
+                CopyStream(imageStream, memStream);
+                return memStream;
+            }
         }
     }
 }
