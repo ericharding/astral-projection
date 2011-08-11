@@ -6,6 +6,7 @@ using System.IO.Packaging;
 using System.IO;
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Astral.Plane.Container
 {
@@ -18,7 +19,18 @@ namespace Astral.Plane.Container
         {
             Log.log("Open Zip {0}", packageName);
             FileMode mode = create ? FileMode.OpenOrCreate : FileMode.Open;
-            _package = (ZipPackage)Package.Open(packageName, mode);
+            for (int x = 0; x < 5; x++)
+            {
+                try
+                {
+                    _package = (ZipPackage)Package.Open(packageName, mode);
+                    break;
+                }
+                catch (IOException)
+                {
+                    Thread.Sleep(100);
+                }
+            }
             _packageName = packageName;
         }
 
