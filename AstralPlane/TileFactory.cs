@@ -245,7 +245,7 @@ namespace Astral.Plane
             return str.ToString() + ".png";
         }
 
-        internal void LoadBitmapSource()
+        internal virtual void LoadBitmapSource()
         {
             if (Map == null) throw new InvalidOperationException("Cannot load bitmap from path when not part of a Map");
 

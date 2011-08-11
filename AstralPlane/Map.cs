@@ -33,16 +33,27 @@ namespace Astral.Plane
 
         #region Constructors
 
+        static Map()
+        {
+            _rootMap = new Map();
+            _rootMap._tileFactories.Add(new MarkerTileFactory(_rootMap));
+            _rootMap._isDirty = false;
+            _rootMap._fileName = "RootMap";
+
+            TheMapCache[_rootMap.FileName] = new WeakReference<Map>(_rootMap);
+        }
+
         /// <summary>
         /// Initializes an empty Map
         /// </summary>
         public Map()
         {
-            // empty map!
+            if (Map.RootMap != null)
+                this._references.Add(Map.RootMap);
         }
 
         // Initializies an empty map
-        public Map(int tileSizeX, int tileSizeY)
+        public Map(int tileSizeX, int tileSizeY) : this()
         {
             this.TileSizeX = tileSizeX;
             this.TileSizeY = tileSizeY;
@@ -64,11 +75,16 @@ namespace Astral.Plane
 
         public static Map LoadFromFile(string filename, bool allowCache)
         {
+            WeakReference<Map> mapRef = null;
+            if (allowCache && Map.TheMapCache.TryGetValue(filename, out mapRef) && mapRef.IsAlive)
+            {
+                return mapRef.Target;
+            }
+
             if (Path.IsPathRooted(filename))
                 Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 
             string fullpath = Path.GetFullPath(filename);
-            WeakReference<Map> mapRef = null;
 
             // if the old map is known and the reference is still alive return that
             if (allowCache && Map.TheMapCache.TryGetValue(fullpath, out mapRef) && mapRef.IsAlive)
@@ -83,6 +99,7 @@ namespace Astral.Plane
         }
 
         private Map(string fileName)
+            : this()
         {
             _fileName = fileName;
             lock (_fileLock)
@@ -231,6 +248,10 @@ namespace Astral.Plane
             }
         }
 
+        public int MarkerCounter { get; set; }
+
+        public static Map RootMap { get { return _rootMap; } }
+
         internal bool IsDirty { get { return _isDirty; } set { _isDirty = value; } }
 
         /// <summary>
@@ -239,7 +260,7 @@ namespace Astral.Plane
         /// <param name="standalone"></param>
         public void Save()
         {
-            if (!_isDirty && File.Exists(_fileName)) /*noop*/ return;
+            if (!_isDirty) /*noop*/ return;
             if (string.IsNullOrEmpty(_fileName)) throw new FileNotFoundException("No filename");
             this.Save(_fileName);
             _isDirty = false;
@@ -308,7 +329,8 @@ namespace Astral.Plane
             XDocument doc = new XDocument(new XElement("AstralMap",
                 new XAttribute("MapVersion", MAP_VERSION),
                 new XAttribute("TileSizeX", this.TileSizeX),
-                new XAttribute("TileSizeY", this.TileSizeY)));
+                new XAttribute("TileSizeY", this.TileSizeY),
+                new XAttribute("MarkerCounter", this.MarkerCounter)));
 
             if (!string.IsNullOrEmpty(this.Notes))
             {
@@ -325,12 +347,12 @@ namespace Astral.Plane
 
                 foreach (Map m in _references)
                 {
+                    if (m == RootMap) continue;
                     if (string.IsNullOrEmpty(m._fileName)) throw new InvalidOperationException("Cannot save a map with unsaved references");
                     m.Save(); // For consistency
                     xRreferences.Add(new XElement(Map.REFERENCE_NODE, new XAttribute("Source", MakeRelative(m._fileName, realfilename))));
                 }
             }
-
 
             // Since it is "impossible" to add a tile that doesn't have a locateable TileFactory... 
             // we can "safely" write the tiles now and collect the tilefactories that we use
@@ -342,7 +364,8 @@ namespace Astral.Plane
                 xTiles.Add(tile.ToXML());
 
                 if (standalone &&
-                    !usedTiles.Contains(tile.Factory))
+                    !usedTiles.Contains(tile.Factory) &&
+                    !RootMap.TileFactories.Contains(tile.Factory))
                 {
                     // For a standalone map we need to know about every referenced tile factory
                     usedTiles.Add(tile.Factory);
@@ -355,7 +378,7 @@ namespace Astral.Plane
             {
                 foreach (TileFactory tf in _tileFactories)
                 {
-                    if (!usedTiles.Contains(tf))
+                    if (!usedTiles.Contains(tf) && !RootMap.TileFactories.Contains(tf))
                         usedTiles.Add(tf);
                 }
             }
@@ -408,6 +431,7 @@ namespace Astral.Plane
 
         private string MakeRelative(string path, string basePath)
         {
+            if (path == _rootMap.FileName) return path;
             Uri baseUri = new Uri(basePath);
             Uri pathUri = new Uri(path);
             Uri relativePath = baseUri.MakeRelativeUri(pathUri);
@@ -439,6 +463,7 @@ namespace Astral.Plane
 
             this.TileSizeX = doc.Root.Attribute("TileSizeX").Parse(Int32.Parse);
             this.TileSizeY = doc.Root.Attribute("TileSizeY").Parse(Int32.Parse);
+            this.MarkerCounter = doc.Root.Attribute("MarkerCounter").Parse(Int32.Parse);
 
             XElement xNotes = doc.Root.Element(Map.MAP_NOTES);
             if (xNotes != null)
@@ -449,21 +474,14 @@ namespace Astral.Plane
             // Load references (recursive)
             XElement references = doc.Root.Element(Map.REFERENCE_COLLECTION);
             _references.Clear();
+            _references.Add(Map.RootMap);
             if (references != null)
             {
                 foreach (XElement r in references.Elements(Map.REFERENCE_NODE))
                 {
                     string filename = Uri.UnescapeDataString(r.Attribute("Source").Value);
-                    if (File.Exists(filename))
-                    {
-                        // Should lazy load maps already in memory
-                        Map refMap = Map.LoadFromFile(filename, true);
-                        _references.Add(refMap);
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException(string.Format("Unresolved reference {0}", filename));
-                    }
+                    Map refMap = Map.LoadFromFile(filename, true);
+                    _references.Add(refMap);
                 }
             }
 
@@ -574,6 +592,7 @@ namespace Astral.Plane
         private object _fileLock = new object();
 
         private static Dictionary<string, WeakReference<Map>> TheMapCache = new Dictionary<string, WeakReference<Map>>();
+        private static Map _rootMap;
 
         #endregion
 
