@@ -184,9 +184,13 @@ namespace Astral.Plane
 
         internal Stream GetImageStream()
         {
+            if (!string.IsNullOrEmpty(_imagePath))
+            {
+                return Map.LoadStream(_imagePath);
+            }
             return this.GetImageStream(new PngBitmapEncoder());
         }
-        internal Stream GetImageStream(BitmapEncoder encoder)
+        private Stream GetImageStream(BitmapEncoder encoder)
         {
             encoder.Frames.Add(BitmapFrame.Create(Image));
             MemoryStream memStream = new MemoryStream();
@@ -249,13 +253,10 @@ namespace Astral.Plane
         {
             if (Map == null) throw new InvalidOperationException("Cannot load bitmap from path when not part of a Map");
 
-            Stream s;
-            using (Map.LoadStream(_imagePath, out s))
-            {
-                PngBitmapDecoder decoder = new PngBitmapDecoder(s, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                _bitmapSource = decoder.Frames[0];
-                _bitmapSource.Freeze();
-            }
+            Stream imageStream = Map.LoadStream(_imagePath);
+            PngBitmapDecoder decoder = new PngBitmapDecoder(imageStream, BitmapCreateOptions.None, BitmapCacheOption.OnDemand);
+            _bitmapSource = decoder.Frames[0];
+            _bitmapSource.Freeze();
         }
 
         internal XNode ToXML()
