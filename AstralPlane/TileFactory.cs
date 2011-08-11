@@ -238,15 +238,17 @@ namespace Astral.Plane
             if (_arbitraryScale)
                 imageBits[0] ^= 1;
 
-            SHA1 sha = SHA1.Create();
-            byte[] hash = sha.ComputeHash(imageBits);
-
-            StringBuilder str = new StringBuilder(40);
-            for (int x = 0; x < 20; x++)
+            using (SHA1 sha = SHA1.Create())
             {
-                str.AppendFormat("{0:X2}", hash[x]);
+                byte[] hash = sha.ComputeHash(imageBits);
+
+                StringBuilder str = new StringBuilder(40);
+                for (int x = 0; x < 20; x++)
+                {
+                    str.AppendFormat("{0:X2}", hash[x]);
+                }
+                return str.ToString() + ".png";
             }
-            return str.ToString() + ".png";
         }
 
         internal virtual void LoadBitmapSource()

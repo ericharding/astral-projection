@@ -110,9 +110,9 @@ namespace Astral.Plane
             this.Layer = (int)element.Attribute("Layer").Parse(UInt32.Parse);
             this.Rotation = element.Attribute("Rotation").Parse(Int32.Parse);
             this.Mirror = element.Attribute("Mirror").Parse(typeof(TileMirror), TileMirror.None);
-            this.Note = element.Attribute("Note").Parse(s => s);
+            this.Note = element.Attribute("Note").Parse(s => s, string.Empty);
             this.Scale = element.Attribute("Scale").Parse(Double.Parse);
-            this.Tag = element.Attribute("Tag").Parse(s => s);
+            this.Tag = element.Attribute("Tag").Parse(s => s, string.Empty);
             this.Visibility = element.Attribute("Visibility").Parse(typeof(TileVisibility), TileVisibility.All);
 
             if (this.Layer > 0 && string.IsNullOrEmpty(this.Tag))
