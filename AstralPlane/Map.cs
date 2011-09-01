@@ -258,7 +258,7 @@ namespace Astral.Plane
             {
                 if (_currentContainer == null)
                 {
-                    _currentContainer = new ZipFileContainer(_fileName, false);
+                    _currentContainer = new RefCountContainer(_fileName, () => new ZipFileContainer(_fileName, false));
                 }
                 return _currentContainer;
             }
