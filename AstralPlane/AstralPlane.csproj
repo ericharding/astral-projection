@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Container\FilesystemContainer.cs" />
     <Compile Include="Container\IContainer.cs" />
+    <Compile Include="Container\RefCountContainer.cs" />
     <Compile Include="Container\ZipFileContainer.cs" />
     <Compile Include="Controls\NumericUpDownEx.xaml.cs">
       <DependentUpon>NumericUpDownEx.xaml</DependentUpon>

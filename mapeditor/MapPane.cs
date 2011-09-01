@@ -361,6 +361,7 @@ namespace TileMap
         public void Clear()
         {
             _tiles = null;
+            if (_map != null) _map.Dispose();
             _map = null;
             GC.Collect();
             _tiles = new QuadTree<TileCluster>(new Size(50, 50), 3, true);
@@ -413,6 +414,7 @@ namespace TileMap
         public void SetMap(Map map)
         {
             this.Clear();
+            if (_map != null) _map.Dispose();
             _map = map;
             this.FileName = map.FileName;
 

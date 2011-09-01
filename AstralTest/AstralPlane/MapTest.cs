@@ -716,6 +716,31 @@ namespace AstralTest.AstralPlane
 
         }
 
+        [TestMethod]
+        public void TestLoadTwoMaps()
+        {
+            // todo: this test doesn't actually load the stream - too lazy.
+            Map map1 = new Map();
+            TileFactory tf1 = new TileFactory(TestUtility.TealImage, "Teal is for real!", Borders.Empty, 1, 1);
+            var tile = tf1.CreateTile();
+            map1.AddTileFactory(tf1);
+            map1.AddTile(tile);
+
+            map1.Save(this.TempFile1);
+            map1.Dispose();
+            File.Copy(TempFile1, TempFile2, true);
+
+            using (Map map2 = Map.LoadFromFile(this.TempFile2, false))
+            {
+                var width = map2.Tiles.First().Image.Width;
+                using (Map map3 = Map.LoadFromFile(this.TempFile2, false))
+                {
+                    Assert.IsTrue(map3.Tiles.Count() == 1);
+                    Assert.IsTrue(width == map3.Tiles.First().Image.Width);
+                }
+            }
+        }
+
     }
 
 
