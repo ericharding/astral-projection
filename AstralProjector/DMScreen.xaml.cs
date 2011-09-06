@@ -106,9 +106,9 @@ namespace Astral.Projector
             _pvc.UpdateInitiative(_initiativeTracker.InitiativeManager.Events);
         }
 
-        void _fog_FogChanged(double x, double y, int size, bool clear)
+        void _fog_FogChanged(double x, double y, int size, double alpha)
         {
-            _pvc.UpdateFogAt(x, y, size, clear);
+            _pvc.UpdateFogAt(x, y, size, alpha);
         }
 
         void expander_Expanded(object sender, RoutedEventArgs e)

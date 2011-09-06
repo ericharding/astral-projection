@@ -132,7 +132,7 @@ namespace Astral.Projector
             return ret;
         }
 
-        public static void CircleAlpha(this WriteableBitmap self, int x0, int y0, int radius, bool transparent)
+        public static void CircleAlpha(this WriteableBitmap self, int x0, int y0, int radius, double alpha)
         {
             self.ApplyCircleFunction(x0, y0, radius, (x, y, color) =>
             {
@@ -141,14 +141,15 @@ namespace Astral.Projector
                 int dy = y0-y;
                 double distance = Math.Sqrt(dx * dx + dy * dy) / radius;
 
-                uint alpha = transparent ? (uint)0 : 255;
-                if (transparent && distance > 0.8)
+                uint a = (uint)(alpha * 0xff);
+                if (a < 250 && distance > 0.8)
                 {
                     double oldAlpha = color >> 24;
-                    alpha = (uint)Math.Min(oldAlpha, 5 * 0xff * (distance - 0.8));
+                    double max = a;
+                    a = (uint)Math.Max(Math.Min(oldAlpha, 5 * 0xff * (distance - 0.8)), a);
                 }
 
-                uint ret = (color & 0x00FFFFFF) | (alpha << 24);
+                uint ret = (color & 0x00FFFFFF) | (a << 24);
                 return ret;
             });
         }
