@@ -132,8 +132,20 @@ namespace Astral.Projector
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point position = e.GetPosition(this);
-                ChangeFogInternal((int)position.X, (int)position.Y, !Keyboard.IsKeyDown(Key.LeftShift));
+                ChangeFogInternal((int)position.X, (int)position.Y, GetAlpha());
             }
+        }
+
+        private static double GetAlpha()
+        {
+            double alpha = 0;
+            if (Keyboard.IsKeyDown(Key.LeftShift))
+                alpha = 1.0;
+            if (Keyboard.IsKeyDown(Key.LeftAlt))
+                alpha = 0.5;
+
+            System.Diagnostics.Debug.WriteLine(alpha);
+            return alpha;
         }
 
         void map_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -141,11 +153,11 @@ namespace Astral.Projector
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point position = e.GetPosition(this);
-                ChangeFogInternal(position.X, position.Y, !Keyboard.IsKeyDown(Key.LeftShift));
+                ChangeFogInternal(position.X, position.Y, GetAlpha());
             }
         }
 
-        private void ChangeFogInternal(double x, double y, bool clear)
+        private void ChangeFogInternal(double x, double y, double alpha)
         {
             var viewPort = _map.MapViewport;
             double pixelX = x - viewPort.X - _mapBounds.X;
@@ -156,17 +168,17 @@ namespace Astral.Projector
             // pixelX, pixelY is the pixel on the fog that was clicked
             if (_fogImage != null)
             {
-                ChangeFog(pixelX / _fogImage.PixelWidth, pixelY / _fogImage.PixelHeight, clear);
+                ChangeFog(pixelX / _fogImage.PixelWidth, pixelY / _fogImage.PixelHeight, alpha);
             }
         }
 
-        public void ChangeFog(double x, double y, bool clear)
+        public void ChangeFog(double x, double y, double alpha)
         {
-            int multiplier = Keyboard.IsKeyDown(Key.LeftCtrl) ? 1 : 5;
-            ChangeFog(x, y, _map.TileSize * multiplier, clear);
+            int multiplier = Keyboard.IsKeyDown(Key.LeftCtrl) ? 2 : 5;
+            ChangeFog(x, y, _map.TileSize * multiplier, alpha);
         }
 
-        public void ChangeFog(double x, double y, int size, bool clear)
+        public void ChangeFog(double x, double y, int size, double alpha)
         {
             UpdateFogNow();
 
@@ -174,15 +186,15 @@ namespace Astral.Projector
             int pixelX = (int)(_fogImage.PixelWidth * x);
             int pixelY = (int)(_fogImage.PixelHeight * y);
 
-            _fogImage.CircleAlpha(pixelX, pixelY, size / 2, clear);
+            _fogImage.CircleAlpha(pixelX, pixelY, size / 2, alpha);
 
             if (this.FogChanged != null)
             {
-                FogChanged(x, y, size, clear);
+                FogChanged(x, y, size, alpha);
             }
         }
 
-        public event Action<double, double, int, bool> FogChanged;
+        public event Action<double, double, int, double> FogChanged;
 
         protected override void OnRender(DrawingContext dc)
         {

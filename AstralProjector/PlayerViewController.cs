@@ -168,9 +168,9 @@ namespace Astral.Projector
             _pv.MapView.SetMapPosition(_x + _mx, _y + _my);
         }
         
-        public void UpdateFogAt(double x, double y, int size, bool clear)
+        public void UpdateFogAt(double x, double y, int size, double alpha)
         {
-            _pv.Fog.ChangeFog(x, y, clear);
+            _pv.Fog.ChangeFog(x, y, alpha);
         }
 
         public void ShowImage(string filename)
