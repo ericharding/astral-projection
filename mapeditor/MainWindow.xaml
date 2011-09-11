@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tilemap="clr-namespace:TileMap"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:sys2="clr-namespace:System;assembly=System"
         Title="Astral Map" Height="768" Width="1024" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded">
     <Grid>
         <DockPanel HorizontalAlignment="Stretch" Name="dockPanel1" VerticalAlignment="Stretch">
@@ -54,7 +55,11 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="250"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Style="{StaticResource focusTextBox}" Grid.Column="0" TextChanged="_mapNotes_TextChanged" IsTabStop="False" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown" />
+                    <TextBox Style="{StaticResource focusTextBox}" Grid.Column="0" TextChanged="_mapNotes_TextChanged" IsTabStop="False" x:Name="_mapNotes" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalScrollBarVisibility="Disabled" SpellCheck.IsEnabled="True" PreviewKeyDown="TextBox_PreviewKeyDown">
+                        <SpellCheck.CustomDictionaries>
+                            <sys2:Uri>pack://application:,,,/AstralPlane;component/Utility/CustomDictionary.lex</sys2:Uri>
+                        </SpellCheck.CustomDictionaries>
+                    </TextBox>
                     <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Focusable="False" Grid.Column="1" Width="5"/>
                     <tilemap:Minimap x:Name="miniMap" Grid.Column="2" Background="White"/>
                 </Grid>
