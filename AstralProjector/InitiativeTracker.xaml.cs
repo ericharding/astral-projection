@@ -276,7 +276,7 @@ namespace Astral.Projector
 
         private void _initiativeList_Drop(object sender, DragEventArgs e)
         {
-            if (_dragData == null) return;
+            if (_dragData == null || _dropTargetItem == null) return;
             if (_isInFirstHalf)
             {
                 _dragData.MoveBefore(_dropTargetItem);
@@ -337,6 +337,7 @@ namespace Astral.Projector
         private bool IsOverThumb(MouseEventArgs e)
         {
             var element = this.InputHitTest(e.GetPosition(this)) as DependencyObject;
+            if (element == null) return false;
             do
             {
                 element = VisualTreeHelper.GetParent(element);
