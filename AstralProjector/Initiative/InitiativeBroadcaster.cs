@@ -14,19 +14,29 @@ namespace Astral.Projector.Initiative
         DispatcherTimer _timer;
         long _version = 0;
         InitiativeManager _manager;
+        int _reliability_counter = 0;
 
         public InitiativeBroadcaster(InitiativeManager manager)
         {
             _manager = manager;
             manager.EventsUpdated += new Action<InitiativeManager>(manager_EventsUpdated);
 
-            _client = new UdpClient();
-            _client.Connect(new IPEndPoint(IPAddress.Broadcast, 38727));
+            connect();
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1.0);
             _timer.Tick += new EventHandler(_timer_Tick);
             _timer.Start();
+        }
+
+        private void connect()
+        {
+            if (_client != null)
+            {
+                _client.Close();
+            }
+            _client = new UdpClient();
+            _client.Connect(new IPEndPoint(IPAddress.Broadcast, 38727));
         }
 
         void _timer_Tick(object sender, EventArgs e)
@@ -42,6 +52,14 @@ namespace Astral.Projector.Initiative
 
         private void BroadcastNow(InitiativeManager sender)
         {
+
+            _reliability_counter++;
+            if (_reliability_counter % 60 == 0)
+            {
+                // recreate the socket every 60seconds whether we need to or not.
+                connect();
+            }
+
             StringBuilder initiativeState = new StringBuilder();
 
             initiativeState.Append("Initiative ");
@@ -58,7 +76,11 @@ namespace Astral.Projector.Initiative
             {
                 _client.Send(messageBytes, messageBytes.Length);
             }
-            catch { /* network go bye bye? */ }
+            catch
+            {
+                /* network go bye bye? */
+                connect();
+            }
         }
 
         private string Serialize(Event e)
