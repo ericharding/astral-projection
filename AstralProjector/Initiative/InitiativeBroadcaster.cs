@@ -35,6 +35,23 @@ namespace Astral.Projector.Initiative
             {
                 _client.Close();
             }
+
+            int count = 0;
+            while (count < 5)
+            {
+                count++;
+                try
+                {
+                    _client = new UdpClient();
+                    _client.Connect(new IPEndPoint(IPAddress.Broadcast, 38727));
+                    return;
+                }
+                catch
+                {
+                    System.Threading.Thread.Sleep(500);
+                }
+            }
+
             _client = new UdpClient();
             _client.Connect(new IPEndPoint(IPAddress.Broadcast, 38727));
         }
