@@ -78,12 +78,12 @@ namespace Astral.Projector
 
             Action<string> navigate = (url) => { _webBrowser.Navigate(url); _expandD20SRD.IsExpanded = true; };
             _docFormatter = new AdventureTextFormatter(_initiativeTracker.InitiativeManager,
-                new BasicAdventureLinkHandler("http", navigate),
-                new BasicAdventureLinkHandler("map", (name) => MenuOpen_Click(null, null)),
-                new AdventureLinkWithParens("link", navigate),
-                new SpellLinkHandler("spell", navigate),
-                new AdventureLinkWithParens("image", file => ShowImageEffect(file.Trim('"'))),
-                new LayerLinkHandler("layer", ToggleLayerVisibility)
+                new BasicAdventureLinkHandler("http", navigate), // [[http://www.google.com]]
+                new BasicAdventureLinkHandler("map", (name) => MenuOpen_Click(null, null)), //[[map: path]]
+                new AdventureLinkWithParens("link", navigate), // [[link: text (http://monster.com)]]
+                new SpellLinkHandler("spell", navigate), // [[spell: Fireball]]
+                new AdventureLinkWithParens("image", file => ShowImageEffect(file.Trim('"'))),  // [[image: text (path)]]
+                new LayerLinkHandler("layer", ToggleLayerVisibility) // [[layer: x]]  [[layer: playerX]]
                 );
 
             _docFormatter.FontFamily = _fdMapNotes.FontFamily;
