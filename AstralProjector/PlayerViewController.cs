@@ -228,5 +228,15 @@ namespace Astral.Projector
                 _pv.BeginStoryboard(sb);
             }
         }
+
+        internal void SetRotation(int rotation)
+        {
+           Storyboard sb = _pv.Resources["SetRotation"] as Storyboard;
+           DoubleAnimation da = sb.Children[0] as DoubleAnimation;
+           da.To = (double)rotation;
+           _pv.BeginStoryboard(sb);
+
+           //_pv.SetRotation(rotation);
+        }
     }
 }

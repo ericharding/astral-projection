@@ -222,6 +222,7 @@ namespace Astral.Projector.Initiative
         }
 
         public int MaxHealth { get; set; }
+        public int Initiative { get; set; }
         private int _currentHealth;
         public int CurrentHealth
         {
