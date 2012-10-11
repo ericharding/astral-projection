@@ -272,6 +272,18 @@ namespace Astral.Projector.Initiative
 
             UpdateNow();
         }
+
+        internal void Sort()
+        {
+           Reset();
+           var actors = _events.OfType<Actor>().OrderBy(a => -a.Initiative).ToArray();
+           double delta = ((MINOR_ACTION_SECONDS) / actors.Length);
+           for (int x = 0; x < actors.Length; x++)
+           {
+              actors[x].SetNext(InitiativeManager.Now.AddSeconds(delta * x).AddTicks(RandomEx.Instance.Next(100000)));
+           }
+           UpdateNow();
+        }
     }
 
     internal static class TimeSpanEx

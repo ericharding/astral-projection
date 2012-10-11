@@ -6,6 +6,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Astral.Projector.Initiative;
 using TileMap;
+using System.Windows.Media;
 
 
 namespace Astral.Projector
@@ -47,5 +48,11 @@ namespace Astral.Projector
             _initiativeView.UpdateEvents(events);
         }
 
+
+        //internal void SetRotation(int rotation)
+        //{
+        //   RotateTransform rt = (RotateTransform)_rotationFrame.LayoutTransform;
+        //   rt.Angle = rotation;
+        //}
     }
 }

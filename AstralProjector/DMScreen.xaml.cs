@@ -298,5 +298,31 @@ namespace Astral.Projector
             _lbEffects.SelectedItem = null;
             _pvc.ClearEffects();
         }
+
+        private void Rotation_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+           if (_pvc == null) return;
+
+           ComboBox cb = sender as ComboBox;
+           if (cb != null)
+           {
+              string content = ((ComboBoxItem)cb.SelectedItem).Content.ToString();
+              switch (content)
+              {
+                 case "None":
+                    _pvc.SetRotation(0);
+                    break;
+                 case "Left":
+                    _pvc.SetRotation(-90);
+                    break;
+                 case "Right":
+                    _pvc.SetRotation(90);
+                    break;
+                 case "Flip":
+                    _pvc.SetRotation(180);
+                    break;
+              }
+           }
+        }
     }
 }

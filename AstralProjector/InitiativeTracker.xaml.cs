@@ -383,6 +383,11 @@ namespace Astral.Projector
                 _unitInitiative.Remove(_dragData);
             }
         }
+
+        private void Sort_Click(object sender, RoutedEventArgs e)
+        {
+           _unitInitiative.Sort();
+        }
     }
 
     public class MockInitiativeData : IEnumerable<Event>
