@@ -77,6 +77,8 @@
             </Border.RenderTransform>
             <Image Stretch="None" x:Name="_imageViewer" />
          </Border>
+         
+         <TextBlock Text="{Binding CurrentCount}" FontSize="120" FontFamily="Consolas" Foreground="Red" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="34,5,5,73" x:Name="_counterView" Visibility="Collapsed" />
       </Grid>
    </Grid>
 </Window>

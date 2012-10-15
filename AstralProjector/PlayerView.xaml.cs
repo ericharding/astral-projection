@@ -16,9 +16,23 @@ namespace Astral.Projector
     /// </summary>
     public partial class PlayerView : Window
     {
+        private Countdown _counter = new Countdown();
         public PlayerView()
         {
             InitializeComponent();
+
+            _counterView.DataContext = _counter;
+            _counter.CountdownCompleted += CountdownCompleted;
+        }
+
+        void CountdownCompleted()
+        {
+           _counterView.Visibility = Visibility.Collapsed;
+        }
+
+        internal Countdown Countdown
+        {
+           get { return _counter; }
         }
 
         public void ShowImage(string image)

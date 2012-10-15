@@ -94,6 +94,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Countdown.cs" />
     <Compile Include="Effects\ImageDrifter.cs" />
     <Compile Include="IAdventureLinkHandler.cs" />
     <Compile Include="InitiativeView.xaml.cs">
