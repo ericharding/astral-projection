@@ -61,6 +61,7 @@ namespace Astral.Projector.Initiative
         private Stack<Action> _history = new Stack<Action>();
         private EventFactory _eventFactory;
         private TurnEnding _lastRealizedTurn;
+        private Actor _currentActor;
 
         public InitiativeManager()
         {
@@ -82,6 +83,7 @@ namespace Astral.Projector.Initiative
         }
 
         public event Action<InitiativeManager> EventsUpdated = (_) => { };
+        public event Action<Actor, Actor> TurnStart = (cur,prev) => { };
 
         public IList<Event> Events
         {
@@ -188,8 +190,19 @@ namespace Astral.Projector.Initiative
         private void UpdateNow()
         {
             _events.Sort();
-            InitiativeManager.Now = _events.First().ScheduledAction;
+            Event first = _events.First();
+            InitiativeManager.Now = first.ScheduledAction;
             EventsUpdated(this);
+
+            if (first is Actor)
+            {
+               Actor afirst = first as Actor;
+               if (afirst != _currentActor)
+               {
+                  TurnStart(afirst, _currentActor);
+                  _currentActor = afirst;
+               }
+            }
         }
 
         // Clear spell effects and reset turn count

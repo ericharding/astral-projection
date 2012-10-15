@@ -74,6 +74,7 @@ namespace Astral.Projector
             _lbEffects.ItemsSource = effects.Keys;
 
             _initiativeTracker.InitiativeManager.EventsUpdated += InitiativeManager_EventsUpdated;
+            _initiativeTracker.InitiativeManager.TurnStart += InitiativeManager_TurnStart;
             _initiativeTracker.VisibleToPlayersChanged += new Action<bool>(_initiativeTracker_VisibleToPlayersChanged);
 
             Action<string> navigate = (url) => { _webBrowser.Navigate(url); _expandD20SRD.IsExpanded = true; };
@@ -104,6 +105,14 @@ namespace Astral.Projector
         void InitiativeManager_EventsUpdated(InitiativeManager sender)
         {
             _pvc.UpdateInitiative(_initiativeTracker.InitiativeManager.Events);
+        }
+
+        void InitiativeManager_TurnStart(Actor cur, Actor old)
+        {
+           if (cur.Team == Team.Gold)
+           {
+              _pvc.ShowTurnCounter();
+           }
         }
 
         void _fog_FogChanged(double x, double y, int size, double alpha)
@@ -139,6 +148,7 @@ namespace Astral.Projector
             _map.SetMap(map);
             _map.LayerMap[0] = true;
             _map.LayerMap[1] = true;
+            _map.TileSize = 34;
             for (int x = 2; x < map.Layers; x++)
             {
                 _map.LayerMap[x] = false;
@@ -151,6 +161,9 @@ namespace Astral.Projector
             Dispatcher.In(TimeSpan.FromSeconds(0.2), () => _dmMapView.IsEnabled = true);
             UpdatePlayerMapBounds();
             _playerMapBounds.Visibility = System.Windows.Visibility.Visible;
+            
+            // hack: should implement INotifyPropertyChanged throughout
+            _zoomVal.Value = _pvc.ZoomLevel;
         }
 
         private void _dmMapView_MouseWheel(object sender, MouseWheelEventArgs e)

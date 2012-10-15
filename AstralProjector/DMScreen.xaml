@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:p="clr-namespace:Astral.Projector"
         xmlns:tile="clr-namespace:TileMap;assembly=AstralMap"
+        xmlns:controls="clr-namespace:Astral.Plane.Controls;assembly=AstralPlane"
         Title="DMScreen" Height="562" Width="789">
    <Window.Resources>
       <BooleanToVisibilityConverter x:Key="b2v" />
@@ -97,13 +98,16 @@
          <StackPanel x:Name="_settingsPanel" Margin="8">
             <CheckBox Content="Show Map" IsChecked="{Binding Path=IsMapVisible, Mode=TwoWay}" Margin="5" />
 
-            <!-- holy shit this is terrible -->
-            <TextBlock Text="Zoom" Margin="5,5,5,0" />
-            <Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="100" Value="{Binding Path=ZoomLevel, Mode=TwoWay}" Margin="5,0,5,5" SmallChange="5" LargeChange="10" />
-
+            <!-- Fog of war controls -->
             <CheckBox Content="Fog of war" IsChecked="{Binding Path=ShowFogOfWar, Mode=TwoWay}" Margin="5" />
             <Button Content="Reset Fog" Margin="20,5,20,5" Click="ResetFog_Button_Click" />
-            
+
+            <!-- Zoom control -->
+            <TextBlock Text="Zoom (pixels/tile)" Margin="5,5,5,0" />
+            <controls:NumericUpDownEx x:Name="_zoomVal" Minimum="10" Maximum="100" Value="{Binding Path=ZoomLevel, Mode=TwoWay}" Margin="5,0,5,5" HorizontalAlignment="Left" />
+            <!--<Slider Width="150" HorizontalAlignment="Left" Minimum="10" Maximum="100" Value="{Binding Path=ZoomLevel, Mode=TwoWay}" Margin="5,0,5,5" SmallChange="5" LargeChange="10" />-->
+           
+            <!-- Rotation -->
             <TextBlock Text="Rotation" />
             <ComboBox SelectedIndex="0" SelectionChanged="Rotation_SelectionChanged" Margin="0,5,0,0">
                <ComboBoxItem Content="None" />
@@ -112,6 +116,7 @@
                <ComboBoxItem Content="Flip" />
             </ComboBox>
 
+            <!-- Manual Adjustments -->
             <TextBlock Text="Manual Adjust" Margin="5,5,5,0" />
             <Grid Margin="5" Width="125">
                <Grid.RowDefinitions>
@@ -129,7 +134,13 @@
                <Button Grid.Row="1" Grid.Column="2" Content="&gt;" Click="ManualAdjust_Button_Click" Tag="right" />
                <Button Grid.Row="2" Grid.Column="1" Content="v" Click="ManualAdjust_Button_Click" Tag="down" />
             </Grid>
+            
+            <!-- Turn timer -->
+            <TextBlock Text="Turn Timer" />
+            <controls:NumericUpDownEx Minimum="0" Maximum="60" Value="{Binding TurnTimer, Mode=TwoWay}" Margin="5" HorizontalAlignment="Left" />
+                       
 
+            <!-- Layers -->
             <GroupBox Header="Layers" Margin="0,5,0,0">
                <Grid>
                   <Grid.RowDefinitions>
@@ -169,6 +180,7 @@
                </Grid>
             </GroupBox>
 
+            <!-- Grid draw options -->
             <TextBlock Text="Draw Grid:" />
             <StackPanel Orientation="Horizontal">
                <RadioButton x:Name="_rbNoGrid" Content="No Grid" Checked="GridConfig_Checked" Margin="3" />
